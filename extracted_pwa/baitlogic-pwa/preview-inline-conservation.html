@@ -1,0 +1,711 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>BaitLogic™ — Fishing Intelligence • Community • Conservation</title>
+  <meta name="description" content="BaitLogic is a mobile-first local fishing platform centered on reports, waters, species education, conservation, water clarity awareness, and a better future for young anglers.">
+  <meta name="theme-color" content="#08100a">
+  
+  
+  
+  <style>
+:root {
+  --bg: #060707;
+  --panel: #0d100f;
+  --panel-2: #101513;
+  --line: rgba(133, 255, 145, 0.1);
+  --text: #f0f2ef;
+  --muted: #b7c2ba;
+  --green: #68f575;
+  --green-2: #9dff8d;
+  --red: #d95f34;
+  --shadow: 0 24px 70px rgba(0, 0, 0, 0.45);
+  --radius: 22px;
+  --max: 1120px;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: radial-gradient(circle at top, rgba(53, 88, 61, 0.25), transparent 30%), var(--bg);
+  color: var(--text);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; display: block; }
+button, input, select, textarea { font: inherit; }
+button { cursor: pointer; }
+.hidden { display: none !important; }
+.shell { width: min(100%, var(--max)); margin: 0 auto; }
+.topbar {
+  position: sticky; top: 0; z-index: 30;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 16px 18px; background: rgba(5, 8, 7, 0.84); backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: 0.12em; }
+.brand-dot { width: 8px; height: 8px; border-radius: 999px; background: var(--red); box-shadow: 0 0 14px var(--red); }
+.brand-main { color: var(--green); font-size: 1.4rem; }
+.brand-beta { color: rgba(255,255,255,0.7); font-size: 0.78rem; }
+.menu-toggle {
+  width: 50px; height: 50px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.02);
+  display: grid; place-items: center; gap: 4px;
+}
+.menu-toggle span { width: 20px; height: 2px; background: white; border-radius: 999px; display: block; }
+.mobile-menu {
+  position: fixed; inset: 82px 16px auto 16px; z-index: 25; display: none; flex-direction: column; gap: 8px; padding: 14px;
+  border-radius: 18px; background: rgba(10, 14, 12, 0.98); border: 1px solid var(--line); box-shadow: var(--shadow);
+}
+.mobile-menu.open { display: flex; }
+.mobile-menu a { padding: 12px 14px; border-radius: 12px; color: var(--muted); }
+.mobile-menu a:hover { background: rgba(255,255,255,0.03); color: var(--text); }
+.hero {
+  position: relative; min-height: 88vh; display: flex; align-items: end; overflow: hidden;
+  background: #040505 url('https://www.genspark.ai/api/files/s/XeGonIl5') center/cover no-repeat;
+}
+.hero-backdrop {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.22) 0%, rgba(0,0,0,0.66) 48%, rgba(4,5,5,0.95) 100%);
+}
+.hero-content { position: relative; z-index: 1; padding: 54px 18px 42px; }
+.eyebrow, .section-kicker {
+  margin: 0 0 12px; color: #f59c75; text-transform: uppercase; letter-spacing: 0.22em; font-size: 0.72rem; font-weight: 700;
+}
+.hero h1, .section-heading h2 {
+  margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: clamp(3rem, 10vw, 6.3rem); line-height: 0.92; letter-spacing: 0.03em;
+}
+.hero h1 span, .section-heading h2 span { color: var(--green); font-style: italic; }
+.hero-copy, .section-heading p { color: var(--muted); line-height: 1.75; }
+.hero-copy { max-width: 720px; margin: 22px 0 0; font-size: 1.04rem; }
+.section { padding: 78px 18px 0; }
+.section-heading p { max-width: 780px; margin-top: 14px; }
+.section-heading.narrow { max-width: 780px; }
+.hero-actions, .inline-actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 26px; align-items: center; }
+.button {
+  display: inline-flex; align-items: center; justify-content: center; min-height: 56px; padding: 0 22px; border-radius: 14px;
+  font-weight: 800; letter-spacing: 0.05em; border: none; transition: 0.2s ease;
+}
+.button-primary { background: linear-gradient(180deg, var(--green-2), var(--green)); color: #071008; box-shadow: 0 8px 28px rgba(102,255,135,0.24); }
+.button-primary:hover { transform: translateY(-1px); }
+.button-secondary { border: 1px solid var(--line); background: rgba(255,255,255,0.02); color: var(--text); }
+.button.wide { width: 100%; }
+.button.compact { min-height: 48px; }
+.stat-grid, .card-grid, .report-list, .species-cards { display: grid; gap: 16px; }
+.stat-grid { margin-top: 32px; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+.card-grid.three-col { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.stat-card, .feature-card, .market-card, .report-card, .signup-form, .modal-card, .image-panel, .admin-card, .toast, .pwa-banner {
+  background: linear-gradient(180deg, rgba(16, 21, 19, 0.92), rgba(8, 11, 10, 0.96)); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow);
+}
+.stat-card, .feature-card, .market-card, .signup-form, .admin-card { padding: 22px; }
+.stat-card strong { display: block; font-size: 2rem; color: var(--green); }
+.stat-card span { color: var(--muted); }
+.feature-card h3, .market-card h3 { margin: 0 0 12px; font-size: 1.14rem; }
+.feature-card p, .market-card p { margin: 0; color: var(--muted); line-height: 1.7; }
+.report-card { padding: 18px; display: grid; grid-template-columns: 44px 1fr; gap: 14px; align-items: start; }
+.report-avatar {
+  width: 44px; height: 44px; border-radius: 999px; display: grid; place-items: center; font-weight: 700;
+  background: rgba(95, 255, 124, 0.14); color: var(--green-2);
+}
+.report-meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 6px; }
+.report-meta span, .tiny-note, .subtle { color: rgba(255,255,255,0.58); }
+.report-card p { margin: 0; color: var(--muted); line-height: 1.7; }
+.badge {
+  display: inline-block; margin-bottom: 14px; padding: 6px 10px; border-radius: 999px; background: rgba(103,255,121,0.12);
+  color: var(--green-2); font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase;
+}
+.split-section { display: grid; gap: 18px; align-items: start; }
+.image-panel { overflow: hidden; }
+.image-panel img { width: 100%; height: 100%; object-fit: cover; }
+.image-panel.tall img { min-height: 320px; }
+.species-card.active { border-color: rgba(120,255,140,0.28); }
+.signup-form, .modal-form { display: grid; gap: 16px; }
+.signup-form label, .modal-form label, .admin-card label { display: grid; gap: 8px; }
+.signup-form span, .modal-form span, .admin-card span { color: rgba(255,255,255,0.76); font-size: 0.92rem; }
+input, select, textarea {
+  width: 100%; border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.03); color: var(--text);
+  border-radius: 14px; padding: 14px 15px; outline: none;
+}
+input:focus, select:focus, textarea:focus { border-color: rgba(120,255,140,0.4); box-shadow: 0 0 0 4px rgba(120,255,140,0.08); }
+.form-message { min-height: 24px; color: var(--green-2); font-weight: 600; }
+.empty-state {
+  padding: 20px; border-radius: 16px; border: 1px dashed rgba(255,255,255,0.12); color: var(--muted);
+}
+.modal {
+  position: fixed; inset: 0; z-index: 40; display: none; align-items: center; justify-content: center; background: rgba(0,0,0,0.72); padding: 18px;
+}
+.modal.open { display: flex; }
+.modal-card { width: min(100%, 540px); padding: 22px; }
+.modal-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 16px; }
+.modal-head h3 { margin: 0; }
+.close-modal {
+  width: 40px; height: 40px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.03); color: white; font-size: 1.4rem;
+}
+.toast-wrap {
+  position: fixed; right: 16px; bottom: 16px; z-index: 60; display: grid; gap: 10px; width: min(92vw, 360px);
+}
+.toast { padding: 16px 18px; }
+.toast strong { display: block; margin-bottom: 4px; color: var(--green-2); }
+.admin-shell { padding-bottom: 52px; }
+.admin-grid { display: grid; gap: 16px; margin-top: 22px; }
+.table-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+.small-button {
+  border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.02); color: var(--text); border-radius: 12px; padding: 10px 14px; font-weight: 700;
+}
+.small-button.primary { background: linear-gradient(180deg, var(--green-2), var(--green)); color: #071008; border: none; }
+.pwa-banner { padding: 18px; margin-top: 18px; }
+@media (min-width: 760px) {
+  .hero-content, .section { padding-left: 24px; padding-right: 24px; }
+  .split-section { grid-template-columns: 1fr 1fr; }
+}
+@media (min-width: 960px) {
+  .topbar { padding-left: 30px; padding-right: 30px; }
+  .hero { min-height: 100vh; }
+}
+
+</style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#top" aria-label="BaitLogic home">
+      <span class="brand-dot"></span>
+      <span class="brand-main">BAITLOGIC</span>
+      <span class="brand-beta">COMMUNITY + CONSERVATION</span>
+    </a>
+    <button class="menu-toggle" id="menuToggle" aria-expanded="false" aria-controls="mobileMenu" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+  </header>
+
+  <nav class="mobile-menu" id="mobileMenu">
+    <a href="#reports">Reports</a>
+    <a href="#weather-water">Weather & Water</a>
+    <a href="#waters">Waters</a>
+    <a href="#catches">Catches</a>
+    <a href="#species">Species</a>
+    <a href="#conservation">Conservation</a>
+    <a href="#business-pages">Business</a>
+    <a href="#waitlist">Join</a>
+    <a href="/admin">Admin</a>
+  </nav>
+
+  <main id="top">
+    <section class="hero">
+      <div class="hero-backdrop"></div>
+      <div class="hero-content shell">
+        <p class="eyebrow">Fishing Intelligence • Community • Conservation</p>
+        <h1>LOCAL FISHING <span>INTEL.</span></h1>
+        <p class="hero-copy">BaitLogic is built to help anglers fish smarter, protect our waters, improve water clarity awareness, and set a better example for the young ones coming up behind us. This is not just about where the fish are biting — it is about leaving every waterway better than we found it.</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="#waitlist">JOIN EARLY ACCESS</a>
+          <a class="button button-secondary" href="#reports">VIEW REPORTS</a>
+          <a class="button button-secondary" href="#conservation">PROTECT OUR WATERS</a>
+          <button class="button button-secondary hidden" id="installButton" type="button">INSTALL APP</button>
+        </div>
+        <div class="stat-grid">
+          <article class="stat-card"><strong>24</strong><span>Active Anglers</span></article>
+          <article class="stat-card"><strong>12</strong><span>Local Waters</span></article>
+          <article class="stat-card"><strong>8</strong><span>Species Tracked</span></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section shell live-now">
+      <div class="section-heading narrow">
+        <span class="section-kicker">Platform Focus</span>
+        <h2>WHAT <span>STAYS IN</span></h2>
+        <p>This launch keeps the parts of BaitLogic that matter most together in one place: local reports, weather and waters awareness, catch logging, species education, conservation leadership, and a free public experience that helps build a better future for young anglers.</p>
+      </div>
+      <div class="card-grid three-col">
+        <article class="feature-card"><h3>Local Reports</h3><p>Followers can submit reports to a moderated community feed rooted in honest local knowledge.</p></article>
+        <article class="feature-card"><h3>Waters + Clarity</h3><p>Track what anglers are seeing in real waters, including conditions and declining clarity concerns.</p></article>
+        <article class="feature-card"><h3>Conservation First</h3><p>Water health, stewardship, and next-generation example setting are built into the product itself.</p></article>
+      </div>
+    </section>
+
+    <section class="section shell" id="weather-water">
+      <div class="section-heading narrow">
+        <span class="section-kicker">Conditions Layer</span>
+        <h2>WEATHER &amp; <span>WATER</span></h2>
+        <p>Local conditions stay in the platform, but they should support a bigger goal too: helping anglers understand what is changing in their waters over time.</p>
+      </div>
+      <div class="feature-card">
+        <p><strong>Air Temp:</strong> 72°F</p>
+        <p><strong>Wind:</strong> 8 mph</p>
+        <p><strong>Water Temp:</strong> 64°F</p>
+        <p><strong>Clarity Trend:</strong> Visibility and overall water quality are declining in too many places, so BaitLogic should help anglers document and respond to those changes.</p>
+        <div class="inline-actions">
+          <a class="button button-secondary compact" href="#waters">VIEW WATERS</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section shell" id="reports">
+      <div class="section-heading">
+        <span class="section-kicker">Community Feed</span>
+        <h2>COMMUNITY — LOCAL <span>REPORTS</span></h2>
+        <p>Approved reports appear here after moderation. The goal is not hype — it is honest local information, strong community standards, and useful knowledge tied to real waters.</p>
+      </div>
+      <div class="inline-actions">
+        <button class="button button-primary compact" type="button" data-open="reportModal">POST REPORT</button>
+        <span class="tiny-note">No account required for followers in the MVP.</span>
+      </div>
+      <div class="report-list" id="reportList"></div>
+    </section>
+
+    <section class="section shell split-section" id="waters">
+      <figure class="image-panel tall">
+        <img src="https://www.genspark.ai/api/files/s/Qhri3ZGz" alt="Close-up photo of a largemouth bass held near the water surface">
+      </figure>
+      <div>
+        <div class="section-heading">
+          <span class="section-kicker">Water Intelligence</span>
+          <h2>LOCAL <span>WATERS</span></h2>
+          <p>Each featured water should become a place for species notes, access information, seasonal observations, clarity concerns, and stewardship signals that help anglers learn and help protect what they use.</p>
+        </div>
+        <div class="species-cards">
+          <article class="feature-card species-card active"><h3>Horseshoe Lake</h3><p>Bass-heavy local favorite with strong report value and real stewardship potential.</p></article>
+          <article class="feature-card species-card"><h3>Carlyle Lake</h3><p>Brush pile patterns, seasonal movement, and clarity tracking all matter here.</p></article>
+          <article class="feature-card species-card"><h3>Mel Price</h3><p>Current influence, catfish patterns, and pollution-watch relevance make this water important.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section shell split-section" id="catches">
+      <div>
+        <div class="section-heading">
+          <span class="section-kicker">Follower Activity</span>
+          <h2>RECENT <span>CATCHES</span></h2>
+          <p>Catch logs build local seasonal knowledge, show how waters are changing over time, and give followers a reason to stay involved without needing a bloated social app.</p>
+        </div>
+        <div class="inline-actions">
+          <button class="button button-primary compact" type="button" data-open="catchModal">LOG CATCH</button>
+        </div>
+        <div class="report-list" id="catchList"></div>
+      </div>
+      <figure class="image-panel">
+        <img src="https://www.genspark.ai/api/files/s/XeGonIl5" alt="Fishing electronics and tackle arranged on a wooden table">
+      </figure>
+    </section>
+
+    <section class="section shell" id="species">
+      <div class="section-heading narrow">
+        <span class="section-kicker">Education Layer</span>
+        <h2>SPECIES ID — KNOW YOUR <span>CATCH</span></h2>
+        <p>Identification, regulations, records, seasonal patterns, and ethical handling guidance should all stay in the platform so anglers get value before the community is huge and younger users learn better habits from day one.</p>
+      </div>
+      <div class="card-grid three-col">
+        <article class="feature-card"><h3>Largemouth Bass</h3><p>Jigs, weed edges, and seasonal transitions remain core pattern language for many local waters.</p></article>
+        <article class="feature-card"><h3>Crappie</h3><p>Brush piles and suspended structure make them ideal for local pattern-sharing and education.</p></article>
+        <article class="feature-card"><h3>Channel Catfish</h3><p>Current seams, cut bait, and low-light windows keep local catfish intel practical and useful.</p></article>
+      </div>
+    </section>
+
+    <section class="section shell" id="conservation">
+      <div class="section-heading narrow">
+        <span class="section-kicker">Mission Core</span>
+        <h2>CONSERVATION &amp; WATER <span>HEALTH</span></h2>
+        <p>BaitLogic should treat water health as non-negotiable. Water clarity has gone down badly in too many places, and anglers need a place to log what they are seeing, learn how to help, and set a better example for the next generation.</p>
+      </div>
+      <div class="card-grid three-col">
+        <article class="market-card"><span class="badge">Water Testing</span><h3>Testing Guide</h3><p>Use test strips for pH, ammonia, nitrites, nitrates, hardness, and alkalinity. Log what you see over time and after storms.</p></article>
+        <article class="market-card"><span class="badge">Illinois Links</span><h3>DNR &amp; EPA Reporting</h3><p><a href="https://www.ifishillinois.org" target="_blank" rel="noopener">Illinois DNR Fisheries</a><br><a href="https://www2.illinois.gov/dnr" target="_blank" rel="noopener">Illinois Department of Natural Resources</a><br><a href="https://www.epa.illinois.gov" target="_blank" rel="noopener">Illinois EPA Water Reports</a></p></article>
+        <article class="market-card"><span class="badge">Issue Routing</span><h3>Authority Routing</h3><p>Water quality issues, fish kills, spills, and invasive species should be routed to the right authority as the platform matures.</p></article>
+        <article class="market-card"><span class="badge">Stewardship</span><h3>Cleanup Events</h3><p>Organize shoreline cleanups, track volunteer hours, and show before/after impact.</p></article>
+        <article class="market-card"><span class="badge">Habitat</span><h3>Invasive Species</h3><p>Track threats like Asian carp, zebra mussels, hydrilla, Eurasian watermilfoil, and rusty crayfish.</p></article>
+        <article class="market-card"><span class="badge">Future</span><h3>Young Anglers</h3><p>Teach better stewardship habits and build a culture worth handing down instead of just chasing bites.</p></article>
+      </div>
+    </section>
+
+    <section class="section shell" id="business-pages">
+      <div class="section-heading narrow">
+        <span class="section-kicker">Business Model</span>
+        <h2>FREE FOR ANGLERS — PAID <span>BUSINESS PAGES</span></h2>
+        <p>The public side of BaitLogic stays free. Monetization comes from businesses that want enhanced visibility, their own homepage/profile, featured placement, and local event promotion.</p>
+      </div>
+      <div class="card-grid three-col">
+        <article class="market-card"><span class="badge">Free</span><h3>Public Access</h3><p>Reports, catches, waters pages, species education, and conservation content remain free for the public community.</p></article>
+        <article class="market-card"><span class="badge">Paid</span><h3>Business Homepages</h3><p>Bait shops, guides, outfitters, and local organizations can pay for their own branded pages and featured visibility.</p></article>
+        <article class="market-card"><span class="badge">On Hold</span><h3>Marketplace + Chat</h3><p>Marketplace and chat stay paused until traction proves they are worth the overhead.</p></article>
+      </div>
+      <figure class="image-panel">
+        <img src="https://www.genspark.ai/api/files/s/GrwT3cwS" alt="Fishing reel, rod, and journal arranged on a dark tabletop">
+      </figure>
+    </section>
+
+    <section class="section shell" id="waitlist">
+      <div class="section-heading narrow">
+        <span class="section-kicker">Growth Engine</span>
+        <h2>JOIN THE <span>CREW</span></h2>
+        <p>Collect names, emails, home waters, and user interest now. Grow the community first, then expand features only after followers prove what they actually use.</p>
+      </div>
+      <form class="signup-form" id="signupForm">
+        <label><span>Name</span><input type="text" name="name" placeholder="Your name" required></label>
+        <label><span>Email</span><input type="email" name="email" placeholder="angler@email.com" required></label>
+        <label><span>Home Water</span><input type="text" name="home_water" placeholder="Horseshoe Lake, Carlyle Lake..."></label>
+        <label><span>Main Interest</span>
+          <select name="interest">
+            <option>Local Reports</option>
+            <option>Catch Logging</option>
+            <option>Waters & Clarity</option>
+            <option>Species Guide</option>
+            <option>Conservation</option>
+            <option>Business Pages</option>
+          </select>
+        </label>
+        <button class="button button-primary wide" type="submit">GET EARLY ACCESS</button>
+        <div class="form-message" id="signupMessage" aria-live="polite"></div>
+      </form>
+    </section>
+
+    <section class="section shell" id="founder-note">
+      <div class="section-heading narrow">
+        <span class="section-kicker">Founder Note</span>
+        <h2>BUILT FOR ANGLERS, WATERS, AND THE <span>NEXT GENERATION</span></h2>
+        <p>BaitLogic exists to help anglers fish smarter, protect our waters, and build a stronger local culture. The mission is to combine real-time intel, local knowledge, waters awareness, species education, and environmental protection into one platform that actually matters.</p>
+      </div>
+      <div class="card-grid three-col">
+        <article class="feature-card"><h3>Real-Time Intel</h3><p>Useful, local, moderated community input that helps people actually fish better.</p></article>
+        <article class="feature-card"><h3>Environmental Protection</h3><p>Water clarity, health, and stewardship stay at the core instead of getting pushed aside.</p></article>
+        <article class="feature-card"><h3>Better Example</h3><p>The platform should help create a better culture for young anglers and everyone who comes after us.</p></article>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal" id="reportModal" aria-hidden="true">
+    <div class="modal-card">
+      <div class="modal-head"><h3>Post Local Report</h3><button class="close-modal" type="button" data-close>×</button></div>
+      <form class="modal-form" id="reportForm">
+        <label><span>Name</span><input type="text" name="name" placeholder="Mike R." required></label>
+        <label><span>Water</span><input type="text" name="water" placeholder="Carlyle Lake" required></label>
+        <label><span>Species</span><input type="text" name="species" placeholder="Crappie"></label>
+        <label><span>Report</span><textarea name="report" rows="4" placeholder="Crappie stacked at 12ft near brush piles" required></textarea></label>
+        <button class="button button-primary wide" type="submit">SUBMIT FOR REVIEW</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal" id="catchModal" aria-hidden="true">
+    <div class="modal-card">
+      <div class="modal-head"><h3>Log Catch</h3><button class="close-modal" type="button" data-close>×</button></div>
+      <form class="modal-form" id="catchForm">
+        <label><span>Name</span><input type="text" name="name" placeholder="Local Angler"></label>
+        <label><span>Species</span><input type="text" name="species" placeholder="Largemouth Bass" required></label>
+        <label><span>Weight</span><input type="text" name="weight" placeholder="4lb 8oz"></label>
+        <label><span>Location</span><input type="text" name="location" placeholder="Rend Lake" required></label>
+        <label><span>Notes</span><textarea name="notes" rows="4" placeholder="Spinnerbait near grass edge"></textarea></label>
+        <button class="button button-primary wide" type="submit">SUBMIT CATCH</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+window.BAITLOGIC_CONFIG = {
+  mode: 'demo',
+  siteName: 'BaitLogic',
+  supabaseUrl: '',
+  supabaseAnonKey: '',
+  adminRedirectUrl: '/admin',
+  adminEmails: ['BaitLogic@outlook.com']
+};
+
+</script>
+  <script>
+(function () {
+  const config = window.BAITLOGIC_CONFIG || {};
+  const liveMode = config.mode === 'live' && config.supabaseUrl && config.supabaseAnonKey && window.supabase;
+  const supabaseClient = liveMode ? window.supabase.createClient(config.supabaseUrl, config.supabaseAnonKey) : null;
+  const demoKeys = {
+    reports: 'baitlogic-demo-reports',
+    catches: 'baitlogic-demo-catches',
+    signups: 'baitlogic-demo-signups'
+  };
+  const demoSeed = {
+    reports: [
+      { id: 'demo-r1', name: 'Mike R.', water: 'Horseshoe Lake', species: 'Largemouth Bass', report: '5lb largemouth on a jig at Horseshoe Lake', status: 'approved', created_at: '2026-06-21T15:00:00.000Z' },
+      { id: 'demo-r2', name: 'Sarah T.', water: 'Carlyle Lake', species: 'Crappie', report: 'Crappie stacked at 12ft, Carlyle Lake brush piles', status: 'approved', created_at: '2026-06-21T13:00:00.000Z' },
+      { id: 'demo-r3', name: 'Dan W.', water: 'Mel Price', species: 'Channel Catfish', report: 'Channel cats hitting cut shad below Mel Price', status: 'approved', created_at: '2026-06-21T11:00:00.000Z' }
+    ],
+    catches: [
+      { id: 'demo-c1', name: 'Local Angler', species: 'Largemouth Bass', weight: '4lb 8oz', location: 'Rend Lake', notes: 'Spinnerbait near grass edge', status: 'approved', created_at: '2026-06-21T10:30:00.000Z' }
+    ],
+    signups: []
+  };
+
+  const menuToggle = document.getElementById('menuToggle');
+  const mobileMenu = document.getElementById('mobileMenu');
+  const reportList = document.getElementById('reportList');
+  const catchList = document.getElementById('catchList');
+  const reportCount = document.getElementById('reportCount');
+  const catchCountStat = document.getElementById('catchCountStat');
+  const signupForm = document.getElementById('signupForm');
+  const signupMessage = document.getElementById('signupMessage');
+  const reportForm = document.getElementById('reportForm');
+  const catchForm = document.getElementById('catchForm');
+  const installButton = document.getElementById('installButton');
+  let deferredPrompt = null;
+
+  function loadDemo(key, seed) {
+    try {
+      const raw = localStorage.getItem(key);
+      if (!raw) {
+        localStorage.setItem(key, JSON.stringify(seed));
+        return seed.slice();
+      }
+      return JSON.parse(raw);
+    } catch {
+      return seed.slice();
+    }
+  }
+
+  function saveDemo(key, data) {
+    localStorage.setItem(key, JSON.stringify(data));
+  }
+
+  function esc(value) {
+    return String(value || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function ago(dateString) {
+    const diff = Date.now() - new Date(dateString).getTime();
+    const mins = Math.max(1, Math.round(diff / 60000));
+    if (mins < 60) return `${mins}m ago`;
+    const hours = Math.round(mins / 60);
+    if (hours < 24) return `${hours}h ago`;
+    return `${Math.round(hours / 24)}d ago`;
+  }
+
+  function showToast(title, text) {
+    const wrap = document.querySelector('.toast-wrap') || createToastWrap();
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.innerHTML = `<strong>${esc(title)}</strong><div>${esc(text)}</div>`;
+    wrap.appendChild(toast);
+    setTimeout(() => toast.remove(), 4200);
+  }
+
+  function createToastWrap() {
+    const wrap = document.createElement('div');
+    wrap.className = 'toast-wrap';
+    document.body.appendChild(wrap);
+    return wrap;
+  }
+
+  function toggleMenu(open) {
+    mobileMenu.classList.toggle('open', open);
+    menuToggle.setAttribute('aria-expanded', String(open));
+  }
+
+  menuToggle?.addEventListener('click', () => toggleMenu(!mobileMenu.classList.contains('open')));
+  mobileMenu?.querySelectorAll('a').forEach(link => link.addEventListener('click', () => toggleMenu(false)));
+
+  document.querySelectorAll('[data-open]').forEach(button => {
+    button.addEventListener('click', () => {
+      document.getElementById(button.dataset.open)?.classList.add('open');
+    });
+  });
+  document.querySelectorAll('[data-close]').forEach(button => {
+    button.addEventListener('click', () => button.closest('.modal')?.classList.remove('open'));
+  });
+  document.querySelectorAll('.modal').forEach(modal => {
+    modal.addEventListener('click', event => {
+      if (event.target === modal) modal.classList.remove('open');
+    });
+  });
+
+  function renderReports(items) {
+    reportCount.textContent = String(items.length);
+    if (!items.length) {
+      reportList.innerHTML = '<div class="empty-state">No approved reports yet. Submit the first one.</div>';
+      return;
+    }
+    reportList.innerHTML = items.map(item => `
+      <article class="report-card">
+        <div class="report-avatar">${esc((item.name || '?').charAt(0).toUpperCase())}</div>
+        <div>
+          <div class="report-meta"><strong>${esc(item.name)}</strong><span>${esc(ago(item.created_at))}</span></div>
+          <p>${esc(item.report)}</p>
+          <div class="subtle">${esc(item.water)}${item.species ? ` · ${esc(item.species)}` : ''}</div>
+        </div>
+      </article>
+    `).join('');
+  }
+
+  function renderCatches(items) {
+    catchCountStat.textContent = String(items.length);
+    if (!items.length) {
+      catchList.innerHTML = '<div class="empty-state">No approved catches yet. Log the first one.</div>';
+      return;
+    }
+    catchList.innerHTML = items.map(item => `
+      <article class="report-card">
+        <div class="report-avatar">${esc((item.species || '?').charAt(0).toUpperCase())}</div>
+        <div>
+          <div class="report-meta"><strong>${esc(item.species)}</strong><span>${esc(ago(item.created_at))}</span></div>
+          <p>${esc(item.location)}${item.weight ? ` · ${esc(item.weight)}` : ''}</p>
+          <div class="subtle">${esc(item.notes || 'No notes added yet.')}</div>
+        </div>
+      </article>
+    `).join('');
+  }
+
+  async function loadReports() {
+    if (!liveMode) {
+      const reports = loadDemo(demoKeys.reports, demoSeed.reports).filter(x => x.status === 'approved');
+      renderReports(reports.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)));
+      return;
+    }
+    const { data, error } = await supabaseClient
+      .from('reports')
+      .select('id,name,water,species,report,status,created_at')
+      .eq('status', 'approved')
+      .order('created_at', { ascending: false })
+      .limit(12);
+    if (error) throw error;
+    renderReports(data || []);
+  }
+
+  async function loadCatches() {
+    if (!liveMode) {
+      const catches = loadDemo(demoKeys.catches, demoSeed.catches).filter(x => x.status === 'approved');
+      renderCatches(catches.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)));
+      return;
+    }
+    const { data, error } = await supabaseClient
+      .from('catches')
+      .select('id,name,species,weight,location,notes,status,created_at')
+      .eq('status', 'approved')
+      .order('created_at', { ascending: false })
+      .limit(12);
+    if (error) throw error;
+    renderCatches(data || []);
+  }
+
+  async function submitSignup(payload) {
+    if (!liveMode) {
+      const signups = loadDemo(demoKeys.signups, demoSeed.signups);
+      const exists = signups.some(x => x.email.toLowerCase() === payload.email.toLowerCase());
+      if (!exists) {
+        signups.push({ ...payload, id: `demo-s-${Date.now()}`, created_at: new Date().toISOString() });
+        saveDemo(demoKeys.signups, signups);
+      }
+      return { message: exists ? 'Already on the demo early-access list.' : 'Demo signup saved. Add Supabase config to go live.' };
+    }
+    const { error } = await supabaseClient.from('waitlist_signups').insert(payload);
+    if (error && String(error.message || '').toLowerCase().includes('duplicate')) {
+      return { message: 'You are already on the early-access list.' };
+    }
+    if (error) throw error;
+    return { message: 'You are on the early-access list.' };
+  }
+
+  async function submitReport(payload) {
+    if (!liveMode) {
+      const reports = loadDemo(demoKeys.reports, demoSeed.reports);
+      reports.unshift({ ...payload, id: `demo-r-${Date.now()}`, status: 'pending', created_at: new Date().toISOString() });
+      saveDemo(demoKeys.reports, reports);
+      return;
+    }
+    const { error } = await supabaseClient.from('reports').insert({ ...payload, status: 'pending' });
+    if (error) throw error;
+  }
+
+  async function submitCatch(payload) {
+    if (!liveMode) {
+      const catches = loadDemo(demoKeys.catches, demoSeed.catches);
+      catches.unshift({ ...payload, id: `demo-c-${Date.now()}`, status: 'pending', created_at: new Date().toISOString() });
+      saveDemo(demoKeys.catches, catches);
+      return;
+    }
+    const { error } = await supabaseClient.from('catches').insert({ ...payload, status: 'pending' });
+    if (error) throw error;
+  }
+
+  signupForm?.addEventListener('submit', async event => {
+    event.preventDefault();
+    signupMessage.textContent = 'Submitting...';
+    const payload = Object.fromEntries(new FormData(signupForm).entries());
+    payload.email = String(payload.email || '').trim().toLowerCase();
+    try {
+      const result = await submitSignup(payload);
+      signupMessage.textContent = result.message;
+      signupForm.reset();
+      showToast('BaitLogic', result.message);
+    } catch (error) {
+      signupMessage.textContent = error.message || 'Unable to save signup right now.';
+    }
+  });
+
+  reportForm?.addEventListener('submit', async event => {
+    event.preventDefault();
+    const payload = Object.fromEntries(new FormData(reportForm).entries());
+    try {
+      await submitReport(payload);
+      reportForm.reset();
+      document.getElementById('reportModal')?.classList.remove('open');
+      showToast('Report received', liveMode ? 'Your report is pending moderation.' : 'Demo report stored locally.');
+      await loadReports();
+    } catch (error) {
+      showToast('Error', error.message || 'Unable to submit report right now.');
+    }
+  });
+
+  catchForm?.addEventListener('submit', async event => {
+    event.preventDefault();
+    const payload = Object.fromEntries(new FormData(catchForm).entries());
+    try {
+      await submitCatch(payload);
+      catchForm.reset();
+      document.getElementById('catchModal')?.classList.remove('open');
+      showToast('Catch received', liveMode ? 'Your catch is pending moderation.' : 'Demo catch stored locally.');
+      await loadCatches();
+    } catch (error) {
+      showToast('Error', error.message || 'Unable to submit catch right now.');
+    }
+  });
+
+  window.addEventListener('beforeinstallprompt', event => {
+    event.preventDefault();
+    deferredPrompt = event;
+    installButton?.classList.remove('hidden');
+  });
+
+  installButton?.addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    await deferredPrompt.userChoice;
+    deferredPrompt = null;
+    installButton.classList.add('hidden');
+  });
+
+  async function boot() {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
+    if (!liveMode) {
+      const banner = document.createElement('div');
+      banner.className = 'shell pwa-banner';
+      banner.innerHTML = '<strong>Demo mode is active.</strong><div class="tiny-note">To go live on Cloudflare + Supabase, copy values into config.js and run the SQL in sql/schema.sql.</div>';
+      document.querySelector('.live-now')?.after(banner);
+    }
+    try {
+      await Promise.all([loadReports(), loadCatches()]);
+    } catch (error) {
+      reportList.innerHTML = '<div class="empty-state">Unable to load reports right now.</div>';
+      catchList.innerHTML = '<div class="empty-state">Unable to load catches right now.</div>';
+      showToast('Connection issue', error.message || 'Could not reach the backend.');
+    }
+  }
+
+  boot();
+})();
+
+</script>
+</body>
+</html>

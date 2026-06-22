@@ -1,0 +1,42 @@
+FINAL LAUNCH — BAITLOGIC PWA
+
+Brand name: BaitLogic
+Admin email: BaitLogic@outlook.com
+Recommended Cloudflare Pages project name: baitlogic
+Recommended first live URL: https://baitlogic.pages.dev
+Admin URL after launch: https://baitlogic.pages.dev/admin
+
+WHAT TO EDIT BEFORE PRESSING DEPLOY
+1) In config.js, set:
+   - mode: 'live'
+   - supabaseUrl: your real Supabase project URL
+   - supabaseAnonKey: your real public anon key
+   - adminRedirectUrl: 'https://baitlogic.pages.dev/admin' (or your actual pages.dev URL if baitlogic is unavailable)
+   - adminEmails already set to BaitLogic@outlook.com
+
+2) In Supabase SQL Editor, run sql/schema.sql
+3) In Supabase Authentication:
+   - Site URL: https://baitlogic.pages.dev
+   - Redirect URL: https://baitlogic.pages.dev/admin
+4) If the baitlogic subdomain is unavailable, use your actual Cloudflare Pages URL everywhere above.
+
+LEAN LAUNCH ORDER
+A. Deploy static site to Cloudflare Pages
+B. Run Supabase schema
+C. Paste Supabase URL and anon key into config.js
+D. Re-deploy Cloudflare Pages
+E. Open /admin and send magic link to BaitLogic@outlook.com
+F. Approve incoming reports and catches
+
+PRODUCT DIRECTION LOCKED
+- Keep conservation and water health central
+- Keep waters pages, reports, catches, species education, and stewardship in the first launch
+- Keep the public experience free
+- Paid layer is enhanced business pages only
+- Marketplace and chat stay on hold until traction is proven
+
+CHEAP/FREE RULES
+- Keep frontend static on Cloudflare Pages
+- Avoid Pages Functions unless truly needed
+- Use Supabase only for auth + database + simple inserts/selects
+- Delay paid weather data and native apps until traction is proven

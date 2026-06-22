@@ -1,0 +1,18 @@
+BAITLOGIC PWA — CLOUDFLARE + SUPABASE SETUP
+
+1) Create a Supabase project.
+2) Open SQL Editor and run sql/schema.sql.
+3) Admin email is prefilled as BaitLogic@outlook.com in sql/schema.sql.
+4) In Supabase Authentication settings, set Site URL to your Cloudflare Pages domain.
+5) If using the recommended project name, use Redirect URL https://baitlogic.pages.dev/admin
+6) Copy config.example.js to config.js and fill in SUPABASE URL + ANON KEY.
+7) In config.js, set mode to 'live' and set adminRedirectUrl to your real pages.dev /admin URL.
+8) Deploy this folder to Cloudflare Pages as a static site.
+9) Open the site on mobile and use Install App.
+10) Open /admin and sign in using the BaitLogic@outlook.com magic link.
+11) Approve reports and catches from the admin dashboard.
+
+LEAN MVP NOTES
+- This version intentionally delays native apps, marketplace transactions, and paid weather data.
+- Static asset requests on Cloudflare Pages are free/unlimited; avoid Pages Functions unless needed.
+- Supabase free plan is enough for first traction if you keep scope lean.

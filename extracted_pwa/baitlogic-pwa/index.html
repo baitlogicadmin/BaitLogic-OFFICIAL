@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>BaitLogic™ — Fishing Intelligence • Community • Conservation</title>
+  <meta name="description" content="BaitLogic is a mobile-first local fishing platform centered on reports, waters, species education, conservation, water clarity awareness, and a better future for young anglers.">
+  <meta name="theme-color" content="#08100a">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" href="/icons/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/icons/icon-192.png">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#top" aria-label="BaitLogic home">
+      <span class="brand-dot"></span>
+      <span class="brand-main">BAITLOGIC</span>
+      <span class="brand-beta">COMMUNITY + CONSERVATION</span>
+    </a>
+    <button class="menu-toggle" id="menuToggle" aria-expanded="false" aria-controls="mobileMenu" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+  </header>
+
+  <nav class="mobile-menu" id="mobileMenu">
+    <a href="#reports">Reports</a>
+    <a href="#weather-water">Weather & Water</a>
+    <a href="#waters">Waters</a>
+    <a href="#catches">Catches</a>
+    <a href="#species">Species</a>
+    <a href="#conservation">Conservation</a>
+    <a href="#business-pages">Business</a>
+    <a href="#waitlist">Join</a>
+    <a href="/admin">Admin</a>
+  </nav>
+
+  <main id="top">
+    <section class="hero">
+      <div class="hero-backdrop"></div>
+      <div class="hero-content shell">
+        <p class="eyebrow">Fishing Intelligence • Community • Conservation</p>
+        <h1>LOCAL FISHING <span>INTEL.</span></h1>
+        <p class="hero-copy">BaitLogic is built to help anglers fish smarter, protect our waters, improve water clarity awareness, and set a better example for the young ones coming up behind us. This is not just about where the fish are biting — it is about leaving every waterway better than we found it.</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="#waitlist">JOIN EARLY ACCESS</a>
+          <a class="button button-secondary" href="#reports">VIEW REPORTS</a>
+          <a class="button button-secondary" href="#conservation">PROTECT OUR WATERS</a>
+          <button class="button button-secondary hidden" id="installButton" type="button">INSTALL APP</button>
+        </div>
+        <div class="stat-grid">
+          <article class="stat-card"><strong>24</strong><span>Active Anglers</span></article>
+          <article class="stat-card"><strong>12</strong><span>Local Waters</span></article>
+          <article class="stat-card"><strong>8</strong><span>Species Tracked</span></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section shell live-now">
+      <div class="section-heading narrow">
+        <span class="section-kicker">Platform Focus</span>
+        <h2>WHAT <span>STAYS IN</span></h2>
+        <p>This launch keeps the parts of BaitLogic that matter most together in one place: local reports, weather and waters awareness, catch logging, species education, conservation leadership, and a free public experience that helps build a better future for young anglers.</p>
+      </div>
+      <div class="card-grid three-col">
+        <article class="feature-card"><h3>Local Reports</h3><p>Followers can submit reports to a moderated community feed rooted in honest local knowledge.</p></article>
+        <article class="feature-card"><h3>Waters + Clarity</h3><p>Track what anglers are seeing in real waters, including conditions and declining clarity concerns.</p></article>
+        <article class="feature-card"><h3>Conservation First</h3><p>Water health, stewardship, and next-generation example setting are built into the product itself.</p></article>
+      </div>
+    </section>
+
+    <section class="section shell" id="weather-water">
+      <div class="section-heading narrow">
+        <span class="section-kicker">Conditions Layer</span>
+        <h2>WEATHER &amp; <span>WATER</span></h2>
+        <p>Local conditions stay in the platform, but they should support a bigger goal too: helping anglers understand what is changing in their waters over time.</p>
+      </div>
+      <div class="feature-card">
+        <p><strong>Air Temp:</strong> 72°F</p>
+        <p><strong>Wind:</strong> 8 mph</p>
+        <p><strong>Water Temp:</strong> 64°F</p>
+        <p><strong>Clarity Trend:</strong> Visibility and overall water quality are declining in too many places, so BaitLogic should help anglers document and respond to those changes.</p>
+        <div class="inline-actions">
+          <a class="button button-secondary compact" href="#waters">VIEW WATERS</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section shell" id="reports">
+      <div class="section-heading">
+        <span class="section-kicker">Community Feed</span>
+        <h2>COMMUNITY — LOCAL <span>REPORTS</span></h2>
+        <p>Approved reports appear here after moderation. The goal is not hype — it is honest local information, strong community standards, and useful knowledge tied to real waters.</p>
+      </div>
+      <div class="inline-actions">
+        <button class="button button-primary compact" type="button" data-open="reportModal">POST REPORT</button>
+        <span class="tiny-note">No account required for followers in the MVP.</span>
+      </div>
+      <div class="report-list" id="reportList"></div>
+    </section>
+
+    <section class="section shell split-section" id="waters">
+      <figure class="image-panel tall">
+        <img src="/assets/bass.jpg" alt="Close-up photo of a largemouth bass held near the water surface">
+      </figure>
+      <div>
+        <div class="section-heading">
+          <span class="section-kicker">Water Intelligence</span>
+          <h2>LOCAL <span>WATERS</span></h2>
+          <p>Each featured water should become a place for species notes, access information, seasonal observations, clarity concerns, and stewardship signals that help anglers learn and help protect what they use.</p>
+        </div>
+        <div class="species-cards">
+          <article class="feature-card species-card active"><h3>Horseshoe Lake</h3><p>Bass-heavy local favorite with strong report value and real stewardship potential.</p></article>
+          <article class="feature-card species-card"><h3>Carlyle Lake</h3><p>Brush pile patterns, seasonal movement, and clarity tracking all matter here.</p></article>
+          <article class="feature-card species-card"><h3>Mel Price</h3><p>Current influence, catfish patterns, and pollution-watch relevance make this water important.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section shell split-section" id="catches">
+      <div>
+        <div class="section-heading">
+          <span class="section-kicker">Follower Activity</span>
+          <h2>RECENT <span>CATCHES</span></h2>
+          <p>Catch logs build local seasonal knowledge, show how waters are changing over time, and give followers a reason to stay involved without needing a bloated social app.</p>
+        </div>
+        <div class="inline-actions">
+          <button class="button button-primary compact" type="button" data-open="catchModal">LOG CATCH</button>
+        </div>
+        <div class="report-list" id="catchList"></div>
+      </div>
+      <figure class="image-panel">
+        <img src="/assets/hero-gear.jpg" alt="Fishing electronics and tackle arranged on a wooden table">
+      </figure>
+    </section>
+
+    <section class="section shell" id="species">
+      <div class="section-heading narrow">
+        <span class="section-kicker">Education Layer</span>
+        <h2>SPECIES ID — KNOW YOUR <span>CATCH</span></h2>
+        <p>Identification, regulations, records, seasonal patterns, and ethical handling guidance should all stay in the platform so anglers get value before the community is huge and younger users learn better habits from day one.</p>
+      </div>
+      <div class="card-grid three-col">
+        <article class="feature-card"><h3>Largemouth Bass</h3><p>Jigs, weed edges, and seasonal transitions remain core pattern language for many local waters.</p></article>
+        <article class="feature-card"><h3>Crappie</h3><p>Brush piles and suspended structure make them ideal for local pattern-sharing and education.</p></article>
+        <article class="feature-card"><h3>Channel Catfish</h3><p>Current seams, cut bait, and low-light windows keep local catfish intel practical and useful.</p></article>
+      </div>
+    </section>
+
+    <section class="section shell" id="conservation">
+      <div class="section-heading narrow">
+        <span class="section-kicker">Mission Core</span>
+        <h2>CONSERVATION &amp; WATER <span>HEALTH</span></h2>
+        <p>BaitLogic should treat water health as non-negotiable. Water clarity has gone down badly in too many places, and anglers need a place to log what they are seeing, learn how to help, and set a better example for the next generation.</p>
+      </div>
+      <div class="card-grid three-col">
+        <article class="market-card"><span class="badge">Water Testing</span><h3>Testing Guide</h3><p>Use test strips for pH, ammonia, nitrites, nitrates, hardness, and alkalinity. Log what you see over time and after storms.</p></article>
+        <article class="market-card"><span class="badge">Illinois Links</span><h3>DNR &amp; EPA Reporting</h3><p><a href="https://www.ifishillinois.org" target="_blank" rel="noopener">Illinois DNR Fisheries</a><br><a href="https://www2.illinois.gov/dnr" target="_blank" rel="noopener">Illinois Department of Natural Resources</a><br><a href="https://www.epa.illinois.gov" target="_blank" rel="noopener">Illinois EPA Water Reports</a></p></article>
+        <article class="market-card"><span class="badge">Issue Routing</span><h3>Authority Routing</h3><p>Water quality issues, fish kills, spills, and invasive species should be routed to the right authority as the platform matures.</p></article>
+        <article class="market-card"><span class="badge">Stewardship</span><h3>Cleanup Events</h3><p>Organize shoreline cleanups, track volunteer hours, and show before/after impact.</p></article>
+        <article class="market-card"><span class="badge">Habitat</span><h3>Invasive Species</h3><p>Track threats like Asian carp, zebra mussels, hydrilla, Eurasian watermilfoil, and rusty crayfish.</p></article>
+        <article class="market-card"><span class="badge">Future</span><h3>Young Anglers</h3><p>Teach better stewardship habits and build a culture worth handing down instead of just chasing bites.</p></article>
+      </div>
+    </section>
+
+    <section class="section shell" id="business-pages">
+      <div class="section-heading narrow">
+        <span class="section-kicker">Business Model</span>
+        <h2>FREE FOR ANGLERS — PAID <span>BUSINESS PAGES</span></h2>
+        <p>The public side of BaitLogic stays free. Monetization comes from businesses that want enhanced visibility, their own homepage/profile, featured placement, and local event promotion.</p>
+      </div>
+      <div class="card-grid three-col">
+        <article class="market-card"><span class="badge">Free</span><h3>Public Access</h3><p>Reports, catches, waters pages, species education, and conservation content remain free for the public community.</p></article>
+        <article class="market-card"><span class="badge">Paid</span><h3>Business Homepages</h3><p>Bait shops, guides, outfitters, and local organizations can pay for their own branded pages and featured visibility.</p></article>
+        <article class="market-card"><span class="badge">On Hold</span><h3>Marketplace + Chat</h3><p>Marketplace and chat stay paused until traction proves they are worth the overhead.</p></article>
+      </div>
+      <figure class="image-panel">
+        <img src="/assets/gear-market.jpg" alt="Fishing reel, rod, and journal arranged on a dark tabletop">
+      </figure>
+    </section>
+
+    <section class="section shell" id="waitlist">
+      <div class="section-heading narrow">
+        <span class="section-kicker">Growth Engine</span>
+        <h2>JOIN THE <span>CREW</span></h2>
+        <p>Collect names, emails, home waters, and user interest now. Grow the community first, then expand features only after followers prove what they actually use.</p>
+      </div>
+      <form class="signup-form" id="signupForm">
+        <label><span>Name</span><input type="text" name="name" placeholder="Your name" required></label>
+        <label><span>Email</span><input type="email" name="email" placeholder="angler@email.com" required></label>
+        <label><span>Home Water</span><input type="text" name="home_water" placeholder="Horseshoe Lake, Carlyle Lake..."></label>
+        <label><span>Main Interest</span>
+          <select name="interest">
+            <option>Local Reports</option>
+            <option>Catch Logging</option>
+            <option>Waters & Clarity</option>
+            <option>Species Guide</option>
+            <option>Conservation</option>
+            <option>Business Pages</option>
+          </select>
+        </label>
+        <button class="button button-primary wide" type="submit">GET EARLY ACCESS</button>
+        <div class="form-message" id="signupMessage" aria-live="polite"></div>
+      </form>
+    </section>
+
+    <section class="section shell" id="founder-note">
+      <div class="section-heading narrow">
+        <span class="section-kicker">Founder Note</span>
+        <h2>BUILT FOR ANGLERS, WATERS, AND THE <span>NEXT GENERATION</span></h2>
+        <p>BaitLogic exists to help anglers fish smarter, protect our waters, and build a stronger local culture. The mission is to combine real-time intel, local knowledge, waters awareness, species education, and environmental protection into one platform that actually matters.</p>
+      </div>
+      <div class="card-grid three-col">
+        <article class="feature-card"><h3>Real-Time Intel</h3><p>Useful, local, moderated community input that helps people actually fish better.</p></article>
+        <article class="feature-card"><h3>Environmental Protection</h3><p>Water clarity, health, and stewardship stay at the core instead of getting pushed aside.</p></article>
+        <article class="feature-card"><h3>Better Example</h3><p>The platform should help create a better culture for young anglers and everyone who comes after us.</p></article>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal" id="reportModal" aria-hidden="true">
+    <div class="modal-card">
+      <div class="modal-head"><h3>Post Local Report</h3><button class="close-modal" type="button" data-close>×</button></div>
+      <form class="modal-form" id="reportForm">
+        <label><span>Name</span><input type="text" name="name" placeholder="Mike R." required></label>
+        <label><span>Water</span><input type="text" name="water" placeholder="Carlyle Lake" required></label>
+        <label><span>Species</span><input type="text" name="species" placeholder="Crappie"></label>
+        <label><span>Report</span><textarea name="report" rows="4" placeholder="Crappie stacked at 12ft near brush piles" required></textarea></label>
+        <button class="button button-primary wide" type="submit">SUBMIT FOR REVIEW</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal" id="catchModal" aria-hidden="true">
+    <div class="modal-card">
+      <div class="modal-head"><h3>Log Catch</h3><button class="close-modal" type="button" data-close>×</button></div>
+      <form class="modal-form" id="catchForm">
+        <label><span>Name</span><input type="text" name="name" placeholder="Local Angler"></label>
+        <label><span>Species</span><input type="text" name="species" placeholder="Largemouth Bass" required></label>
+        <label><span>Weight</span><input type="text" name="weight" placeholder="4lb 8oz"></label>
+        <label><span>Location</span><input type="text" name="location" placeholder="Rend Lake" required></label>
+        <label><span>Notes</span><textarea name="notes" rows="4" placeholder="Spinnerbait near grass edge"></textarea></label>
+        <button class="button button-primary wide" type="submit">SUBMIT CATCH</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/config.js"></script>
+  <script src="/app.js"></script>
+</body>
+</html>
