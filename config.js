@@ -1,15 +1,19 @@
 window.BAITLOGIC_CONFIG = {
-  mode: 'live',
 
-  siteName: 'BaitLogic',
+    mode: "live",
 
-  supabaseUrl: 'https://khhishscjirjxhsulniq.supabase.co',
+    siteName: "BaitLogic",
 
-  supabaseAnonKey: 'sb_publishable_d-MPFEIo3g9ORJXFzHiKtA_sIBHHD_7',
+    supabaseUrl:
+        "https://khhishscjirjxhsulniq.supabase.co",
 
-  adminRedirectUrl: 'https://baitlogic.pages.dev/admin',
+    supabaseAnonKey:
+        "PASTE_YOUR_SUPABASE_ANON_KEY_HERE",
 
-  adminEmails: [
-    'baitlogic@outlook.com'
-  ]
+    adminRedirectUrl:
+        "https://baitlogic.pages.dev/admin",
+
+    adminEmails: [
+        "baitlogic@outlook.com"
+    ]
 };
