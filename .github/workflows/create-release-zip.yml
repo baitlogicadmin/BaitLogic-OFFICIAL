@@ -1,0 +1,28 @@
+name: Create Release with Zip File
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Create zip file
+        run: |
+          zip -r BaitLogic-${{ github.ref_name }}.zip . -x "*.git*" "node_modules/*" ".github/*"
+      
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: BaitLogic-${{ github.ref_name }}.zip
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
