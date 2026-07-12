@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#123f2a" />
+  <meta name="description" content="BaitLogic fishing conditions and barometer dashboard." />
+  <title>BaitLogic Barometer</title>
+  <style>
+    :root {
+      --green-950: #0b2418;
+      --green-900: #123f2a;
+      --green-800: #195438;
+      --green-700: #247149;
+      --green-100: #e8f3ec;
+      --sand: #f3efe4;
+      --card: rgba(255,255,255,.96);
+      --ink: #142018;
+      --muted: #607064;
+      --line: #dbe4dc;
+      --gold: #d4a72c;
+      --danger: #b33a32;
+      --shadow: 0 14px 34px rgba(7, 34, 20, .14);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 15% 0%, rgba(255,255,255,.15), transparent 32%),
+        linear-gradient(165deg, var(--green-950) 0%, var(--green-900) 32%, #dfe9df 32%, var(--sand) 100%);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    button, a { -webkit-tap-highlight-color: transparent; }
+
+    .app {
+      width: min(100%, 760px);
+      margin: 0 auto;
+      padding: max(18px, env(safe-area-inset-top)) 16px calc(32px + env(safe-area-inset-bottom));
+    }
+
+    .topbar {
+      color: white;
+      padding: 8px 4px 20px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo {
+      width: 48px;
+      height: 48px;
+      border-radius: 15px;
+      display: grid;
+      place-items: center;
+      background: rgba(255,255,255,.14);
+      border: 1px solid rgba(255,255,255,.22);
+      font-size: 26px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.15);
+    }
+
+    .eyebrow {
+      margin: 0 0 2px;
+      font-size: .74rem;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      opacity: .75;
+      font-weight: 800;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.7rem, 7vw, 2.5rem);
+      line-height: 1;
+    }
+
+    .tagline {
+      margin: 10px 0 0;
+      color: rgba(255,255,255,.78);
+      font-size: .95rem;
+    }
+
+    .location-row {
+      margin-top: 18px;
+      display: flex;
+      gap: 10px;
+      align-items: stretch;
+    }
+
+    .location-box {
+      flex: 1;
+      min-width: 0;
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: rgba(255,255,255,.1);
+      border: 1px solid rgba(255,255,255,.18);
+    }
+
+    .location-box strong,
+    .location-box span {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .location-box span {
+      margin-top: 3px;
+      font-size: .78rem;
+      opacity: .72;
+    }
+
+    .locate-btn {
+      border: 0;
+      border-radius: 16px;
+      padding: 0 18px;
+      font-weight: 900;
+      color: var(--green-950);
+      background: white;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+    }
+
+    .panel {
+      margin-top: 14px;
+      padding: 18px;
+      border-radius: var(--radius);
+      background: var(--card);
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255,255,255,.7);
+    }
+
+    .hero-score {
+      display: grid;
+      grid-template-columns: 126px 1fr;
+      gap: 18px;
+      align-items: center;
+    }
+
+    .score-ring {
+      --score: 0;
+      width: 126px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at center, white 57%, transparent 59%),
+        conic-gradient(var(--green-700) calc(var(--score) * 1%), #dfe7df 0);
+      box-shadow: inset 0 0 0 1px #e5ece6;
+    }
+
+    .score-ring div { text-align: center; }
+    .score-ring strong {
+      display: block;
+      font-size: 2.15rem;
+      line-height: .95;
+    }
+    .score-ring span {
+      display: block;
+      margin-top: 3px;
+      font-size: .72rem;
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .hero-copy h2 {
+      margin: 0;
+      font-size: 1.28rem;
+    }
+
+    .status {
+      display: inline-flex;
+      margin-top: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: var(--green-100);
+      color: var(--green-800);
+      font-size: .78rem;
+      font-weight: 900;
+    }
+
+    .hero-copy p {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: .9rem;
+      line-height: 1.45;
+    }
+
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: baseline;
+      margin-bottom: 13px;
+    }
+
+    .section-title h2 {
+      margin: 0;
+      font-size: 1.08rem;
+    }
+
+    .section-title span {
+      color: var(--muted);
+      font-size: .76rem;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 10px;
+    }
+
+    .metric {
+      min-height: 112px;
+      padding: 14px;
+      border-radius: 17px;
+      background: #f7faf7;
+      border: 1px solid var(--line);
+    }
+
+    .metric .icon { font-size: 1.3rem; }
+    .metric label {
+      display: block;
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: .75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+    }
+
+    .metric strong {
+      display: block;
+      margin-top: 4px;
+      font-size: 1.18rem;
+      line-height: 1.15;
+    }
+
+    .metric small {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      line-height: 1.25;
+    }
+
+    .pressure-main {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 15px;
+      align-items: center;
+    }
+
+    .pressure-value {
+      font-size: clamp(2rem, 10vw, 3.2rem);
+      line-height: 1;
+      font-weight: 950;
+      letter-spacing: -.04em;
+    }
+
+    .pressure-value small {
+      font-size: .9rem;
+      letter-spacing: 0;
+      color: var(--muted);
+    }
+
+    .trend-badge {
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: var(--green-100);
+      color: var(--green-800);
+      font-size: .84rem;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .pressure-note {
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: .85rem;
+      line-height: 1.45;
+    }
+
+    .plan {
+      padding: 16px;
+      border-radius: 18px;
+      color: white;
+      background: linear-gradient(135deg, var(--green-900), var(--green-700));
+    }
+
+    .plan h3 {
+      margin: 0;
+      font-size: 1.05rem;
+    }
+
+    .plan p {
+      margin: 8px 0 0;
+      color: rgba(255,255,255,.82);
+      line-height: 1.5;
+    }
+
+    .loading, .error {
+      padding: 14px;
+      border-radius: 16px;
+      font-size: .88rem;
+      line-height: 1.45;
+    }
+
+    .loading {
+      background: #edf5ef;
+      color: var(--green-800);
+    }
+
+    .error {
+      display: none;
+      background: #fff0ee;
+      color: var(--danger);
+      border: 1px solid #f0c4bf;
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .action {
+      min-height: 50px;
+      border: 0;
+      border-radius: 16px;
+      padding: 12px;
+      font: inherit;
+      font-weight: 900;
+      text-align: center;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .action.primary {
+      color: white;
+      background: var(--green-800);
+    }
+
+    .action.secondary {
+      color: var(--green-900);
+      background: var(--green-100);
+      border: 1px solid #cfe2d4;
+    }
+
+    .disclaimer {
+      margin: 16px 5px 0;
+      color: #637068;
+      font-size: .73rem;
+      line-height: 1.45;
+      text-align: center;
+    }
+
+    .hidden { display: none !important; }
+
+    @media (min-width: 620px) {
+      .metric-grid { grid-template-columns: repeat(4, minmax(0,1fr)); }
+      .panel { padding: 22px; }
+    }
+
+    @media (max-width: 390px) {
+      .hero-score { grid-template-columns: 108px 1fr; gap: 13px; }
+      .score-ring { width: 108px; }
+      .pressure-main { grid-template-columns: 1fr; }
+      .trend-badge { justify-self: start; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">🎣</div>
+        <div>
+          <p class="eyebrow">Beyond the Bite</p>
+          <h1>BaitLogic Barometer</h1>
+        </div>
+      </div>
+      <p class="tagline">Live local conditions translated into a practical fishing plan.</p>
+
+      <div class="location-row">
+        <div class="location-box">
+          <strong id="locationName">Location needed</strong>
+          <span id="updatedAt">Tap “Use my location” to load live conditions.</span>
+        </div>
+        <button class="locate-btn" id="locateButton" type="button">Use my location</button>
+      </div>
+    </header>
+
+    <section id="errorBox" class="error" role="alert"></section>
+    <section id="loadingBox" class="loading">
+      Ready when you are. Your location stays in your browser and is used only to request local conditions.
+    </section>
+
+    <section class="panel">
+      <div class="hero-score">
+        <div class="score-ring" id="scoreRing" style="--score:0">
+          <div>
+            <strong id="biteScore">--</strong>
+            <span>OUT OF 100</span>
+          </div>
+        </div>
+        <div class="hero-copy">
+          <h2>Current Bite Outlook</h2>
+          <span class="status" id="biteLabel">Waiting for live data</span>
+          <p id="biteSummary">BaitLogic will score only the weather factors returned for your location.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="section-title">
+        <h2>Barometric Pressure</h2>
+        <span>Live weather reading</span>
+      </div>
+      <div class="pressure-main">
+        <div class="pressure-value">
+          <span id="pressureValue">--</span>
+          <small> inHg</small>
+        </div>
+        <div class="trend-badge" id="pressureTrend">Trend unavailable</div>
+      </div>
+      <p class="pressure-note" id="pressureNote">
+        Pressure movement will appear after hourly data loads.
+      </p>
+    </section>
+
+    <section class="panel">
+      <div class="section-title">
+        <h2>Conditions</h2>
+        <span id="conditionText">Live</span>
+      </div>
+      <div class="metric-grid">
+        <article class="metric">
+          <span class="icon">🌡️</span>
+          <label>Air Temp</label>
+          <strong id="temperature">--</strong>
+          <small id="feelsLike">Feels like --</small>
+        </article>
+
+        <article class="metric">
+          <span class="icon">💨</span>
+          <label>Wind</label>
+          <strong id="wind">--</strong>
+          <small id="windDirection">Direction --</small>
+        </article>
+
+        <article class="metric">
+          <span class="icon">☁️</span>
+          <label>Cloud Cover</label>
+          <strong id="cloudCover">--</strong>
+          <small id="precipitation">Rain chance --</small>
+        </article>
+
+        <article class="metric">
+          <span class="icon">🌙</span>
+          <label>Moon</label>
+          <strong id="moonPhase">--</strong>
+          <small id="moonIllumination">Illumination --</small>
+        </article>
+
+        <article class="metric">
+          <span class="icon">🌅</span>
+          <label>Sunrise</label>
+          <strong id="sunrise">--</strong>
+          <small>Local time</small>
+        </article>
+
+        <article class="metric">
+          <span class="icon">🌇</span>
+          <label>Sunset</label>
+          <strong id="sunset">--</strong>
+          <small>Local time</small>
+        </article>
+
+        <article class="metric">
+          <span class="icon">💧</span>
+          <label>Humidity</label>
+          <strong id="humidity">--</strong>
+          <small>Current reading</small>
+        </article>
+
+        <article class="metric">
+          <span class="icon">🧭</span>
+          <label>Best Bank</label>
+          <strong id="bestBank">--</strong>
+          <small>Based on wind direction</small>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="section-title">
+        <h2>Your Fishing Plan</h2>
+        <span>Condition-based guidance</span>
+      </div>
+      <div class="plan">
+        <h3 id="planTitle">Load your location</h3>
+        <p id="planText">Your target zone, presentation pace, and lure direction will appear here.</p>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="actions">
+        <button class="action primary" type="button" id="refreshButton">Refresh conditions</button>
+        <a class="action secondary" href="/" aria-label="Return to BaitLogic home">BaitLogic home</a>
+      </div>
+    </section>
+
+    <p class="disclaimer">
+      Bite Score is a transparent condition score, not a guarantee of fish activity. Water temperature, clarity, depth, forage, fishing pressure, and local fish behavior may not be available from the weather source.
+    </p>
+  </main>
+
+  <script>
+    const els = {
+      locateButton: document.getElementById('locateButton'),
+      refreshButton: document.getElementById('refreshButton'),
+      locationName: document.getElementById('locationName'),
+      updatedAt: document.getElementById('updatedAt'),
+      errorBox: document.getElementById('errorBox'),
+      loadingBox: document.getElementById('loadingBox'),
+      scoreRing: document.getElementById('scoreRing'),
+      biteScore: document.getElementById('biteScore'),
+      biteLabel: document.getElementById('biteLabel'),
+      biteSummary: document.getElementById('biteSummary'),
+      pressureValue: document.getElementById('pressureValue'),
+      pressureTrend: document.getElementById('pressureTrend'),
+      pressureNote: document.getElementById('pressureNote'),
+      temperature: document.getElementById('temperature'),
+      feelsLike: document.getElementById('feelsLike'),
+      wind: document.getElementById('wind'),
+      windDirection: document.getElementById('windDirection'),
+      cloudCover: document.getElementById('cloudCover'),
+      precipitation: document.getElementById('precipitation'),
+      moonPhase: document.getElementById('moonPhase'),
+      moonIllumination: document.getElementById('moonIllumination'),
+      sunrise: document.getElementById('sunrise'),
+      sunset: document.getElementById('sunset'),
+      humidity: document.getElementById('humidity'),
+      bestBank: document.getElementById('bestBank'),
+      conditionText: document.getElementById('conditionText'),
+      planTitle: document.getElementById('planTitle'),
+      planText: document.getElementById('planText')
+    };
+
+    let lastCoords = null;
+
+    const round = value => Math.round(Number(value));
+    const hPaToInHg = value => Number(value) * 0.0295299830714;
+
+    function showLoading(message) {
+      els.loadingBox.textContent = message;
+      els.loadingBox.classList.remove('hidden');
+      els.errorBox.style.display = 'none';
+    }
+
+    function showError(message) {
+      els.loadingBox.classList.add('hidden');
+      els.errorBox.textContent = message;
+      els.errorBox.style.display = 'block';
+    }
+
+    function formatTime(value) {
+      if (!value) return '--';
+      return new Date(value).toLocaleTimeString([], {
+        hour: 'numeric',
+        minute: '2-digit'
+      });
+    }
+
+    function compassDirection(degrees) {
+      const directions = ['N','NE','E','SE','S','SW','W','NW'];
+      return directions[Math.round(Number(degrees) / 45) % 8];
+    }
+
+    function bestBankFromWind(direction) {
+      const opposite = {
+        N: 'South-facing bank',
+        NE: 'Southwest bank',
+        E: 'West bank',
+        SE: 'Northwest bank',
+        S: 'North-facing bank',
+        SW: 'Northeast bank',
+        W: 'East bank',
+        NW: 'Southeast bank'
+      };
+      return opposite[direction] || 'Windblown bank';
+    }
+
+    function moonData(date = new Date()) {
+      const knownNewMoon = Date.UTC(2000, 0, 6, 18, 14);
+      const synodicMonth = 29.53058867;
+      const age = (((date.getTime() - knownNewMoon) / 86400000) % synodicMonth + synodicMonth) % synodicMonth;
+      const phase = age / synodicMonth;
+      const illumination = Math.round((1 - Math.cos(2 * Math.PI * phase)) / 2 * 100);
+
+      let name;
+      if (phase < 0.03 || phase > 0.97) name = 'New Moon';
+      else if (phase < 0.22) name = 'Waxing Crescent';
+      else if (phase < 0.28) name = 'First Quarter';
+      else if (phase < 0.47) name = 'Waxing Gibbous';
+      else if (phase < 0.53) name = 'Full Moon';
+      else if (phase < 0.72) name = 'Waning Gibbous';
+      else if (phase < 0.78) name = 'Last Quarter';
+      else name = 'Waning Crescent';
+
+      return { name, illumination };
+    }
+
+    function pressureTrend(hourlyTimes, hourlyPressure) {
+      const now = Date.now();
+      let nearestIndex = 0;
+      let nearestDiff = Infinity;
+
+      hourlyTimes.forEach((time, index) => {
+        const diff = Math.abs(new Date(time).getTime() - now);
+        if (diff < nearestDiff) {
+          nearestDiff = diff;
+          nearestIndex = index;
+        }
+      });
+
+      const pastIndex = Math.max(0, nearestIndex - 3);
+      const current = Number(hourlyPressure[nearestIndex]);
+      const previous = Number(hourlyPressure[pastIndex]);
+      const difference = current - previous;
+
+      if (!Number.isFinite(difference)) {
+        return { label: 'Trend unavailable', difference: 0, direction: 'stable' };
+      }
+
+      if (difference > 1.2) return { label: '↗ Rising', difference, direction: 'rising' };
+      if (difference < -1.2) return { label: '↘ Falling', difference, direction: 'falling' };
+      return { label: '→ Stable', difference, direction: 'stable' };
+    }
+
+    function computeBiteScore(data, trend, moon) {
+      const current = data.current;
+      let score = 50;
+      const reasons = [];
+
+      const wind = Number(current.wind_speed_10m);
+      if (wind >= 4 && wind <= 14) {
+        score += 12;
+        reasons.push('productive wind');
+      } else if (wind > 20) {
+        score -= 12;
+        reasons.push('strong wind');
+      } else if (wind < 2) {
+        score -= 4;
+        reasons.push('very calm water');
+      }
+
+      const cloud = Number(current.cloud_cover);
+      if (cloud >= 35 && cloud <= 85) {
+        score += 10;
+        reasons.push('useful cloud cover');
+      } else if (cloud < 15) {
+        score -= 4;
+        reasons.push('bright sky');
+      }
+
+      if (trend.direction === 'falling') {
+        score += 10;
+        reasons.push('falling pressure');
+      } else if (trend.direction === 'stable') {
+        score += 5;
+        reasons.push('stable pressure');
+      } else {
+        score -= 2;
+        reasons.push('rising pressure');
+      }
+
+      const precip = Number(current.precipitation_probability ?? 0);
+      if (precip >= 20 && precip <= 65) {
+        score += 6;
+        reasons.push('weather movement');
+      } else if (precip > 80) {
+        score -= 4;
+        reasons.push('high rain risk');
+      }
+
+      if (moon.illumination >= 40 && moon.illumination <= 80) {
+        score += 4;
+        reasons.push('moderate moon illumination');
+      }
+
+      const hour = new Date().getHours();
+      if (hour <= 9 || hour >= 17) {
+        score += 8;
+        reasons.push('low-light timing');
+      }
+
+      return {
+        score: Math.max(0, Math.min(100, Math.round(score))),
+        reasons
+      };
+    }
+
+    function biteLabel(score) {
+      if (score >= 80) return 'Strong conditions';
+      if (score >= 65) return 'Good conditions';
+      if (score >= 50) return 'Mixed conditions';
+      return 'Tougher conditions';
+    }
+
+    function fishingPlan(current, trend) {
+      const wind = Number(current.wind_speed_10m);
+      const cloud = Number(current.cloud_cover);
+
+      if (trend.direction === 'falling' && wind >= 4 && wind <= 16) {
+        return {
+          title: 'Cover water with confidence',
+          text: 'Start on windblown points, channel swings, grass edges, or wood. Use a spinnerbait, chatterbait, crankbait, or another moving presentation before slowing down.'
+        };
+      }
+
+      if (trend.direction === 'rising' || cloud < 20) {
+        return {
+          title: 'Slow down and use shade',
+          text: 'Prioritize docks, laydowns, deeper edges, vegetation shade, and steeper banks. Use a Texas rig, jig, finesse worm, or another controlled presentation.'
+        };
+      }
+
+      if (wind < 3) {
+        return {
+          title: 'Use stealth and precision',
+          text: 'Make longer casts, reduce lure size when needed, and target isolated cover, shade lines, subtle depth changes, or visible bait activity.'
+        };
+      }
+
+      return {
+        title: 'Start with a two-step approach',
+        text: 'Search with a moving bait on wind-influenced structure, then follow with a slower bottom-contact or finesse presentation in the highest-percentage areas.'
+      };
+    }
+
+    async function reverseGeocode(latitude, longitude) {
+      try {
+        const params = new URLSearchParams({
+          latitude,
+          longitude,
+          localityLanguage: 'en'
+        });
+
+        const response = await fetch(
+          `https://api.bigdatacloud.net/data/reverse-geocode-client?${params.toString()}`
+        );
+
+        if (!response.ok) throw new Error('Location lookup failed');
+
+        const data = await response.json();
+        const locality =
+          data.city ||
+          data.locality ||
+          data.principalSubdivision ||
+          data.countryName;
+
+        const region =
+          data.principalSubdivision &&
+          data.principalSubdivision !== locality
+            ? data.principalSubdivision
+            : '';
+
+        return [locality, region].filter(Boolean).join(', ') ||
+          `${latitude.toFixed(3)}, ${longitude.toFixed(3)}`;
+      } catch {
+        return `${latitude.toFixed(3)}, ${longitude.toFixed(3)}`;
+      }
+    }
+
+    async function loadWeather(latitude, longitude) {
+      showLoading('Loading live conditions…');
+
+      const params = new URLSearchParams({
+        latitude,
+        longitude,
+        current: [
+          'temperature_2m',
+          'apparent_temperature',
+          'relative_humidity_2m',
+          'precipitation_probability',
+          'weather_code',
+          'cloud_cover',
+          'pressure_msl',
+          'wind_speed_10m',
+          'wind_direction_10m'
+        ].join(','),
+        hourly: 'pressure_msl',
+        daily: 'sunrise,sunset',
+        temperature_unit: 'fahrenheit',
+        wind_speed_unit: 'mph',
+        precipitation_unit: 'inch',
+        timezone: 'auto',
+        forecast_days: '2'
+      });
+
+      const [weatherResponse, locationName] = await Promise.all([
+        fetch(`https://api.open-meteo.com/v1/forecast?${params.toString()}`),
+        reverseGeocode(latitude, longitude)
+      ]);
+
+      if (!weatherResponse.ok) {
+        throw new Error('Live weather data could not be loaded.');
+      }
+
+      const data = await weatherResponse.json();
+      renderWeather(data, locationName);
+    }
+
+    function renderWeather(data, locationName) {
+      const current = data.current;
+      const trend = pressureTrend(data.hourly.time, data.hourly.pressure_msl);
+      const moon = moonData(new Date());
+      const bite = computeBiteScore(data, trend, moon);
+      const direction = compassDirection(current.wind_direction_10m);
+      const plan = fishingPlan(current, trend);
+
+      els.locationName.textContent = locationName;
+      els.updatedAt.textContent = `Updated ${new Date().toLocaleTimeString([], {hour:'numeric', minute:'2-digit'})}`;
+      els.loadingBox.classList.add('hidden');
+      els.errorBox.style.display = 'none';
+
+      els.scoreRing.style.setProperty('--score', bite.score);
+      els.biteScore.textContent = bite.score;
+      els.biteLabel.textContent = biteLabel(bite.score);
+      els.biteSummary.textContent = bite.reasons.length
+        ? `Score factors: ${bite.reasons.slice(0, 4).join(', ')}.`
+        : 'Live factors loaded, but limited scoring data was available.';
+
+      els.pressureValue.textContent = hPaToInHg(current.pressure_msl).toFixed(2);
+      els.pressureTrend.textContent = trend.label;
+      els.pressureNote.textContent =
+        `${Math.abs(trend.difference * 0.0295299830714).toFixed(2)} inHg change across the closest available three-hour window.`;
+
+      els.temperature.textContent = `${round(current.temperature_2m)}°F`;
+      els.feelsLike.textContent = `Feels like ${round(current.apparent_temperature)}°F`;
+      els.wind.textContent = `${round(current.wind_speed_10m)} mph`;
+      els.windDirection.textContent = `${direction} wind`;
+      els.cloudCover.textContent = `${round(current.cloud_cover)}%`;
+      els.precipitation.textContent = `Rain chance ${round(current.precipitation_probability ?? 0)}%`;
+      els.moonPhase.textContent = moon.name;
+      els.moonIllumination.textContent = `${moon.illumination}% illuminated`;
+      els.sunrise.textContent = formatTime(data.daily.sunrise?.[0]);
+      els.sunset.textContent = formatTime(data.daily.sunset?.[0]);
+      els.humidity.textContent = `${round(current.relative_humidity_2m)}%`;
+      els.bestBank.textContent = bestBankFromWind(direction);
+      els.conditionText.textContent = data.timezone_abbreviation || 'Local';
+      els.planTitle.textContent = plan.title;
+      els.planText.textContent = plan.text;
+    }
+
+    function requestLocation() {
+      if (!navigator.geolocation) {
+        showError('This browser does not support location access.');
+        return;
+      }
+
+      showLoading('Waiting for your location permission…');
+
+      navigator.geolocation.getCurrentPosition(
+        async position => {
+          lastCoords = {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude
+          };
+
+          try {
+            await loadWeather(lastCoords.latitude, lastCoords.longitude);
+          } catch (error) {
+            showError(error.message || 'Conditions could not be loaded.');
+          }
+        },
+        error => {
+          const messages = {
+            1: 'Location permission was denied. Allow location access in your browser settings, then try again.',
+            2: 'Your location could not be determined. Check that location services are turned on.',
+            3: 'Location timed out. Try again with a clear GPS signal.'
+          };
+          showError(messages[error.code] || 'Location could not be loaded.');
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 15000,
+          maximumAge: 300000
+        }
+      );
+    }
+
+    els.locateButton.addEventListener('click', requestLocation);
+    els.refreshButton.addEventListener('click', () => {
+      if (lastCoords) {
+        loadWeather(lastCoords.latitude, lastCoords.longitude).catch(error => {
+          showError(error.message || 'Conditions could not be refreshed.');
+        });
+      } else {
+        requestLocation();
+      }
+    });
+  </script>
+</body>
+</html>
