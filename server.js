@@ -1,4 +1,3 @@
-Absolutely. Create a new file named server.js and paste this entire contents into it.
 require('dotenv').config();
 const express = require('express');
 const helmet = require('helmet');
