@@ -1,0 +1,107 @@
+"use strict";
+
+const state = {
+  latitude: null,
+  longitude: null,
+  locationLabel: "Current location",
+  pressure: null,
+  previousPressure: null,
+  selectedSpecies: "Largemouth Bass",
+  catchWeight: 1,
+  deferredInstallPrompt: null
+};
+
+const elements = {
+  airTemperature: document.querySelector("#airTemperature"),
+  weatherCondition: document.querySelector("#weatherCondition"),
+  locationName: document.querySelector("#locationName"),
+  pressureValue: document.querySelector("#pressureValue"),
+  pressureTrend: document.querySelector("#pressureTrend"),
+  pressureNeedle: document.querySelector("#pressureNeedle"),
+  biteStatus: document.querySelector("#biteStatus"),
+  lastUpdated: document.querySelector("#lastUpdated"),
+  locationStatus: document.querySelector("#locationStatus"),
+  locationStatusDot: document.querySelector("#locationStatusDot"),
+  pressureTrendLine: document.querySelector("#pressureTrendLine"),
+  refreshConditions: document.querySelector("#refreshConditions"),
+  pressureDialButton: document.querySelector("#pressureDialButton"),
+  recentCatches: document.querySelector("#recentCatches"),
+  connectionStatus: document.querySelector("#connectionStatus"),
+  installButton: document.querySelector("#installButton"),
+  catchLoggerModal: document.querySelector("#catchLoggerModal"),
+  openCatchLogger: document.querySelector("#openCatchLogger"),
+  closeCatchLogger: document.querySelector("#closeCatchLogger"),
+  bottomLogButton: document.querySelector("#bottomLogButton"),
+  bottomRefreshButton: document.querySelector("#bottomRefreshButton"),
+  cancelCatch: document.querySelector("#cancelCatch"),
+  catchForm: document.querySelector("#catchForm"),
+  speciesSelector: document.querySelector("#speciesSelector"),
+  catchWeight: document.querySelector("#catchWeight"),
+  increaseWeight: document.querySelector("#increaseWeight"),
+  decreaseWeight: document.querySelector("#decreaseWeight"),
+  catchLocation: document.querySelector("#catchLocation"),
+  useCatchLocation: document.querySelector("#useCatchLocation"),
+  catchNotes: document.querySelector("#catchNotes"),
+  waterDepth: document.querySelector("#waterDepth"),
+  waterTemperature: document.querySelector("#waterTemperature")
+};
+
+const weatherDescriptions = {
+  0: "Clear",
+  1: "Mostly clear",
+  2: "Partly cloudy",
+  3: "Cloudy",
+  45: "Fog",
+  48: "Fog",
+  51: "Light drizzle",
+  53: "Drizzle",
+  55: "Heavy drizzle",
+  61: "Light rain",
+  63: "Rain",
+  65: "Heavy rain",
+  71: "Light snow",
+  73: "Snow",
+  75: "Heavy snow",
+  80: "Rain showers",
+  81: "Rain showers",
+  82: "Heavy showers",
+  95: "Thunderstorms",
+  96: "Storms",
+  99: "Severe storms"
+};
+
+function setConnectionStatus() {
+  elements.connectionStatus.textContent = navigator.onLine
+    ? "Online"
+    : "Offline mode";
+}
+
+function setLoadingState() {
+  elements.weatherCondition.textContent = "Updating";
+  elements.locationStatus.textContent = "Getting current conditions";
+  elements.refreshConditions.disabled = true;
+}
+
+function clearLoadingState() {
+  elements.refreshConditions.disabled = false;
+}
+
+function getLocation() {
+  setLoadingState();
+
+  if (!navigator.geolocation) {
+    showLocationError("GPS is not supported on this device.");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    async position => {
+      state.latitude = position.coords.latitude;
+      state.longitude = position.coords.longitude;
+
+      elements.locationStatus.textContent = "Location connected";
+      elements.locationStatusDot.classList.add("locked");
+      elements.catchLocation.textContent =
+        `${state.latitude.toFixed(4)}, ${state.longitude.toFixed(4)}`;
+
+     
