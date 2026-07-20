@@ -1,2 +1,2 @@
 🎣 BaitLogic~ Smarter Fishing. Better Waters. Bigger impact. Better future. Quality knowledge built by Communities/Real people. 🎣
-Helping anglers fish smarter- Fishing insights, lake conditions, and community-driven conservation reporting, Be the change!
+Helping anglers & outdoor enthusiasts create a smarter community-driven space that connects the scattered knowledge of conservation reporting, fishing, activities and more ! Be the change we need. 
