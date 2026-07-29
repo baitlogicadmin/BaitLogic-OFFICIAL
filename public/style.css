@@ -249,3 +249,18 @@ main {
   font-size: 0.9rem;
   margin: 0;
 }
+
+.feature-card {
+  box-shadow: 0 4px 14px rgba(31, 75, 74, 0.08);
+}
+
+.feature-card .icon {
+  width: 32px;
+  height: 32px;
+  margin-bottom: 10px;
+  color: var(--coral);
+}
+
+.section.info {
+  box-shadow: 0 6px 20px rgba(31, 75, 74, 0.10);
+}
