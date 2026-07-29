@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>BaitLogic</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+
+<body>
+  <header>
+    <div class="brand">
+      <p>Local bait, gear, and outdoor know-how — built by the community, never behind a paywall.</p>
+    </div>
+
+    <div class="logo">
+      <h1>BaitLogic</h1>
+      <p>Empowering Fishermen</p>
+    </div>
+  </header>
+
+  <main>
+    <section class="section info">
+      <h2>Join the Heritage Crew</h2>
+      <p>Helping build smarter fishing and healthier waters from the ground up.</p>
+
+      <form id="signupForm" class="form">
+        <input type="text" name="name" placeholder="Name" required />
+        <input type="email" name="email" placeholder="Email" required />
+        <input type="text" name="home_water" placeholder="Favorite lake or river" />
+        <button type="submit">Join Free</button>
+      </form>
+    </section>
+  </main>
+
+  <nav class="bottom-nav">
+    <button data-open="accountModal">Account</button>
+    <button data-open="reportModal">Submit Fishing Report</button>
+    <button data-open="catchModal">Save Catch</button>
+    <button data-open="conservationModal">Submit Conservation Report</button>
+  </nav>
+
+  <!-- Account Modal -->
+  <div class="modal" id="accountModal">
+    <div class="modal-box">
+      <button class="close" data-close="accountModal">&times;</button>
+
+      <h2>Account</h2>
+
+      <form id="loginForm" class="form">
+        <input type="email" name="email" placeholder="Email" required />
+        <input type="password" name="password" placeholder="Password" required />
+
+        <button type="submit" name="intent" value="login" class="btn">
+          Sign In
+        </button>
+
+        <button type="submit" name="intent" value="register" class="btn secondary-btn">
+          Register
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Fishing Report Modal -->
+  <div class="modal" id="reportModal">
+    <div class="modal-box">
+      <button class="close" data-close="reportModal">&times;</button>
+
+      <h2>Submit Fishing Report</h2>
+
+      <form id="reportForm" class="form">
+        <input type="text" name="name" placeholder="Your name" required />
+        <input type="text" name="water" placeholder="Lake / river / pond" required />
+        <input type="text" name="species" placeholder="Species" />
+        <input type="text" name="bait" placeholder="Bait / lure" />
+
+        <textarea
+          name="report"
+          placeholder="What happened? Time, depth, weather, pattern..."
+          required
+        ></textarea>
+
+        <button type="submit">Submit Report</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Save Catch Modal -->
+  <div class="modal" id="catchModal">
+    <div class="modal-box">
+      <button class="close" data-close="catchModal">&times;</button>
+
+      <h2>Save Catch</h2>
+
+      <form id="catchForm" class="form">
+        <input type="text" name="name" placeholder="Your name" required />
+        <input type="text" name="species" placeholder="Species" required />
+        <input type="text" name="location" placeholder="Water / location" required />
+        <input type="text" name="weight" placeholder="Weight" />
+        <input type="text" name="length" placeholder="Length" />
+        <input type="text" name="bait" placeholder="Bait / lure" />
+
+        <textarea name="notes" placeholder="Notes (optional)"></textarea>
+
+        <button type="submit">Save Catch</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Conservation Report Modal -->
+  <div class="modal" id="conservationModal">
+    <div class="modal-box">
+      <button class="close" data-close="conservationModal">&times;</button>
+
+      <h2>Submit Conservation Report</h2>
+
+      <form id="conservationForm" class="form">
+        <input type="text" name="name" placeholder="Your name" />
+        <input type="text" name="water" placeholder="Water body / area" required />
+
+        <select name="issue_type" required>
+          <option value="">Choose issue type</option>
+          <option>Pollution/Trash</option>
+          <option>Fish Kill</option>
+          <option>Habitat Damage</option>
+          <option>Invasive Species</option>
+          <option>Illegal Dumping</option>
+          <option>Other</option>
+        </select>
+
+        <textarea
+          name="description"
+          placeholder="Description: What did you see?"
+          required
+        ></textarea>
+
+        <button type="submit">Submit Conservation Report</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Supabase SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- BaitLogic Config -->
+  <script src="/config.js"></script>
+
+  <!-- BaitLogic App -->
+  <script src="/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+{
+  "signups": [],
+  "reports": [
+    {
+      "id": "seed-mike-r",
+      "category": "Fishing",
+      "name": "Mike R.",
+      "water": "Horseshoe Lake",
+      "report": "5lb largemouth on a jig at Horseshoe Lake",
+      "createdAt": "2026-06-21T15:00:00.000Z"
+    },
+    {
+      "id": "seed-sarah-t",
+      "category": "Fishing",
+      "name": "Sarah T.",
+      "water": "Carlyle Lake",
+      "report": "Crappie stacked at 12ft near brush piles",
+      "createdAt": "2026-06-21T13:00:00.000Z"
+    }
+  ],
+  "catches": []
+}
