@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+
+  <meta
+    name="theme-color"
+    content="#0B1120"
+  >
+
+  <meta
+    name="description"
+    content="BaitLogic fishing barometer and field intelligence dashboard."
+  >
+
+  <title>BaitLogic Barometer</title>
+
+  <link
+    rel="manifest"
+    href="/barometer/manifest.webmanifest"
+  >
+
+  <link rel="icon" href="/barometer/icons/icon-32.png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/barometer/icons/icon-180.png">
+
+  <link
+    rel="stylesheet"
+    href="/barometer/styles.css"
+  >
+</head>
+
+<body>
+  <header class="top-nav">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">BL</div>
+
+      <div>
+        <strong>BaitLogic Barometer</strong>
+        <span>Beyond the Bite. Powered by People and Purpose.</span>
+      </div>
+    </div>
+
+    <div class="nav-actions">
+      <span class="pill-status" id="connectionStatus">Online</span>
+
+      <button
+        class="icon-button"
+        id="installButton"
+        type="button"
+        aria-label="Install BaitLogic Barometer"
+        hidden
+      >
+        ↓
+      </button>
+    </div>
+  </header>
+
+  <main class="dashboard-grid">
+    <section class="card intelligence-card">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Live fishing intelligence</p>
+          <h1>Current Bite Conditions</h1>
+        </div>
+
+        <div class="weather-badge">
+          <strong id="airTemperature">--°</strong>
+          <span id="weatherCondition">Locating</span>
+          <small id="locationName">Waiting for GPS</small>
+        </div>
+      </div>
+
+      <button
+        class="dial-button"
+        id="pressureDialButton"
+        type="button"
+        aria-label="Refresh barometric pressure"
+      >
+        <div class="dial">
+          <div class="tick-ring"></div>
+
+          <div
+            class="needle"
+            id="pressureNeedle"
+          ></div>
+
+          <div class="needle-cap"></div>
+          <div class="optimal-dot"></div>
+
+          <div class="dial-center">
+            <span
+              class="status-pill"
+              id="biteStatus"
+            >
+              CHECKING
+            </span>
+
+            <strong id="pressureValue">--.--</strong>
+            <small>inHg</small>
+
+            <span id="pressureTrend">
+              Waiting for current conditions
+            </span>
+          </div>
+        </div>
+      </button>
+
+      <div class="timeline-wrap">
+        <div class="timeline-header">
+          <span>Pressure trend</span>
+          <span id="lastUpdated">Not updated</span>
+        </div>
+
+        <div class="timeline">
+          <svg
+            viewBox="0 0 720 70"
+            role="img"
+            aria-label="Recent barometric pressure trend"
+          >
+            <g class="grid-lines">
+              <line x1="0" y1="18" x2="720" y2="18"></line>
+              <line x1="0" y1="35" x2="720" y2="35"></line>
+              <line x1="0" y1="52" x2="720" y2="52"></line>
+            </g>
+
+            <polyline
+              id="pressureTrendLine"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="3"
+              points="0,35 120,35 240,35 360,35 480,35 600,35 720,35"
+            ></polyline>
+          </svg>
+        </div>
+      </div>
+
+      <div class="depth-grid">
+        <button
+          class="depth-card"
+          type="button"
+          id="waterDepthCard"
+          disabled
+        >
+          <span class="metric-label">Estimated depth</span>
+
+          <strong class="metric-value">
+            <span id="waterDepth">--</span>
+            <small>ft</small>
+          </strong>
+
+          <span class="metric-meta">
+            Depth-map integration coming soon
+          </span>
+        </button>
+
+        <button
+          class="depth-card"
+          type="button"
+          id="waterTemperatureCard"
+          disabled
+        >
+          <span class="metric-label">Water temperature</span>
+
+          <strong class="metric-value temp-cold">
+            <span id="waterTemperature">--</span>
+            <small>°F</small>
+          </strong>
+
+          <span class="metric-meta">
+            Local estimate coming soon
+          </span>
+        </button>
+
+        <div class="depth-footer">
+          <div class="location-status">
+            <span
+              class="status-dot"
+              id="locationStatusDot"
+            ></span>
+
+            <span id="locationStatus">Getting current conditions</span>
+          </div>
+
+          <button
+            class="refresh-button"
+            id="refreshConditions"
+            type="button"
+          >
+            Refresh
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card catches-card">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Community</p>
+          <h2>Recent Catches</h2>
+        </div>
+
+        <button
+          class="text-button"
+          id="openCatchLogger"
+          type="button"
+        >
+          + Log a catch
+        </button>
+      </div>
+
+      <ul class="catches-list" id="recentCatches">
+        <li class="catches-empty">No catches logged yet — be the first.</li>
+      </ul>
+    </section>
+  </main>
+
+  <nav class="bottom-nav">
+    <button
+      class="bottom-nav-button"
+      id="bottomRefreshButton"
+      type="button"
+    >
+      Refresh
+    </button>
+
+    <button
+      class="bottom-nav-button primary"
+      id="bottomLogButton"
+      type="button"
+    >
+      Log Catch
+    </button>
+  </nav>
+
+  <div class="modal-backdrop" id="catchLoggerModal" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="catchLoggerTitle">
+      <div class="modal-header">
+        <h2 id="catchLoggerTitle">Log a Catch</h2>
+        <button class="icon-button" id="closeCatchLogger" type="button" aria-label="Close">✕</button>
+      </div>
+
+      <form id="catchForm">
+        <label class="field">
+          <span>Species</span>
+          <select id="speciesSelector" name="species">
+            <option>Largemouth Bass</option>
+            <option>Smallmouth Bass</option>
+            <option>Crappie</option>
+            <option>Catfish</option>
+            <option>Bluegill</option>
+            <option>Walleye</option>
+            <option>Other</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Weight (lb)</span>
+          <div class="weight-stepper">
+            <button type="button" id="decreaseWeight" aria-label="Decrease weight">−</button>
+            <input type="number" id="catchWeight" name="weight" min="0" step="0.1" value="1">
+            <button type="button" id="increaseWeight" aria-label="Increase weight">+</button>
+          </div>
+        </label>
+
+        <label class="field">
+          <span>Location</span>
+          <div class="location-field">
+            <input type="text" id="catchLocation" name="location" placeholder="Lat, long or water name">
+            <button type="button" id="useCatchLocation">Use current</button>
+          </div>
+        </label>
+
+        <label class="field">
+          <span>Notes</span>
+          <textarea id="catchNotes" name="notes" rows="3" placeholder="Bait, depth, conditions..."></textarea>
+        </label>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" id="cancelCatch">Cancel</button>
+          <button type="submit" class="btn-primary">Save Catch</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/barometer/app.js"></script>
+</body>
+</html>
