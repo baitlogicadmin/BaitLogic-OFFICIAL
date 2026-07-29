@@ -1,171 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <title>BaitLogic</title>
-  <link rel="stylesheet" href="/style.css" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BaitLogic</title>
+<link rel="stylesheet" href="/premium.css" />
 </head>
-
 <body>
-  <header>
-    <div class="brand">
-      <p>Local bait, gear, and outdoor know-how — built by the community, never behind a paywall.</p>
-    </div>
 
-    <div class="logo">
-      <h1>BaitLogic</h1>
-      <p>Beyond the Bite. Powered by People and Purpose.</p>
-    </div>
-    <p class="eyebrow">FREE FOREVER · NO PAYWALLS</p>
-  </header>
+<div class="topbar">
+  <div class="logo">Bait<span>Logic</span></div>
+  <div class="menu"><div></div><div></div><div></div></div>
+</div>
 
-  <section class="features">
-    <div class="feature-card">
-      <svg class="icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.97-4.03 9-9 9-1.5 0-2.9-.37-4.14-1.02L3 21l1.02-3.86A8.96 8.96 0 013 12c0-4.97 4.03-9 9-9s9 4.03 9 9z"/></svg><svg class="icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.97-4.03 9-9 9-1.5 0-2.9-.37-4.14-1.02L3 21l1.02-3.86A8.96 8.96 0 013 12c0-4.97 4.03-9 9-9s9 4.03 9 9z"/></svg><h3>Local Reports</h3>
-      <p>Real conditions from real anglers — updated by the community, not a corporation.</p>
-    </div>
-    <div class="feature-card">
-      <svg class="icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg><svg class="icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg><h3>Log Your Catch</h3>
-      <p>Track species, weight, bait, and location — build your own fishing history over time.</p>
-    </div>
-    <div class="feature-card">
-      <svg class="icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 2l7 4v6c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6l7-4z"/></svg><svg class="icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 2l7 4v6c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6l7-4z"/></svg><h3>Protect the Water</h3>
-      <p>Report pollution, fish kills, and habitat damage directly to the right people.</p>
-    </div>
-  </section>
-    </div>
-  </header>
-
-  <main>
-    <section class="section info">
-      <h2>Join the BaitLogic Crew</h2>
-      <p>Helping build smarter fishing and healthier waters from the ground up.</p>
-
-      <form id="signupForm" class="form">
-        <input type="text" name="name" placeholder="Name" required />
-        <input type="email" name="email" placeholder="Email" required />
-        <input type="text" name="home_water" placeholder="Favorite lake or river" />
-        <button type="submit">Join Free</button>
-      </form>
-    </section>
-  </main>
-
-  <nav class="bottom-nav">
-    <button data-open="accountModal">Account</button>
-    <button data-open="reportModal">Submit Fishing Report</button>
-    <button data-open="catchModal">Save Catch</button>
-    <button data-open="conservationModal">Submit Conservation Report</button>
-  </nav>
-
-  <!-- Account Modal -->
-  <div class="modal" id="accountModal">
-    <div class="modal-box">
-      <button class="close" data-close="accountModal">&times;</button>
-
-      <h2>Account</h2>
-
-      <form id="loginForm" class="form">
-        <input type="email" name="email" placeholder="Email" required />
-        <input type="password" name="password" placeholder="Password" required />
-
-        <button type="submit" name="intent" value="login" class="btn">
-          Sign In
-        </button>
-
-        <button type="submit" name="intent" value="register" class="btn secondary-btn">
-          Register
-        </button>
-      </form>
-    </div>
+<div class="hero">
+  <h1>Know the water before you go.</h1>
+  <p>Free forever. Built by the community, for the community.</p>
+  <div class="btnrow">
+    <div class="btn-primary">Get Started</div>
+    <div class="btn-secondary">Learn More</div>
   </div>
+</div>
 
-  <!-- Fishing Report Modal -->
-  <div class="modal" id="reportModal">
-    <div class="modal-box">
-      <button class="close" data-close="reportModal">&times;</button>
-
-      <h2>Submit Fishing Report</h2>
-
-      <form id="reportForm" class="form">
-        <input type="text" name="name" placeholder="Your name" required />
-        <input type="text" name="water" placeholder="Lake / river / pond" required />
-        <input type="text" name="species" placeholder="Species" />
-        <input type="text" name="bait" placeholder="Bait / lure" />
-
-        <textarea
-          name="report"
-          placeholder="What happened? Time, depth, weather, pattern..."
-          required
-        ></textarea>
-
-        <button type="submit">Submit Report</button>
-      </form>
-    </div>
+<div class="section-label">Platform</div>
+<div class="datacards">
+  <div class="datacard">
+    <div class="ic">&#9680;</div>
+    <div><h3>Local Conditions</h3><p>Water temp, barometer, and real reports from anglers nearby.</p></div>
   </div>
-
-  <!-- Save Catch Modal -->
-  <div class="modal" id="catchModal">
-    <div class="modal-box">
-      <button class="close" data-close="catchModal">&times;</button>
-
-      <h2>Save Catch</h2>
-
-      <form id="catchForm" class="form">
-        <input type="text" name="name" placeholder="Your name" required />
-        <input type="text" name="species" placeholder="Species" required />
-        <input type="text" name="location" placeholder="Water / location" required />
-        <input type="text" name="weight" placeholder="Weight" />
-        <input type="text" name="length" placeholder="Length" />
-        <input type="text" name="bait" placeholder="Bait / lure" />
-
-        <textarea name="notes" placeholder="Notes (optional)"></textarea>
-
-        <button type="submit">Save Catch</button>
-      </form>
-    </div>
+  <div class="datacard">
+    <div class="ic">&#9671;</div>
+    <div><h3>Smart Trip Planning</h3><p>Best times to fish based on pressure trends and past catches.</p></div>
   </div>
-
-  <!-- Conservation Report Modal -->
-  <div class="modal" id="conservationModal">
-    <div class="modal-box">
-      <button class="close" data-close="conservationModal">&times;</button>
-
-      <h2>Submit Conservation Report</h2>
-
-      <form id="conservationForm" class="form">
-        <input type="text" name="name" placeholder="Your name" />
-        <input type="text" name="water" placeholder="Water body / area" required />
-
-        <select name="issue_type" required>
-          <option value="">Choose issue type</option>
-          <option>Pollution/Trash</option>
-          <option>Fish Kill</option>
-          <option>Habitat Damage</option>
-          <option>Invasive Species</option>
-          <option>Illegal Dumping</option>
-          <option>Other</option>
-        </select>
-
-        <textarea
-          name="description"
-          placeholder="Description: What did you see?"
-          required
-        ></textarea>
-
-        <button type="submit">Submit Conservation Report</button>
-      </form>
-    </div>
+  <div class="datacard">
+    <div class="ic">&#9670;</div>
+    <div><h3>Species Insights</h3><p>Local patterns for bass, crappie, and catfish — season by season.</p></div>
   </div>
+</div>
 
-  <!-- Supabase SDK -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<div class="forecast">
+  <div class="label">Carlyle Lake &middot; Today</div>
+  <div class="bite">Bite Window: 6:15&ndash;8:30 AM</div>
+  <div class="forecast-grid">
+    <div><div class="val">72&deg;</div><div class="lbl">Water Temp</div></div>
+    <div><div class="val">29.92</div><div class="lbl">Barometer</div></div>
+    <div><div class="val">8 mph</div><div class="lbl">Wind</div></div>
+  </div>
+</div>
 
-  <!-- BaitLogic Config -->
-  <script src="/config.js"></script>
+<div class="section-label">Species Near You</div>
+<div class="species-row">
+  <div class="species-card">
+    <div class="tag">Freshwater</div>
+    <h4>Largemouth Bass</h4>
+    <p>Jigs and weed edges. Active in low light.</p>
+  </div>
+  <div class="species-card">
+    <div class="tag">Freshwater</div>
+    <h4>Crappie</h4>
+    <p>Brush piles, suspended structure.</p>
+  </div>
+  <div class="species-card">
+    <div class="tag">Freshwater</div>
+    <h4>Channel Catfish</h4>
+    <p>Cut bait, low-light windows.</p>
+  </div>
+</div>
 
-  <!-- BaitLogic App -->
-  <script src="/app.js"></script>
+<div class="footer-cta">
+  <h3>Join the BaitLogic Crew</h3>
+  <p class="tagline">Be the change &mdash; because no one else will.</p>
+  <div class="btn">Join Free</div>
+</div>
+
 </body>
 </html>
