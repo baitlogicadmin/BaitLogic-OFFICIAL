@@ -205,3 +205,47 @@ main {
 .modal .close:hover {
   color: var(--coral);
 }
+
+.hero {
+  background: linear-gradient(135deg, var(--teal) 0%, var(--teal-dark) 100%);
+  padding: 48px 20px 40px;
+  text-align: center;
+}
+
+.hero .eyebrow {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--coral);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin: 0 0 12px;
+}
+
+.features {
+  display: grid;
+  gap: 16px;
+  padding: 0 20px 32px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.feature-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: left;
+}
+
+.feature-card h3 {
+  font-family: 'EB Garamond', serif;
+  color: var(--teal);
+  font-size: 1.2rem;
+  margin: 0 0 6px;
+}
+
+.feature-card p {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin: 0;
+}
