@@ -1,0 +1,1 @@
+Catch API, service worker, location status, and refresh timestamp fixes.
