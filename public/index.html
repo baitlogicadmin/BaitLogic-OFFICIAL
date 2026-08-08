@@ -4,33 +4,34 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="BaitLogic delivers free fishing intelligence, local conditions, community reports, and conservation resources without paywalls.">
-  <meta name="theme-color" content="#0B1120">
+  <meta name="theme-color" content="#007C7C">
   <meta property="og:title" content="BaitLogic — Know the Water Before You Go">
   <meta property="og:description" content="Free fishing intelligence, community reports, and conservation tools.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://www.bait-logic.com/">
-  <link rel="canonical" href="https://www.bait-logic.com/">
+  <meta property="og:url" content="https://bait-logic.com/">
+  <link rel="canonical" href="https://bait-logic.com/">
   <title>BaitLogic — Know the Water Before You Go</title>
   <link rel="stylesheet" href="/premium.css">
+  <link rel="stylesheet" href="/launch.css">
 </head>
 <body>
 <header class="topbar">
   <a class="logo" href="/" aria-label="BaitLogic home">Bait<span>Logic</span></a>
   <nav aria-label="Primary navigation">
     <a href="/barometer.html">Barometer</a>
-    <a href="#platform">Platform</a>
-    <a href="#community">Community</a>
+    <a href="#community-tools">Report</a>
+    <a href="#join">Join</a>
   </nav>
 </header>
 
 <main>
   <section class="hero">
-    <p class="section-label">Beyond the Bite. Powered by People and Purpose.</p>
+    <p class="section-label hero-label">Beyond the Bite. Protect What Matters.</p>
     <h1>Know the water before you go.</h1>
     <p>Free fishing knowledge, local conditions, community reports, and conservation tools—without paywalls or gatekeeping.</p>
     <div class="btnrow">
       <a class="btn-primary" href="/barometer.html">Open Live Barometer</a>
-      <a class="btn-secondary" href="#platform">Explore BaitLogic</a>
+      <a class="btn-secondary" href="#community-tools">Share a Report</a>
     </div>
   </section>
 
@@ -45,29 +46,136 @@
 
   <section class="forecast" aria-labelledby="barometer-preview-title">
     <div class="label" id="barometer-preview-title">Live BaitLogic Barometer</div>
-    <div class="bite">Use your location to load current pressure and weather data.</div>
+    <div class="bite">Turn conditions into a fishing decision.</div>
     <div class="forecast-grid">
       <div><div class="val">Live</div><div class="lbl">Weather</div></div>
-      <div><div class="val">Trend</div><div class="lbl">Barometer</div></div>
-      <div><div class="val">Local</div><div class="lbl">Fishing Guidance</div></div>
+      <div><div class="val">Trend</div><div class="lbl">Pressure</div></div>
+      <div><div class="val">Local</div><div class="lbl">Guidance</div></div>
     </div>
     <div class="btnrow"><a class="btn-primary" href="/barometer.html">Check Current Conditions</a></div>
+  </section>
+
+  <section id="community-tools" class="action-section" aria-labelledby="report-title">
+    <div class="section-label" id="report-title">Community Intelligence</div>
+    <div class="action-card">
+      <h2>Share a Water Report</h2>
+      <p>Help other anglers understand what is changing without giving away a sensitive spot.</p>
+      <form id="reportForm" class="action-form">
+        <label>Name<input name="name" maxlength="60" required autocomplete="name"></label>
+        <label>Water / Area<input name="water" maxlength="80" required placeholder="Carlyle Lake, local creek, etc."></label>
+        <label>Report<textarea name="report" maxlength="400" required placeholder="Water clarity, bite, habitat change, fish activity, access issue..."></textarea></label>
+        <label>Category<select name="category"><option>Fishing</option><option>Water Conditions</option><option>Conservation</option><option>Access</option><option>Outdoor</option></select></label>
+        <button class="form-button" type="submit">Publish Report</button>
+        <p id="reportStatus" class="form-status" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </section>
+
+  <section id="recent-reports" class="action-section" aria-labelledby="recent-title">
+    <div class="section-label" id="recent-title">Latest Reports</div>
+    <div class="action-card">
+      <div id="reportsList" class="reports-list"><p>Loading community reports…</p></div>
+    </div>
   </section>
 
   <section id="community" aria-labelledby="community-title">
     <div class="section-label" id="community-title">Built for the Waters We Share</div>
     <div class="species-row">
       <article class="species-card"><div class="tag">Free Access</div><h2>No Paywalls</h2><p>Practical outdoor knowledge should remain accessible to everyone.</p></article>
-      <article class="species-card"><div class="tag">Community</div><h2>Share What Works</h2><p>Help other anglers learn local patterns without giving away sensitive spots.</p></article>
+      <article class="species-card"><div class="tag">Community</div><h2>Share What Works</h2><p>Help others learn local patterns without giving away sensitive spots.</p></article>
       <article class="species-card"><div class="tag">Conservation</div><h2>Protect the Resource</h2><p>Notice changes, report concerns, and leave healthier waters for the next generation.</p></article>
     </div>
   </section>
 
-  <section class="footer-cta">
+  <section id="join" class="footer-cta">
     <h2>Join the BaitLogic Community</h2>
     <p class="tagline">Fishing knowledge belongs to everyone. Conservation is everyone’s responsibility.</p>
-    <a class="btn" href="/barometer.html">Start With the Barometer</a>
+    <form id="signupForm" class="signup-form">
+      <input name="name" maxlength="80" required autocomplete="name" placeholder="Your name" aria-label="Your name">
+      <input name="email" type="email" maxlength="120" required autocomplete="email" placeholder="Email address" aria-label="Email address">
+      <button class="join-button" type="submit">Join Free</button>
+      <p id="signupStatus" class="signup-status" role="status" aria-live="polite"></p>
+    </form>
   </section>
 </main>
+
+<script>
+  const escapeHtml = (value) => String(value || '').replace(/[&<>"']/g, (char) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+
+  async function loadReports() {
+    const container = document.getElementById('reportsList');
+    try {
+      const response = await fetch('/api/reports');
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Could not load reports.');
+      const reports = Array.isArray(data.reports) ? data.reports.slice(0, 8) : [];
+      if (!reports.length) {
+        container.innerHTML = '<p>No community reports yet. Be the first to share what you are seeing.</p>';
+        return;
+      }
+      container.innerHTML = reports.map((item) => `
+        <article class="report-item">
+          <div class="report-meta">${escapeHtml(item.category || 'Fishing')} · ${escapeHtml(item.water || 'Local water')}</div>
+          <strong>${escapeHtml(item.name)}</strong>
+          <p>${escapeHtml(item.report)}</p>
+        </article>`).join('');
+    } catch (error) {
+      container.innerHTML = '<p>Community reports are temporarily unavailable.</p>';
+    }
+  }
+
+  document.getElementById('reportForm').addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const status = document.getElementById('reportStatus');
+    const button = form.querySelector('button[type="submit"]');
+    const payload = Object.fromEntries(new FormData(form).entries());
+    button.disabled = true;
+    status.textContent = 'Publishing…';
+    try {
+      const response = await fetch('/api/reports', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(payload)
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Could not publish report.');
+      form.reset();
+      status.textContent = 'Report published. Thank you for helping the community.';
+      await loadReports();
+    } catch (error) {
+      status.textContent = error.message || 'Could not publish report.';
+    } finally {
+      button.disabled = false;
+    }
+  });
+
+  document.getElementById('signupForm').addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const status = document.getElementById('signupStatus');
+    const button = form.querySelector('button[type="submit"]');
+    const payload = Object.fromEntries(new FormData(form).entries());
+    button.disabled = true;
+    status.textContent = 'Joining…';
+    try {
+      const response = await fetch('/api/signups', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(payload)
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Could not join right now.');
+      form.reset();
+      status.textContent = 'You’re in. Welcome to BaitLogic.';
+    } catch (error) {
+      status.textContent = error.message || 'Could not join right now.';
+    } finally {
+      button.disabled = false;
+    }
+  });
+
+  loadReports();
+</script>
 </body>
 </html>
