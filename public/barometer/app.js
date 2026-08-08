@@ -1,153 +1,23 @@
 "use strict";
 
-const PRESSURE_FUNCTION_URL = "https://khhishscjirjxhsulniq.supabase.co/functions/v1/quick-processor";
-const FALLBACK_LOCATION = { latitude: 38.6189, longitude: -89.3529, label: "Carlyle Lake (default)" };
-
-const state = {
-  latitude: null,
-  longitude: null,
-  loading: false,
-  locationMessage: "Getting current conditions",
-  deferredInstallPrompt: null,
-  pressureController: null
-};
-const $ = (selector) => document.querySelector(selector);
-const elements = {
-  airTemperature: $("#airTemperature"), weatherCondition: $("#weatherCondition"), locationName: $("#locationName"),
-  pressureValue: $("#pressureValue"), pressureTrend: $("#pressureTrend"), pressureNeedle: $("#pressureNeedle"),
-  biteStatus: $("#biteStatus"), lastUpdated: $("#lastUpdated"), locationStatus: $("#locationStatus"),
-  locationStatusDot: $("#locationStatusDot"), pressureTrendLine: $("#pressureTrendLine"), refreshConditions: $("#refreshConditions"),
-  pressureDialButton: $("#pressureDialButton"), recentCatches: $("#recentCatches"), connectionStatus: $("#connectionStatus"),
-  installButton: $("#installButton"), catchLoggerModal: $("#catchLoggerModal"), openCatchLogger: $("#openCatchLogger"),
-  closeCatchLogger: $("#closeCatchLogger"), bottomLogButton: $("#bottomLogButton"), bottomRefreshButton: $("#bottomRefreshButton"),
-  cancelCatch: $("#cancelCatch"), catchForm: $("#catchForm"), speciesSelector: $("#speciesSelector"), catchWeight: $("#catchWeight"),
-  increaseWeight: $("#increaseWeight"), decreaseWeight: $("#decreaseWeight"), catchLocation: $("#catchLocation"),
-  useCatchLocation: $("#useCatchLocation"), catchNotes: $("#catchNotes")
-};
-
-const weatherDescriptions = {0:"Clear",1:"Mostly clear",2:"Partly cloudy",3:"Cloudy",45:"Fog",48:"Fog",51:"Light drizzle",53:"Drizzle",55:"Heavy drizzle",61:"Light rain",63:"Rain",65:"Heavy rain",71:"Light snow",73:"Snow",75:"Heavy snow",80:"Rain showers",81:"Rain showers",82:"Heavy showers",95:"Thunderstorms",96:"Storms",99:"Severe storms"};
-const trendMeta = {
-  falling_fast:{badge:"PRIME BITE",cls:"good",angle:-80}, falling:{badge:"GOOD",cls:"good",angle:-35},
-  steady:{badge:"STEADY",cls:"",angle:0}, rising:{badge:"FAIR",cls:"",angle:35}, rising_fast:{badge:"TOUGH",cls:"bad",angle:80}
-};
-
-function setConnectionStatus(){ if(elements.connectionStatus) elements.connectionStatus.textContent = navigator.onLine ? "Online" : "Offline mode"; }
-function setLocationMessage(message, className=""){
-  state.locationMessage=message;
-  elements.locationStatus.textContent=message;
-  elements.locationStatusDot.classList.remove("locked","error");
-  if(className) elements.locationStatusDot.classList.add(className);
-}
-function setLoading(on){
-  state.loading=on;
-  if(elements.refreshConditions) elements.refreshConditions.disabled=on;
-  if(on){
-    elements.weatherCondition.textContent="Updating";
-    elements.locationStatus.textContent="Getting current conditions";
-  }else{
-    elements.locationStatus.textContent=state.locationMessage;
-  }
-}
-function useLocation(latitude, longitude, label){
-  state.latitude=latitude;
-  state.longitude=longitude;
-  elements.locationName.textContent=label;
-  elements.catchLocation.value=`${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
-  loadConditions();
-}
-function getLocation(){
-  setLoading(true);
-  if(!navigator.geolocation){
-    setLocationMessage("Location unavailable — showing Carlyle Lake","error");
-    useLocation(FALLBACK_LOCATION.latitude,FALLBACK_LOCATION.longitude,FALLBACK_LOCATION.label);
-    return;
-  }
-  navigator.geolocation.getCurrentPosition(
-    p=>{
-      setLocationMessage("Location connected","locked");
-      useLocation(p.coords.latitude,p.coords.longitude,"Current location");
-    },
-    ()=>{
-      setLocationMessage("Location unavailable — showing Carlyle Lake","error");
-      useLocation(FALLBACK_LOCATION.latitude,FALLBACK_LOCATION.longitude,FALLBACK_LOCATION.label);
-    },
-    {timeout:10000,maximumAge:300000}
-  );
-}
-
-async function loadConditions(){
-  if(state.loading && state.latitude===null) return;
-  if(state.latitude===null) return getLocation();
-  setLoading(true);
-  const [pressureResult] = await Promise.allSettled([loadPressure(),loadWeather()]);
-  if(pressureResult.status === "fulfilled" && pressureResult.value === true){
-    elements.lastUpdated.textContent=`Updated ${new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})}`;
-  }else{
-    elements.lastUpdated.textContent="Update failed — showing last known data";
-  }
-  setLoading(false);
-}
-
-async function loadPressure(){
-  if(state.pressureController) state.pressureController.abort();
-  state.pressureController=new AbortController();
-  try{
-    const response=await fetch(`${PRESSURE_FUNCTION_URL}?lat=${encodeURIComponent(state.latitude)}&lon=${encodeURIComponent(state.longitude)}`,{signal:state.pressureController.signal});
-    const data=await response.json();
-    if(!response.ok || !data.latest) throw new Error(data.error || "Pressure data unavailable");
-    const pressure=Number(data.latest.pressureInHg);
-    elements.pressureValue.textContent=Number.isFinite(pressure)?pressure.toFixed(2):"--.--";
-    elements.locationName.textContent=data.station?.name || elements.locationName.textContent;
-    elements.pressureTrend.textContent=data.guidance || "Current pressure loaded";
-    const meta=trendMeta[data.trend] || trendMeta.steady;
-    elements.biteStatus.textContent=meta.badge;
-    elements.biteStatus.className=`status-pill ${meta.cls}`.trim();
-    elements.pressureNeedle.style.transform=`translateX(-50%) rotate(${meta.angle}deg)`;
-    if(Array.isArray(data.series)&&data.series.length>1) drawTrendLine(data.series);
-    return true;
-  }catch(error){
-    if(error.name==="AbortError") return false;
-    elements.pressureTrend.textContent="Pressure data unavailable — last reading may be stale";
-    elements.biteStatus.textContent="STALE";
-    elements.biteStatus.className="status-pill bad";
-    return false;
-  }
-}
-
-function drawTrendLine(series){ const values=series.map(p=>Number(p.pressureInHg)).filter(Number.isFinite); if(values.length<2)return; const min=Math.min(...values),max=Math.max(...values),range=max-min||0.01; const points=values.map((v,i)=>`${((i/(values.length-1))*720).toFixed(1)},${(60-((v-min)/range)*50).toFixed(1)}`).join(" "); elements.pressureTrendLine.setAttribute("points",points); }
-
-async function loadWeather(){
-  try{
-    const response=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${state.latitude}&longitude=${state.longitude}&current=temperature_2m,weather_code&temperature_unit=fahrenheit`);
-    const data=await response.json();
-    if(!response.ok||!data.current) throw new Error();
-    elements.airTemperature.textContent=`${Math.round(data.current.temperature_2m)}°`;
-    elements.weatherCondition.textContent=weatherDescriptions[data.current.weather_code]||"Current conditions";
-    return true;
-  }catch{
-    elements.airTemperature.textContent="--°";
-    elements.weatherCondition.textContent="Weather unavailable";
-    return false;
-  }
-}
-
-function escapeHtml(value){ return String(value||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
-async function loadRecentCatches(){ try{ const response=await fetch("/api/catches"); if(!response.ok)throw new Error(); const data=await response.json(); const catches=Array.isArray(data.catches)?data.catches:[]; elements.recentCatches.innerHTML=catches.length?catches.slice(0,8).map(c=>`<li><strong>${escapeHtml(c.species)}</strong>${c.weight?` — ${escapeHtml(c.weight)} lb`:""}${c.location?` · ${escapeHtml(c.location)}`:""}${c.notes?`<br><span>${escapeHtml(c.notes)}</span>`:""}</li>`).join(""):'<li class="catches-empty">No catches logged yet — be the first.</li>'; }catch{ elements.recentCatches.innerHTML='<li class="catches-empty">Catch logging is temporarily unavailable.</li>'; } }
-
-function setupCatchLogger(){
-  const open=()=>{elements.catchLoggerModal.hidden=false;}; const close=()=>{elements.catchLoggerModal.hidden=true;};
-  elements.openCatchLogger.addEventListener("click",open); elements.bottomLogButton.addEventListener("click",open); elements.closeCatchLogger.addEventListener("click",close); elements.cancelCatch.addEventListener("click",close);
-  elements.increaseWeight.addEventListener("click",()=>elements.catchWeight.value=(Number(elements.catchWeight.value||0)+0.5).toFixed(1));
-  elements.decreaseWeight.addEventListener("click",()=>elements.catchWeight.value=Math.max(0,Number(elements.catchWeight.value||0)-0.5).toFixed(1));
-  elements.useCatchLocation.addEventListener("click",()=>{ if(state.latitude!==null) elements.catchLocation.value=`${state.latitude.toFixed(4)}, ${state.longitude.toFixed(4)}`; });
-  elements.catchForm.addEventListener("submit",async event=>{ event.preventDefault(); const submit=elements.catchForm.querySelector("button[type='submit']"); submit.disabled=true; submit.textContent="Saving..."; try{ const response=await fetch("/api/catches",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({species:elements.speciesSelector.value,weight:elements.catchWeight.value,location:elements.catchLocation.value,notes:elements.catchNotes.value})}); const data=await response.json().catch(()=>({})); if(!response.ok)throw new Error(data.error||"Could not save catch"); elements.catchForm.reset(); close(); await loadRecentCatches(); }catch(error){ alert(error.message); }finally{ submit.disabled=false; submit.textContent="Save Catch"; } });
-}
-
-function setupInstall(){ window.addEventListener("beforeinstallprompt",event=>{event.preventDefault();state.deferredInstallPrompt=event;elements.installButton.hidden=false;}); elements.installButton.addEventListener("click",async()=>{if(!state.deferredInstallPrompt)return;state.deferredInstallPrompt.prompt();await state.deferredInstallPrompt.userChoice;state.deferredInstallPrompt=null;elements.installButton.hidden=true;}); }
-function registerServiceWorker(){ if("serviceWorker" in navigator) navigator.serviceWorker.register("/barometer/sw.js",{scope:"/"}).catch(console.warn); }
-
-document.addEventListener("DOMContentLoaded",()=>{
-  setConnectionStatus(); window.addEventListener("online",setConnectionStatus); window.addEventListener("offline",setConnectionStatus);
-  elements.pressureDialButton.addEventListener("click",loadConditions); elements.refreshConditions.addEventListener("click",loadConditions); elements.bottomRefreshButton.addEventListener("click",loadConditions);
-  setupCatchLogger(); setupInstall(); registerServiceWorker(); loadRecentCatches(); getLocation(); setInterval(loadConditions,10*60*1000);
-});
+const FALLBACK_LOCATION={latitude:38.6189,longitude:-89.3529,label:"Carlyle Lake (default)"};
+const state={latitude:null,longitude:null,loading:false,locationMessage:"Getting current conditions",deferredInstallPrompt:null,pressureController:null,currentPressure:null,trend:"steady",weatherCode:null,temperature:null,wind:null,isDay:1};
+const $=s=>document.querySelector(s);
+const elements={airTemperature:$("#airTemperature"),weatherCondition:$("#weatherCondition"),locationName:$("#locationName"),pressureValue:$("#pressureValue"),pressureTrend:$("#pressureTrend"),pressureNeedle:$("#pressureNeedle"),biteStatus:$("#biteStatus"),lastUpdated:$("#lastUpdated"),locationStatus:$("#locationStatus"),locationStatusDot:$("#locationStatusDot"),pressureTrendLine:$("#pressureTrendLine"),refreshConditions:$("#refreshConditions"),pressureDialButton:$("#pressureDialButton"),recentCatches:$("#recentCatches"),connectionStatus:$("#connectionStatus"),installButton:$("#installButton"),catchLoggerModal:$("#catchLoggerModal"),openCatchLogger:$("#openCatchLogger"),closeCatchLogger:$("#closeCatchLogger"),bottomLogButton:$("#bottomLogButton"),bottomRefreshButton:$("#bottomRefreshButton"),cancelCatch:$("#cancelCatch"),catchForm:$("#catchForm"),speciesSelector:$("#speciesSelector"),catchWeight:$("#catchWeight"),increaseWeight:$("#increaseWeight"),decreaseWeight:$("#decreaseWeight"),catchLocation:$("#catchLocation"),useCatchLocation:$("#useCatchLocation"),catchNotes:$("#catchNotes"),fishActivity:$("#fishActivity"),activityReason:$("#activityReason"),fishMood:$("#fishMood"),moodReason:$("#moodReason"),tacticAdvice:$("#tacticAdvice"),confidenceText:$("#confidenceText")};
+const weatherDescriptions={0:"Clear",1:"Mostly clear",2:"Partly cloudy",3:"Cloudy",45:"Fog",48:"Fog",51:"Light drizzle",53:"Drizzle",55:"Heavy drizzle",61:"Light rain",63:"Rain",65:"Heavy rain",71:"Light snow",73:"Snow",75:"Heavy snow",80:"Rain showers",81:"Rain showers",82:"Heavy showers",95:"Thunderstorms",96:"Storms",99:"Severe storms"};
+const trendMeta={falling_fast:{badge:"PRIME BITE",cls:"good",angle:-80},falling:{badge:"GOOD",cls:"good",angle:-35},steady:{badge:"STEADY",cls:"",angle:0},rising:{badge:"FAIR",cls:"",angle:35},rising_fast:{badge:"TOUGH",cls:"bad",angle:80}};
+const hpaToInHg=v=>Number(v)*0.0295299830714;
+function setConnectionStatus(){if(elements.connectionStatus)elements.connectionStatus.textContent=navigator.onLine?"Online":"Offline mode"}
+function setLocationMessage(message,className=""){state.locationMessage=message;elements.locationStatus.textContent=message;elements.locationStatusDot.classList.remove("locked","error");if(className)elements.locationStatusDot.classList.add(className)}
+function setLoading(on){state.loading=on;if(elements.refreshConditions)elements.refreshConditions.disabled=on;if(on){elements.weatherCondition.textContent="Updating";elements.locationStatus.textContent="Getting current conditions"}else elements.locationStatus.textContent=state.locationMessage}
+function useLocation(latitude,longitude,label){state.latitude=latitude;state.longitude=longitude;elements.locationName.textContent=label;if(elements.catchLocation)elements.catchLocation.value=`${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;loadConditions()}
+function getLocation(){setLoading(true);if(!navigator.geolocation){setLocationMessage("Location unavailable — showing Carlyle Lake","error");return useLocation(FALLBACK_LOCATION.latitude,FALLBACK_LOCATION.longitude,FALLBACK_LOCATION.label)}navigator.geolocation.getCurrentPosition(p=>{setLocationMessage("Location connected","locked");useLocation(p.coords.latitude,p.coords.longitude,"Current location")},()=>{setLocationMessage("Location unavailable — showing Carlyle Lake","error");useLocation(FALLBACK_LOCATION.latitude,FALLBACK_LOCATION.longitude,FALLBACK_LOCATION.label)},{timeout:10000,maximumAge:300000})}
+function drawTrendLine(series){const values=series.map(p=>Number(p.pressureInHg)).filter(Number.isFinite);if(values.length<2)return;const min=Math.min(...values),max=Math.max(...values),range=max-min||.01;const pts=values.map((v,i)=>`${((i/(values.length-1))*720).toFixed(1)},${(60-((v-min)/range)*50).toFixed(1)}`).join(" ");elements.pressureTrendLine.setAttribute("points",pts)}
+function deriveFishingInsights(){let score=55;const t=state.trend;if(t==="falling_fast")score+=25;else if(t==="falling")score+=17;else if(t==="steady")score+=7;else if(t==="rising")score-=6;else if(t==="rising_fast")score-=14;if([2,3,51,53,55,61,63,80,81].includes(state.weatherCode))score+=8;if([95,96,99].includes(state.weatherCode))score-=12;if(state.wind>=4&&state.wind<=14)score+=6;else if(state.wind>22)score-=8;if(state.isDay===0)score+=4;score=Math.max(20,Math.min(95,Math.round(score)));let mood="Neutral";if(score>=80)mood="Feeding";else if(score>=65)mood="Active";else if(score<45)mood="Holding";let move="Work proven cover methodically.";if(t.includes("falling"))move="Cover water with moving baits, then slow down where fish show.";else if(t.includes("rising"))move="Slow down and target tight cover, shade, drops, and structure.";else if(t==="steady")move="Repeat productive depth and cover; let the fish reveal the pattern.";if(elements.fishActivity)elements.fishActivity.textContent=score;if(elements.activityReason)elements.activityReason.textContent=`Live pressure ${t.replace("_"," ")}, ${weatherDescriptions[state.weatherCode]||"current weather"}, ${Math.round(state.wind||0)} mph wind.`;if(elements.fishMood)elements.fishMood.textContent=mood;if(elements.moodReason)elements.moodReason.textContent=score>=65?"Conditions support active searching and feeding behavior.":score<45?"Expect fish to hold tighter and reward slower presentations.":"Mixed conditions — use a controlled search pattern.";if(elements.tacticAdvice)elements.tacticAdvice.textContent=move;if(elements.confidenceText)elements.confidenceText.textContent="Based on live weather + 3-hour pressure trend. Use local water observations to refine it."}
+async function loadConditions(){if(state.latitude===null)return getLocation();if(state.pressureController)state.pressureController.abort();state.pressureController=new AbortController();setLoading(true);try{const url=`https://api.open-meteo.com/v1/forecast?latitude=${encodeURIComponent(state.latitude)}&longitude=${encodeURIComponent(state.longitude)}&current=temperature_2m,weather_code,pressure_msl,wind_speed_10m,is_day&hourly=pressure_msl&past_days=1&forecast_days=1&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto`;const response=await fetch(url,{signal:state.pressureController.signal,cache:"no-store"});const data=await response.json();if(!response.ok||!data.current)throw new Error("Live conditions unavailable");state.temperature=Number(data.current.temperature_2m);state.weatherCode=Number(data.current.weather_code);state.wind=Number(data.current.wind_speed_10m||0);state.isDay=Number(data.current.is_day??1);const pressure=hpaToInHg(data.current.pressure_msl);if(!Number.isFinite(pressure))throw new Error("Pressure unavailable");state.currentPressure=pressure;elements.airTemperature.textContent=`${Math.round(state.temperature)}°`;elements.weatherCondition.textContent=weatherDescriptions[state.weatherCode]||"Current conditions";elements.pressureValue.textContent=pressure.toFixed(2);const times=data.hourly?.time||[],vals=data.hourly?.pressure_msl||[];let idx=0,dist=Infinity;times.forEach((time,i)=>{const d=Math.abs(new Date(time).getTime()-Date.now());if(d<dist){dist=d;idx=i}});const prior=Number(vals[Math.max(0,idx-3)]),delta=Number.isFinite(prior)?pressure-hpaToInHg(prior):0;let trend="steady";if(delta<=-.12)trend="falling_fast";else if(delta<=-.03)trend="falling";else if(delta>=.12)trend="rising_fast";else if(delta>=.03)trend="rising";state.trend=trend;const guidance={falling_fast:"Pressure falling quickly — an active feeding window may be developing",falling:"Pressure falling — often favorable for active fish",steady:"Pressure steady — focus on repeatable patterns and proven cover",rising:"Pressure rising — fish may tighten to cover or structure",rising_fast:"Pressure rising quickly — slow down and target high-percentage holding areas"}[trend];elements.pressureTrend.textContent=guidance;const meta=trendMeta[trend];elements.biteStatus.textContent=meta.badge;elements.biteStatus.className=`status-pill ${meta.cls}`.trim();elements.pressureNeedle.style.transform=`translateX(-50%) rotate(${meta.angle}deg)`;const series=[];for(let i=Math.max(0,idx-6);i<=idx&&i<vals.length;i++){const v=Number(vals[i]);if(Number.isFinite(v))series.push({pressureInHg:hpaToInHg(v)})}drawTrendLine(series);deriveFishingInsights();elements.lastUpdated.textContent=`Updated ${new Date().toLocaleTimeString([],{hour:"numeric",minute:"2-digit"})}`;setLocationMessage(state.locationMessage||"Location connected","locked")}catch(error){if(error.name!=="AbortError"){console.error(error);elements.pressureTrend.textContent="Live conditions temporarily unavailable — tap Refresh to retry";elements.biteStatus.textContent="RETRY";elements.biteStatus.className="status-pill bad";elements.lastUpdated.textContent="Update failed"}}finally{setLoading(false)}}
+function escapeHtml(v){return String(v||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+async function loadRecentCatches(){try{const r=await fetch("/api/catches",{cache:"no-store"});if(!r.ok)throw new Error();const d=await r.json();const catches=Array.isArray(d.catches)?d.catches:[];elements.recentCatches.innerHTML=catches.length?catches.slice(0,8).map(c=>`<li><strong>${escapeHtml(c.species)}</strong>${c.weight?` — ${escapeHtml(c.weight)} lb`:""}${c.location?` · ${escapeHtml(c.location)}`:""}${c.notes?`<br><span>${escapeHtml(c.notes)}</span>`:""}</li>`).join(""):'<li class="catches-empty">No catches logged yet — be the first.</li>'}catch{elements.recentCatches.innerHTML='<li class="catches-empty">Catch logging is temporarily unavailable.</li>'}}
+function setupCatchLogger(){const open=()=>elements.catchLoggerModal.hidden=false,close=()=>elements.catchLoggerModal.hidden=true;elements.openCatchLogger.addEventListener("click",open);elements.bottomLogButton.addEventListener("click",open);elements.closeCatchLogger.addEventListener("click",close);elements.cancelCatch.addEventListener("click",close);elements.increaseWeight.addEventListener("click",()=>elements.catchWeight.value=(Number(elements.catchWeight.value||0)+.5).toFixed(1));elements.decreaseWeight.addEventListener("click",()=>elements.catchWeight.value=Math.max(0,Number(elements.catchWeight.value||0)-.5).toFixed(1));elements.useCatchLocation.addEventListener("click",()=>{if(state.latitude!==null)elements.catchLocation.value=`${state.latitude.toFixed(4)}, ${state.longitude.toFixed(4)}`});elements.catchForm.addEventListener("submit",async e=>{e.preventDefault();const submit=elements.catchForm.querySelector("button[type='submit']");submit.disabled=true;submit.textContent="Saving...";try{const r=await fetch("/api/catches",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({species:elements.speciesSelector.value,weight:elements.catchWeight.value,location:elements.catchLocation.value,notes:elements.catchNotes.value})});const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||"Could not save catch");elements.catchForm.reset();close();await loadRecentCatches()}catch(err){alert(err.message)}finally{submit.disabled=false;submit.textContent="Save Catch"}})}
+function setupInstall(){window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();state.deferredInstallPrompt=e;elements.installButton.hidden=false});elements.installButton.addEventListener("click",async()=>{if(!state.deferredInstallPrompt)return;state.deferredInstallPrompt.prompt();await state.deferredInstallPrompt.userChoice;state.deferredInstallPrompt=null;elements.installButton.hidden=true})}
+function registerServiceWorker(){if("serviceWorker"in navigator)navigator.serviceWorker.register("/barometer/sw.js",{scope:"/"}).catch(console.warn)}
+document.addEventListener("DOMContentLoaded",()=>{setConnectionStatus();window.addEventListener("online",setConnectionStatus);window.addEventListener("offline",setConnectionStatus);elements.pressureDialButton.addEventListener("click",loadConditions);elements.refreshConditions.addEventListener("click",loadConditions);elements.bottomRefreshButton.addEventListener("click",loadConditions);setupCatchLogger();setupInstall();registerServiceWorker();loadRecentCatches();getLocation();setInterval(loadConditions,10*60*1000)});
