@@ -1,0 +1,30 @@
+a { text-decoration: none; }
+.topbar nav { display:flex; gap:12px; align-items:center; }
+.topbar nav a { color:#005f5f; font-size:.78rem; font-weight:700; }
+.hero .hero-label { padding:0; color:#fff; opacity:.9; }
+.action-section { padding: 0 20px; }
+.action-section .section-label { padding-left:0; padding-right:0; }
+.action-card { background:linear-gradient(160deg,#fff,#fdfaf3); border:1px solid #e5dcc4; border-radius:18px; padding:20px; box-shadow:0 10px 24px rgba(0,60,55,.09); }
+.action-card h2 { font-family:'Fraunces',serif; color:#12201e; font-size:1.3rem; }
+.action-card > p { margin-top:6px; color:#6b6b5f; font-size:.8rem; line-height:1.5; }
+.action-form { margin-top:16px; display:grid; gap:12px; }
+.action-form label { display:grid; gap:6px; font-size:.72rem; font-weight:700; color:#245f59; }
+.action-form input,.action-form textarea,.action-form select,.signup-form input { width:100%; border:1px solid #d8cfb8; border-radius:10px; background:#fff; color:#1f2a29; padding:12px; font:inherit; outline:none; }
+.action-form textarea { min-height:110px; resize:vertical; }
+.action-form input:focus,.action-form textarea:focus,.action-form select:focus,.signup-form input:focus { border-color:#007C7C; box-shadow:0 0 0 3px rgba(0,124,124,.12); }
+.form-button,.join-button { border:0; border-radius:10px; padding:13px 18px; font:inherit; font-weight:800; cursor:pointer; }
+.form-button { background:#007C7C; color:#fff; }
+.join-button { background:#fff; color:#d85444; }
+.form-button:disabled,.join-button:disabled { opacity:.55; cursor:not-allowed; }
+.form-status,.signup-status { min-height:1.2em; font-size:.76rem; line-height:1.4; }
+.form-status { color:#245f59; }
+.signup-status { color:#fff; }
+.reports-list { display:grid; gap:12px; }
+.report-item { padding:14px 0; border-bottom:1px solid #e5dcc4; }
+.report-item:last-child { border-bottom:0; }
+.report-item strong { display:block; margin-top:4px; color:#12201e; }
+.report-item p { margin-top:5px; font-size:.8rem; line-height:1.45; color:#565f5c; }
+.report-meta { color:#007C7C; font-family:'IBM Plex Mono',monospace; text-transform:uppercase; font-size:.62rem; letter-spacing:.6px; }
+.signup-form { display:grid; gap:10px; margin-top:16px; }
+.footer-cta { margin-top:28px; }
+@media (min-width:481px){ body{ max-width:760px; } }
