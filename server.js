@@ -16,6 +16,8 @@ const SUPABASE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_oUy
 const nowIso = () => new Date().toISOString();
 const toText = (value, max = 300) => String(value || '').replace(/\s+/g, ' ').trim().slice(0, max);
 const validEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value || '').trim());
+const naturePhotoPrefix = `${SUPABASE_URL}/storage/v1/object/public/nature-checks/`;
+const rewardCode = () => `BL-NC-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
 
 async function supabaseRequest(pathname, options = {}) {
   const response = await fetch(`${SUPABASE_URL}/rest/v1/${pathname}`, {
@@ -142,6 +144,61 @@ app.post('/api/catches', async (req, res, next) => {
   } catch (error) { next(error); }
 });
 
+app.post('/api/nature-checks', async (req, res, next) => {
+  try {
+    const displayName = toText(req.body.display_name, 60);
+    const water = toText(req.body.water, 120);
+    const notes = toText(req.body.notes, 500);
+    const gps = toText(req.body.gps, 100);
+    const beforeUrl = toText(req.body.before_url, 500);
+    const afterUrl = toText(req.body.after_url, 500);
+    const bags = Number(req.body.bags || 1);
+
+    if (!displayName || !water) return res.status(400).json({ error: 'Name and water are required.' });
+    if (!Number.isInteger(bags) || bags < 1 || bags > 50) return res.status(400).json({ error: 'Cleanup amount must be between 1 and 50 bags.' });
+    if (!afterUrl || !afterUrl.startsWith(naturePhotoPrefix)) return res.status(400).json({ error: 'A valid cleanup photo is required.' });
+    if (beforeUrl && !beforeUrl.startsWith(naturePhotoPrefix)) return res.status(400).json({ error: 'Before photo URL is invalid.' });
+
+    const code = rewardCode();
+    const rows = await supabaseRequest('nature_checks', {
+      method: 'POST',
+      body: JSON.stringify({
+        display_name: displayName,
+        water,
+        action_type: 'shoreline_cleanup',
+        before_url: beforeUrl || null,
+        after_url: afterUrl,
+        notes: notes || null,
+        gps: gps || null,
+        bags,
+        status: 'submitted',
+        reward_code: code,
+        created_at: nowIso()
+      })
+    });
+
+    const row = rows?.[0] || null;
+    res.status(201).json({
+      message: 'Nature-Check recorded and queued for review.',
+      natureCheck: {
+        id: row?.id || null,
+        displayName,
+        water,
+        bags,
+        rewardCode: code,
+        status: 'submitted'
+      }
+    });
+  } catch (error) { next(error); }
+});
+
+app.get('/api/nature-checks', async (req, res, next) => {
+  try {
+    const rows = await supabaseRequest('nature_checks?select=id,display_name,water,bags,after_url,created_at&status=eq.approved&order=created_at.desc&limit=25');
+    res.json({ natureChecks: rows || [] });
+  } catch (error) { next(error); }
+});
+
 app.post('/api/signups', async (req, res, next) => {
   try {
     const name = toText(req.body.name, 80);
@@ -159,13 +216,15 @@ app.post('/api/signups', async (req, res, next) => {
 
 app.get('/api/admin/summary', adminAuth, async (req, res, next) => {
   try {
-    const [reports, catches] = await Promise.all([
+    const [reports, catches, natureChecks] = await Promise.all([
       supabaseRequest('reports?select=id'),
-      supabaseRequest('public_catches?select=id')
+      supabaseRequest('public_catches?select=id'),
+      supabaseRequest('nature_checks?select=id&status=eq.approved')
     ]);
     res.json({
       reports: reports?.length || 0,
       catches: catches?.length || 0,
+      natureChecks: natureChecks?.length || 0,
       signups: 'protected'
     });
   } catch (error) { next(error); }
