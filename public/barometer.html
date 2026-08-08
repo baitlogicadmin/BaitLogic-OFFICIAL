@@ -3,43 +3,63 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#0B1120">
-  <meta name="description" content="BaitLogic live fishing barometer and field intelligence dashboard.">
-  <title>BaitLogic Barometer</title>
+  <meta name="theme-color" content="#07141a">
+  <meta name="description" content="BaitLogic Field Decision Console — live fishing conditions translated into practical on-water decisions.">
+  <title>BaitLogic Field Decision Console</title>
   <link rel="manifest" href="/barometer/manifest.webmanifest">
   <link rel="icon" href="/barometer/icons/icon-32.png" sizes="32x32">
   <link rel="apple-touch-icon" href="/barometer/icons/icon-180.png">
-  <link rel="stylesheet" href="/barometer/styles.css">
+  <link rel="stylesheet" href="/barometer/styles.css?v=4">
 </head>
 <body>
   <header class="top-nav">
-    <div class="brand"><div class="brand-mark" aria-hidden="true">BL</div><div><strong>BaitLogic Barometer</strong><span>Beyond the Bite. Powered by People and Purpose.</span></div></div>
-    <div class="nav-actions"><a class="text-button" href="/">Home</a><span class="pill-status" id="connectionStatus">Online</span><button class="icon-button" id="installButton" type="button" aria-label="Install BaitLogic Barometer" hidden>↓</button></div>
+    <div class="brand"><div class="brand-mark" aria-hidden="true">BL</div><div><strong>BaitLogic Field Console</strong><span>Live conditions → practical fishing decisions</span></div></div>
+    <div class="nav-actions"><a class="text-button" href="/">Home</a><span class="pill-status" id="connectionStatus">Online</span><button class="icon-button" id="installButton" type="button" aria-label="Install BaitLogic" hidden>↓</button></div>
   </header>
 
-  <main class="dashboard-grid">
-    <section class="card intelligence-card">
-      <div class="section-heading"><div><p class="eyebrow">Live fishing intelligence</p><h1>Current Bite Conditions</h1></div><div class="weather-badge"><strong id="airTemperature">--°</strong><span id="weatherCondition">Locating</span><small id="locationName">Waiting for GPS</small></div></div>
+  <main class="dashboard-grid premium-console">
+    <section class="card intelligence-card hero-console">
+      <div class="section-heading"><div><p class="eyebrow">BaitLogic Live Intelligence</p><h1>What should I do right now?</h1></div><div class="weather-badge"><strong id="airTemperature">--°</strong><span id="weatherCondition">Locating</span><small id="locationName">Waiting for GPS</small></div></div>
 
-      <button class="dial-button" id="pressureDialButton" type="button" aria-label="Refresh barometric pressure"><div class="dial"><div class="tick-ring"></div><div class="needle" id="pressureNeedle"></div><div class="needle-cap"></div><div class="optimal-dot"></div><div class="dial-center"><span class="status-pill" id="biteStatus">CHECKING</span><strong id="pressureValue">--.--</strong><small>inHg</small><span id="pressureTrend">Waiting for current conditions</span></div></div></button>
-
-      <div class="timeline-wrap"><div class="timeline-header"><span>Pressure trend</span><span id="lastUpdated">Not updated</span></div><div class="timeline"><svg viewBox="0 0 720 70" role="img" aria-label="Recent barometric pressure trend"><g class="grid-lines"><line x1="0" y1="18" x2="720" y2="18"></line><line x1="0" y1="35" x2="720" y2="35"></line><line x1="0" y1="52" x2="720" y2="52"></line></g><polyline id="pressureTrendLine" fill="none" stroke="currentColor" stroke-width="3" points="0,35 120,35 240,35 360,35 480,35 600,35 720,35"></polyline></svg></div></div>
-
-      <div class="depth-grid">
-        <div class="depth-card"><span class="metric-label">Fish Activity Pulse™</span><strong class="metric-value"><span id="fishActivity">--</span><small>/100</small></strong><span class="metric-meta" id="activityReason">Calculating from live conditions...</span></div>
-        <div class="depth-card"><span class="metric-label">Fish Mood</span><strong class="metric-value"><span id="fishMood">--</span></strong><span class="metric-meta" id="moodReason">Reading pressure and weather...</span></div>
-        <div class="depth-card" style="grid-column:1/-1"><span class="metric-label">BaitLogic Move</span><strong class="metric-value" style="font-size:1.35rem"><span id="tacticAdvice">Checking conditions...</span></strong><span class="metric-meta" id="confidenceText">Live-data guidance, not a guarantee.</span></div>
-        <div class="depth-footer"><div class="location-status"><span class="status-dot" id="locationStatusDot"></span><span id="locationStatus">Getting current conditions</span></div><button class="refresh-button" id="refreshConditions" type="button">Refresh</button></div>
+      <div class="decision-panel">
+        <div class="decision-score-wrap"><span class="decision-kicker">FIELD DECISION</span><strong id="primaryDecision" class="decision-word">CHECKING</strong><span id="decisionReason" class="decision-reason">Reading current conditions...</span></div>
+        <div class="pulse-orb"><span>Fish Activity</span><strong><span id="fishActivity">--</span><small>/100</small></strong><em id="fishMood">--</em></div>
       </div>
+
+      <div class="action-grid">
+        <article class="action-card accent"><span class="metric-label">BaitLogic Move</span><strong id="tacticAdvice">Checking conditions...</strong><small id="activityReason">Waiting for live data.</small></article>
+        <article class="action-card"><span class="metric-label">Start With</span><strong id="lureFamily">--</strong><small id="lureReason">Presentation recommendation will appear here.</small></article>
+        <article class="action-card"><span class="metric-label">Target Zone</span><strong id="targetZone">--</strong><small id="habitatShift">Habitat guidance will appear here.</small></article>
+      </div>
+
+      <div class="pressure-module">
+        <div class="pressure-head"><div><span class="metric-label">Pressure Story</span><strong><span id="pressureValue">--.--</span> <small>inHg</small></strong></div><span class="status-pill" id="biteStatus">CHECKING</span></div>
+        <p id="pressureTrend">Waiting for current conditions</p>
+        <div class="timeline-wrap"><div class="timeline-header"><span>6-hour trend</span><span id="lastUpdated">Not updated</span></div><div class="timeline"><svg viewBox="0 0 720 70" role="img" aria-label="Recent barometric pressure trend"><g class="grid-lines"><line x1="0" y1="18" x2="720" y2="18"></line><line x1="0" y1="35" x2="720" y2="35"></line><line x1="0" y1="52" x2="720" y2="52"></line></g><polyline id="pressureTrendLine" fill="none" stroke="currentColor" stroke-width="3" points="0,35 120,35 240,35 360,35 480,35 600,35 720,35"></polyline></svg></div></div>
+      </div>
+
+      <div class="intel-grid">
+        <article class="intel-card"><span class="metric-label">Bite Windows</span><strong id="biteWindows">--</strong><small>Built from daylight timing and current pressure behavior.</small></article>
+        <article class="intel-card"><span class="metric-label">Species Match</span><strong id="speciesMatch">--</strong><small id="speciesReason">Condition-based fit, not a guarantee.</small></article>
+        <article class="intel-card"><span class="metric-label">Confidence</span><strong><span id="confidenceScore">--</span><small>/100</small></strong><small id="confidenceText">Checking data completeness...</small></article>
+        <article class="intel-card"><span class="metric-label">Pattern Alert</span><strong id="patternAlert">--</strong><small id="patternReason">Watching for meaningful condition changes.</small></article>
+      </div>
+
+      <div class="depth-footer"><div class="location-status"><span class="status-dot" id="locationStatusDot"></span><span id="locationStatus">Getting current conditions</span></div><button class="refresh-button" id="refreshConditions" type="button">Refresh live data</button></div>
+      <button id="pressureDialButton" type="button" hidden aria-hidden="true"></button>
+      <div id="pressureNeedle" hidden></div>
     </section>
 
-    <section class="card catches-card"><div class="section-heading"><div><p class="eyebrow">Community</p><h2>Recent Catches</h2></div><button class="text-button" id="openCatchLogger" type="button">+ Log a catch</button></div><ul class="catches-list" id="recentCatches"><li class="catches-empty">No catches logged yet — be the first.</li></ul></section>
+    <aside class="side-stack">
+      <section class="card catches-card"><div class="section-heading"><div><p class="eyebrow">Community Proof</p><h2>Recent Catches</h2></div><button class="text-button" id="openCatchLogger" type="button">+ Log catch</button></div><p class="side-copy">Real catches make BaitLogic smarter over time by connecting conditions to outcomes.</p><ul class="catches-list" id="recentCatches"><li class="catches-empty">No catches logged yet — be the first.</li></ul></section>
+      <section class="card quick-actions-card"><p class="eyebrow">Field Actions</p><h2>Do more than check weather.</h2><a href="/nature-check.html" class="field-action-link"><strong>Nature-Check</strong><span>Document cleanup and conservation action →</span></a><a href="/#community-tools" class="field-action-link"><strong>Share Water Intel</strong><span>Report clarity, access, habitat, or bite changes →</span></a></section>
+    </aside>
   </main>
 
   <nav class="bottom-nav" aria-label="Barometer actions"><button class="bottom-nav-button" id="bottomRefreshButton" type="button">Refresh</button><button class="bottom-nav-button primary" id="bottomLogButton" type="button">Log Catch</button></nav>
 
-  <div class="modal-backdrop" id="catchLoggerModal" hidden><div class="modal" role="dialog" aria-modal="true" aria-labelledby="catchLoggerTitle"><div class="modal-header"><h2 id="catchLoggerTitle">Log a Catch</h2><button class="icon-button" id="closeCatchLogger" type="button" aria-label="Close">✕</button></div><form id="catchForm"><label class="field"><span>Species</span><select id="speciesSelector" name="species"><option>Largemouth Bass</option><option>Smallmouth Bass</option><option>Crappie</option><option>Catfish</option><option>Bluegill</option><option>Walleye</option><option>Other</option></select></label><label class="field"><span>Weight (lb)</span><div class="weight-stepper"><button type="button" id="decreaseWeight" aria-label="Decrease weight">−</button><input type="number" id="catchWeight" name="weight" min="0" step="0.1" value="1"><button type="button" id="increaseWeight" aria-label="Increase weight">+</button></div></label><label class="field"><span>Location</span><div class="location-field"><input type="text" id="catchLocation" name="location" placeholder="Lat, long or water name"><button type="button" id="useCatchLocation">Use current</button></div></label><label class="field"><span>Notes</span><textarea id="catchNotes" name="notes" rows="3" placeholder="Bait, depth, conditions..."></textarea></label><div class="modal-actions"><button type="button" class="btn-secondary" id="cancelCatch">Cancel</button><button type="submit" class="btn-primary">Save Catch</button></div></form></div></div>
+  <div class="modal-backdrop" id="catchLoggerModal" hidden><div class="modal" role="dialog" aria-modal="true" aria-labelledby="catchLoggerTitle"><div class="modal-header"><h2 id="catchLoggerTitle">Log a Catch</h2><button class="icon-button" id="closeCatchLogger" type="button" aria-label="Close">✕</button></div><form id="catchForm"><label class="field"><span>Species</span><select id="speciesSelector" name="species"><option>Largemouth Bass</option><option>Smallmouth Bass</option><option>Crappie</option><option>Catfish</option><option>Bluegill</option><option>Walleye</option><option>Other</option></select></label><label class="field"><span>Weight (lb)</span><div class="weight-stepper"><button type="button" id="decreaseWeight" aria-label="Decrease weight">−</button><input type="number" id="catchWeight" name="weight" min="0" step="0.1" value="1"><button type="button" id="increaseWeight" aria-label="Increase weight">+</button></div></label><label class="field"><span>Location</span><div class="location-field"><input type="text" id="catchLocation" name="location" placeholder="Lat, long or water name"><button type="button" id="useCatchLocation">Use current</button></div></label><label class="field"><span>Notes</span><textarea id="catchNotes" name="notes" rows="3" placeholder="Bait, depth, cover, water clarity, conditions..."></textarea></label><div class="modal-actions"><button type="button" class="btn-secondary" id="cancelCatch">Cancel</button><button type="submit" class="btn-primary">Save Catch</button></div></form></div></div>
 
-  <script src="/barometer/app.js?v=3" defer></script>
+  <script src="/barometer/app.js?v=4" defer></script>
 </body>
 </html>
