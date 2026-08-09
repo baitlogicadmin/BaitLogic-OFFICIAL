@@ -1,0 +1,19 @@
+{
+  "name": "BaitLogic Field Decision Console",
+  "short_name": "BaitLogic",
+  "description": "Live fishing conditions translated into practical on-water decisions.",
+  "start_url": "/barometer.html",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#07141a",
+  "theme_color": "#07141a",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/barometer/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
