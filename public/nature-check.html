@@ -2,153 +2,61 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="description" content="Take the BaitLogic Nature-Check: document a shoreline cleanup, help protect local waters, and earn community recognition.">
-  <meta name="theme-color" content="#073B3A">
-  <title>BaitLogic Nature-Check</title>
-  <style>
-    :root{--ink:#092f33;--teal:#007c7c;--teal2:#0b6665;--coral:#ff775f;--cream:#f6f7f2;--white:#fff;--muted:#637476;--line:#d9e3df;--green:#4f7f2c;--shadow:0 18px 45px rgba(1,34,37,.14)}
-    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:linear-gradient(180deg,#eef5f3 0,#fff 42%,#eef5f3 100%);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-    a{color:inherit}.wrap{width:min(760px,100%);margin:0 auto;padding:0 18px 56px}.top{position:sticky;top:0;z-index:20;margin:0 -18px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;background:rgba(246,247,242,.92);backdrop-filter:blur(14px);border-bottom:1px solid rgba(9,47,51,.08)}
-    .brand{font-weight:900;font-size:1.35rem;text-decoration:none;letter-spacing:-.04em}.brand span{color:var(--teal)}.back{font-size:.9rem;text-decoration:none;font-weight:800;color:var(--teal2)}
-    .hero{padding:42px 0 25px}.eyebrow{display:inline-flex;align-items:center;gap:8px;padding:7px 11px;border-radius:999px;background:#dff1ec;color:var(--teal2);font-weight:900;text-transform:uppercase;font-size:.72rem;letter-spacing:.08em}.hero h1{font-size:clamp(2.35rem,9vw,4.8rem);line-height:.95;letter-spacing:-.06em;margin:16px 0 18px}.hero h1 span{color:var(--coral)}.hero p{font-size:1.08rem;line-height:1.65;color:#40575a;margin:0 0 22px}.promise{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.promise div{background:var(--white);border:1px solid var(--line);border-radius:16px;padding:13px 11px;box-shadow:0 8px 22px rgba(9,47,51,.06)}.promise strong{display:block;font-size:.84rem;margin-bottom:4px}.promise span{font-size:.75rem;line-height:1.35;color:var(--muted)}
-    .card{background:var(--white);border:1px solid var(--line);border-radius:26px;padding:22px;box-shadow:var(--shadow);margin-top:18px}.card h2{font-size:1.55rem;letter-spacing:-.035em;margin:0 0 8px}.card>p{color:var(--muted);line-height:1.55;margin:0 0 20px}.step{display:flex;gap:12px;margin:16px 0}.num{flex:0 0 34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--ink);color:white;font-weight:900}.step strong{display:block}.step p{margin:4px 0 0;color:var(--muted);line-height:1.45;font-size:.91rem}
-    form{display:grid;gap:16px}.field{display:grid;gap:7px}.field label,.field .label{font-size:.86rem;font-weight:900}.field small{font-weight:500;color:var(--muted)}input,textarea,select{width:100%;border:1px solid #cbd9d5;border-radius:14px;background:#fbfcfa;color:var(--ink);font:inherit;padding:13px 14px;outline:none}textarea{min-height:105px;resize:vertical}input:focus,textarea:focus,select:focus{border-color:var(--teal);box-shadow:0 0 0 4px rgba(0,124,124,.1)}
-    .photo{position:relative;border:1.5px dashed #a8c0b9;border-radius:16px;padding:16px;background:#f4faf8}.photo input{padding:10px;background:white}.photo .hint{font-size:.78rem;color:var(--muted);margin-top:7px}.twocol{display:grid;grid-template-columns:1fr 1fr;gap:12px}.locrow{display:grid;grid-template-columns:1fr auto;gap:8px}.locbtn{border:0;border-radius:14px;padding:0 14px;background:#dff1ec;color:var(--teal2);font-weight:900}.submit{border:0;border-radius:16px;padding:16px 18px;background:linear-gradient(135deg,var(--teal2),var(--teal));color:white;font-weight:900;font-size:1rem;box-shadow:0 12px 25px rgba(0,124,124,.25)}.submit:disabled{opacity:.6}.status{min-height:24px;margin:0;color:var(--muted);font-size:.9rem}.fine{font-size:.77rem;color:var(--muted);line-height:1.5;margin:0}
-    .success{display:none;background:linear-gradient(180deg,#073b3a,#092f33);color:white;border-radius:26px;padding:24px;box-shadow:var(--shadow);margin-top:18px}.success.show{display:block}.success .badge{display:inline-block;background:#cfea9f;color:#294d12;padding:8px 12px;border-radius:999px;font-weight:900;font-size:.76rem;text-transform:uppercase;letter-spacing:.06em}.success h2{font-size:2rem;line-height:1;margin:16px 0 10px}.success p{color:#d6e4e1;line-height:1.55}.reward{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.14);border-radius:17px;padding:15px;margin:18px 0}.reward strong{display:block;color:#fff;margin-bottom:4px}.code{font-size:1.5rem;font-weight:950;letter-spacing:.08em;color:#ffd4ca}.share{display:inline-block;text-decoration:none;background:var(--coral);color:#162d2e;border-radius:14px;padding:12px 15px;font-weight:900}
-    .impact{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}.impact div{border-radius:16px;background:#f6f8f5;padding:14px;text-align:center}.impact strong{display:block;font-size:1.35rem;color:var(--teal2)}.impact span{font-size:.72rem;color:var(--muted)}
-    @media(max-width:560px){.promise{grid-template-columns:1fr}.twocol{grid-template-columns:1fr}.hero{padding-top:30px}.card{padding:18px;border-radius:22px}.impact{grid-template-columns:1fr 1fr}.impact div:last-child{grid-column:1/-1}}
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="BaitLogic conservation guidance: notice problems, document what you see, report serious issues, and leave the water better.">
+  <meta name="theme-color" content="#007C7C">
+  <title>BaitLogic — Protect the Water</title>
+  <link rel="stylesheet" href="/premium.css">
+  <link rel="stylesheet" href="/launch.css">
 </head>
 <body>
-<div class="wrap">
-  <header class="top"><a class="brand" href="/">Bait<span>Logic</span></a><a class="back" href="/">← Back to BaitLogic</a></header>
-
+<header class="topbar">
+  <a class="logo" href="/">Bait<span>Logic</span></a>
+  <nav><a href="/barometer.html">Barometer</a><a href="/">Home</a></nav>
+</header>
+<main>
   <section class="hero">
-    <div class="eyebrow">Community Action • Conservation</div>
-    <h1>Take the <span>Nature-Check.</span></h1>
-    <p>Fish the water. Notice the water. Leave it better. Document a small cleanup and turn one outdoor trip into useful community action.</p>
-    <div class="promise">
-      <div><strong>1. Clean</strong><span>Remove litter from a shoreline or access area.</span></div>
-      <div><strong>2. Document</strong><span>Upload a cleanup photo and tell us where.</span></div>
-      <div><strong>3. Build Impact</strong><span>Your action becomes part of BaitLogic's community stewardship record.</span></div>
+    <p class="section-label hero-label">Beyond the Bite. Protect What Matters.</p>
+    <h1>Notice it. Document it. Report it.</h1>
+    <p>Anglers are often the first people to notice changing water, dead fish, pollution, illegal dumping, invasive species, damaged habitat, or unsafe access.</p>
+  </section>
+
+  <section class="action-section">
+    <div class="section-label">BaitLogic Nature-Check</div>
+    <div class="action-card">
+      <h2>Leave the water better than you found it.</h2>
+      <p>Pick up fishing line, plastic, cans, bait containers, or other litter when it is safe to do so. Take a photo for your own record and share the action with other anglers to normalize stewardship.</p>
     </div>
   </section>
 
-  <section class="card" aria-labelledby="how-title">
-    <h2 id="how-title">How it works</h2>
-    <p>This pilot is intentionally simple. No complicated app install and no paywall.</p>
-    <div class="step"><div class="num">1</div><div><strong>Do a real cleanup</strong><p>Even a single bag or handful of fishing line, cans, plastic, or shoreline litter counts.</p></div></div>
-    <div class="step"><div class="num">2</div><div><strong>Submit proof</strong><p>An after photo is required. A before photo and location coordinates make the record stronger.</p></div></div>
-    <div class="step"><div class="num">3</div><div><strong>Earn Founding Water Steward recognition</strong><p>During the pilot, every valid submission receives a unique Nature-Check code and entry in the founding challenge record.</p></div></div>
+  <section aria-labelledby="report-title">
+    <div class="section-label" id="report-title">When Something Is Wrong</div>
+    <div class="datacards">
+      <article class="datacard"><div class="ic">1</div><div><h2>Observe</h2><p>Note the waterbody, approximate location, time, smell, color, dead wildlife, discharge, algae, or other unusual conditions.</p></div></article>
+      <article class="datacard"><div class="ic">2</div><div><h2>Document</h2><p>Take photos or video from a safe location. Do not touch unknown chemicals, dead wildlife, or hazardous material.</p></div></article>
+      <article class="datacard"><div class="ic">3</div><div><h2>Report</h2><p>Use the responsible state agency so the report reaches people who can investigate it.</p></div></article>
+    </div>
   </section>
 
-  <section class="card" aria-labelledby="form-title">
-    <h2 id="form-title">Log your Nature-Check</h2>
-    <p>Use the form while you are at the water or after you get home.</p>
-    <form id="natureForm">
-      <div class="field"><label for="display_name">Name or community username</label><input id="display_name" name="display_name" maxlength="60" required autocomplete="name" placeholder="How you want to be recognized"></div>
-      <div class="field"><label for="water">Water / access area</label><input id="water" name="water" maxlength="120" required placeholder="Example: Carlyle Lake — west bank access"></div>
-      <div class="twocol">
-        <div class="field"><label for="bags">Cleanup amount <small>(bags)</small></label><input id="bags" name="bags" type="number" min="1" max="50" value="1" required></div>
-        <div class="field"><span class="label">Location <small>(optional)</small></span><div class="locrow"><input id="gps" name="gps" readonly placeholder="Not captured"><button class="locbtn" type="button" id="locBtn">Use GPS</button></div></div>
-      </div>
-      <div class="field photo"><label for="beforePhoto">Before photo <small>(optional)</small></label><input id="beforePhoto" type="file" accept="image/jpeg,image/png,image/webp" capture="environment"><div class="hint">Photo uploads are limited to 5 MB.</div></div>
-      <div class="field photo"><label for="afterPhoto">Cleanup / after photo</label><input id="afterPhoto" type="file" accept="image/jpeg,image/png,image/webp" capture="environment" required><div class="hint">Show what you removed or the cleaned area. Avoid showing exact sensitive fishing spots if you prefer.</div></div>
-      <div class="field"><label for="notes">What did you notice? <small>(optional)</small></label><textarea id="notes" name="notes" maxlength="500" placeholder="Fishing line, cans, plastic, access issue, unusual water condition, habitat concern..."></textarea></div>
-      <button class="submit" id="submitBtn" type="submit">Complete Nature-Check</button>
-      <p class="status" id="status" role="status" aria-live="polite"></p>
-      <p class="fine">Submissions enter a moderation queue before appearing publicly. Uploaded photos may be used to document BaitLogic community conservation impact.</p>
-    </form>
+  <section class="action-section">
+    <div class="section-label">Official Reporting</div>
+    <div class="action-card">
+      <h2>Illinois</h2>
+      <p>Illinois EPA accepts pollution complaints including illegal discharges into streams and rivers and other threats to water and public health.</p>
+      <div class="btnrow"><a class="btn-primary" href="https://epa.illinois.gov/pollution-complaint/submit-a-complaint.html" target="_blank" rel="noopener">Illinois Pollution Complaint</a></div>
+    </div>
+    <div class="action-card">
+      <h2>Missouri</h2>
+      <p>Missouri Department of Conservation provides reporting guidance for fish kills and water-quality problems.</p>
+      <div class="btnrow"><a class="btn-primary" href="https://mdc.mo.gov/fishing/protect-missouri-fishing/fish-kills" target="_blank" rel="noopener">Missouri Fish Kill / Water Issue</a></div>
+    </div>
   </section>
 
-  <section class="success" id="successBox" aria-live="polite">
-    <span class="badge">Nature-Check Complete</span>
-    <h2>You left the water better.</h2>
-    <p>Your action has been recorded. This is the first version of the BaitLogic community stewardship system: real people, real waters, measurable action.</p>
-    <div class="reward"><strong>Founding Water Steward code</strong><div class="code" id="rewardCode">BL-NC</div><p>Keep this code. Partner rewards will be added as local businesses join the pilot.</p></div>
-    <a class="share" id="shareBtn" href="#">Share the challenge</a>
+  <section class="footer-cta">
+    <h2>See something. Say something.</h2>
+    <p class="tagline">Fishing knowledge belongs to everyone. Conservation is everyone’s responsibility.</p>
+    <div class="btnrow"><a class="btn-primary" href="/barometer.html">Check Fishing Conditions</a><a class="btn-secondary" href="/">Back to BaitLogic</a></div>
   </section>
-
-  <section class="card">
-    <h2>Pilot target</h2>
-    <p>We are proving the loop before adding complexity: community action → verified impact → local partnerships → better outdoor stewardship.</p>
-    <div class="impact"><div><strong>25</strong><span>Founding Nature-Checks</span></div><div><strong>1</strong><span>Pilot waterbody</span></div><div><strong>1</strong><span>Local tackle partner</span></div></div>
-  </section>
-</div>
-
-<script>
-const SUPABASE_URL='https://gibaaxzltpdizayvicgf.supabase.co';
-const SUPABASE_KEY='sb_publishable_oUyldV6BybbdjH3GhVRzqw_uVLKl_xN';
-const form=document.getElementById('natureForm');
-const statusEl=document.getElementById('status');
-const submitBtn=document.getElementById('submitBtn');
-const successBox=document.getElementById('successBox');
-
-function safeName(file){
-  const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
-  const id=(crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random().toString(16).slice(2));
-  return `${new Date().toISOString().slice(0,10)}/${id}.${ext}`;
-}
-
-async function uploadPhoto(file){
-  if(!file) return null;
-  if(file.size>5*1024*1024) throw new Error('Each photo must be 5 MB or smaller.');
-  const path=safeName(file);
-  const response=await fetch(`${SUPABASE_URL}/storage/v1/object/nature-checks/${path}`,{
-    method:'POST',
-    headers:{'apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}`,'Content-Type':file.type,'x-upsert':'false'},
-    body:file
-  });
-  if(!response.ok){const text=await response.text();throw new Error('Photo upload failed. Please try again.');}
-  return `${SUPABASE_URL}/storage/v1/object/public/nature-checks/${path}`;
-}
-
-document.getElementById('locBtn').addEventListener('click',()=>{
-  const btn=document.getElementById('locBtn');
-  if(!navigator.geolocation){statusEl.textContent='Location is not available on this device.';return;}
-  btn.disabled=true;btn.textContent='Locating…';
-  navigator.geolocation.getCurrentPosition((pos)=>{
-    document.getElementById('gps').value=`${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)}`;
-    btn.textContent='Captured';
-  },()=>{statusEl.textContent='Could not capture location. You can still submit.';btn.disabled=false;btn.textContent='Use GPS';},{enableHighAccuracy:true,timeout:10000,maximumAge:60000});
-});
-
-form.addEventListener('submit',async(e)=>{
-  e.preventDefault();
-  submitBtn.disabled=true;statusEl.textContent='Uploading your Nature-Check…';successBox.classList.remove('show');
-  try{
-    const beforeFile=document.getElementById('beforePhoto').files[0]||null;
-    const afterFile=document.getElementById('afterPhoto').files[0]||null;
-    if(!afterFile) throw new Error('Please add a cleanup / after photo.');
-    const [before_url,after_url]=await Promise.all([uploadPhoto(beforeFile),uploadPhoto(afterFile)]);
-    statusEl.textContent='Saving your community impact…';
-    const payload={
-      display_name:form.display_name.value.trim(),
-      water:form.water.value.trim(),
-      bags:Number(form.bags.value||1),
-      gps:form.gps.value.trim(),
-      notes:form.notes.value.trim(),
-      before_url,
-      after_url
-    };
-    const response=await fetch('/api/nature-checks',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-    const data=await response.json();
-    if(!response.ok) throw new Error(data.error||'Could not save your Nature-Check.');
-    document.getElementById('rewardCode').textContent=data.natureCheck.rewardCode;
-    statusEl.textContent='Nature-Check recorded.';
-    successBox.classList.add('show');
-    successBox.scrollIntoView({behavior:'smooth',block:'center'});
-    document.getElementById('shareBtn').onclick=async(ev)=>{
-      ev.preventDefault();
-      const text='I completed a BaitLogic Nature-Check and left the water better than I found it. Take the challenge at bait-logic.com/nature-check.html';
-      if(navigator.share){try{await navigator.share({title:'BaitLogic Nature-Check',text,url:'https://bait-logic.com/nature-check.html'});}catch{}}
-      else{await navigator.clipboard.writeText(text);document.getElementById('shareBtn').textContent='Copied to clipboard';}
-    };
-    form.reset();form.bags.value='1';document.getElementById('gps').value='';
-  }catch(error){statusEl.textContent=error.message||'Something went wrong. Please try again.';}
-  finally{submitBtn.disabled=false;}
-});
-</script>
+</main>
 </body>
 </html>
