@@ -1,246 +1,36 @@
 require('dotenv').config();
-const express = require('express');
-const helmet = require('helmet');
-const compression = require('compression');
-const path = require('path');
-
-const app = express();
-const PORT = Number(process.env.PORT || 3000);
-const ADMIN_KEY = process.env.ADMIN_KEY || 'change-this-admin-key';
-const SITE_TITLE = process.env.SITE_TITLE || 'BaitLogic';
-const PUBLIC_DIR = path.join(__dirname, 'public');
-
-const SUPABASE_URL = process.env.SUPABASE_URL || 'https://gibaaxzltpdizayvicgf.supabase.co';
-const SUPABASE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_oUyldV6BybbdjH3GhVRzqw_uVLKl_xN';
-
-const nowIso = () => new Date().toISOString();
-const toText = (value, max = 300) => String(value || '').replace(/\s+/g, ' ').trim().slice(0, max);
-const validEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value || '').trim());
-const naturePhotoPrefix = `${SUPABASE_URL}/storage/v1/object/public/nature-checks/`;
-const rewardCode = () => `BL-NC-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
-
-async function supabaseRequest(pathname, options = {}) {
-  const response = await fetch(`${SUPABASE_URL}/rest/v1/${pathname}`, {
-    ...options,
-    headers: {
-      apikey: SUPABASE_KEY,
-      Authorization: `Bearer ${SUPABASE_KEY}`,
-      'Content-Type': 'application/json',
-      Prefer: 'return=representation',
-      ...(options.headers || {})
-    }
-  });
-
-  const text = await response.text();
-  if (!response.ok) throw new Error(`Supabase error ${response.status}: ${text}`);
-  return text ? JSON.parse(text) : null;
-}
-
-const rateMap = new Map();
-function rateLimit(req, res, next) {
-  const key = `${req.ip}:${req.path}`;
-  const current = rateMap.get(key) || { count: 0, start: Date.now() };
-  if (Date.now() - current.start > 60000) {
-    rateMap.set(key, { count: 1, start: Date.now() });
-    return next();
-  }
-  if (current.count >= 30) return res.status(429).json({ error: 'Too many requests. Please slow down.' });
-  current.count++;
-  rateMap.set(key, current);
-  next();
-}
-
-function adminAuth(req, res, next) {
-  const supplied = req.headers['x-admin-key'] || req.query.key;
-  if (!supplied || supplied !== ADMIN_KEY) return res.status(401).json({ error: 'Unauthorized' });
-  next();
-}
-
-app.disable('x-powered-by');
-app.use(helmet({ contentSecurityPolicy: false }));
-app.use(compression());
-app.use(express.json({ limit: '250kb' }));
-app.use(express.urlencoded({ extended: false }));
-app.use('/api', rateLimit);
-app.use(express.static(PUBLIC_DIR, { extensions: ['html'] }));
-
-app.get('/api/health', (req, res) => res.json({ ok: true, siteTitle: SITE_TITLE, storage: 'supabase', timestamp: nowIso() }));
-
-app.get('/api/reports', async (req, res, next) => {
-  try {
-    const reports = await supabaseRequest('reports?select=id,category,name,water,report,gps,created_at&order=created_at.desc&limit=50');
-    res.json({ reports: reports || [] });
-  } catch (error) { next(error); }
-});
-
-app.post('/api/reports', async (req, res, next) => {
-  try {
-    const category = toText(req.body.category, 50) || 'Fishing';
-    const name = toText(req.body.name, 60);
-    const water = toText(req.body.water, 80);
-    const report = toText(req.body.report, 400);
-    const gps = toText(req.body.gps, 100);
-    if (!name || !water || !report) return res.status(400).json({ error: 'Name, water, and report are required.' });
-
-    const rows = await supabaseRequest('reports', {
-      method: 'POST',
-      body: JSON.stringify({ category, name, water, report, gps: gps || null, created_at: nowIso() })
-    });
-
-    res.status(201).json({ message: 'Report published.', report: rows?.[0] || null });
-  } catch (error) { next(error); }
-});
-
-app.get('/api/catches', async (req, res, next) => {
-  try {
-    const rows = await supabaseRequest('public_catches?select=id,species,weight_lb,location,notes,created_at&order=created_at.desc&limit=50');
-    const catches = (rows || []).map((row) => ({
-      id: row.id,
-      species: row.species,
-      weight: row.weight_lb == null ? null : Number(row.weight_lb),
-      location: row.location || '',
-      notes: row.notes || '',
-      createdAt: row.created_at
-    }));
-    res.json({ catches });
-  } catch (error) { next(error); }
-});
-
-app.post('/api/catches', async (req, res, next) => {
-  try {
-    const species = toText(req.body.species, 80);
-    const location = toText(req.body.location, 120);
-    const notes = toText(req.body.notes, 500);
-    const rawWeight = req.body.weight;
-    const weightNumber = rawWeight === '' || rawWeight == null ? null : Number(rawWeight);
-
-    if (!species) return res.status(400).json({ error: 'Species is required.' });
-    if (weightNumber !== null && (!Number.isFinite(weightNumber) || weightNumber < 0 || weightNumber > 500)) {
-      return res.status(400).json({ error: 'Weight must be between 0 and 500 pounds.' });
-    }
-
-    const rows = await supabaseRequest('public_catches', {
-      method: 'POST',
-      body: JSON.stringify({
-        species,
-        weight_lb: weightNumber === null ? null : Number(weightNumber.toFixed(2)),
-        location: location || null,
-        notes: notes || null,
-        created_at: nowIso()
-      })
-    });
-
-    const row = rows?.[0] || null;
-    res.status(201).json({
-      message: 'Catch saved.',
-      catch: row ? {
-        id: row.id,
-        species: row.species,
-        weight: row.weight_lb == null ? null : Number(row.weight_lb),
-        location: row.location || '',
-        notes: row.notes || '',
-        createdAt: row.created_at
-      } : null
-    });
-  } catch (error) { next(error); }
-});
-
-app.post('/api/nature-checks', async (req, res, next) => {
-  try {
-    const displayName = toText(req.body.display_name, 60);
-    const water = toText(req.body.water, 120);
-    const notes = toText(req.body.notes, 500);
-    const gps = toText(req.body.gps, 100);
-    const beforeUrl = toText(req.body.before_url, 500);
-    const afterUrl = toText(req.body.after_url, 500);
-    const bags = Number(req.body.bags || 1);
-
-    if (!displayName || !water) return res.status(400).json({ error: 'Name and water are required.' });
-    if (!Number.isInteger(bags) || bags < 1 || bags > 50) return res.status(400).json({ error: 'Cleanup amount must be between 1 and 50 bags.' });
-    if (!afterUrl || !afterUrl.startsWith(naturePhotoPrefix)) return res.status(400).json({ error: 'A valid cleanup photo is required.' });
-    if (beforeUrl && !beforeUrl.startsWith(naturePhotoPrefix)) return res.status(400).json({ error: 'Before photo URL is invalid.' });
-
-    const code = rewardCode();
-    const rows = await supabaseRequest('nature_checks', {
-      method: 'POST',
-      body: JSON.stringify({
-        display_name: displayName,
-        water,
-        action_type: 'shoreline_cleanup',
-        before_url: beforeUrl || null,
-        after_url: afterUrl,
-        notes: notes || null,
-        gps: gps || null,
-        bags,
-        status: 'submitted',
-        reward_code: code,
-        created_at: nowIso()
-      })
-    });
-
-    const row = rows?.[0] || null;
-    res.status(201).json({
-      message: 'Nature-Check recorded and queued for review.',
-      natureCheck: {
-        id: row?.id || null,
-        displayName,
-        water,
-        bags,
-        rewardCode: code,
-        status: 'submitted'
-      }
-    });
-  } catch (error) { next(error); }
-});
-
-app.get('/api/nature-checks', async (req, res, next) => {
-  try {
-    const rows = await supabaseRequest('nature_checks?select=id,display_name,water,bags,after_url,created_at&status=eq.approved&order=created_at.desc&limit=25');
-    res.json({ natureChecks: rows || [] });
-  } catch (error) { next(error); }
-});
-
-app.post('/api/signups', async (req, res, next) => {
-  try {
-    const name = toText(req.body.name, 80);
-    const email = toText(req.body.email, 120).toLowerCase();
-    if (!name || !validEmail(email)) return res.status(400).json({ error: 'Valid name and email required.' });
-
-    await supabaseRequest('signups', {
-      method: 'POST',
-      body: JSON.stringify({ name, email, created_at: nowIso() })
-    });
-
-    res.status(201).json({ message: 'You are on the BaitLogic early access list.' });
-  } catch (error) { next(error); }
-});
-
-app.get('/api/admin/summary', adminAuth, async (req, res, next) => {
-  try {
-    const [reports, catches, natureChecks] = await Promise.all([
-      supabaseRequest('reports?select=id'),
-      supabaseRequest('public_catches?select=id'),
-      supabaseRequest('nature_checks?select=id&status=eq.approved')
-    ]);
-    res.json({
-      reports: reports?.length || 0,
-      catches: catches?.length || 0,
-      natureChecks: natureChecks?.length || 0,
-      signups: 'protected'
-    });
-  } catch (error) { next(error); }
-});
-
-app.get('/admin', (req, res) => res.sendFile(path.join(PUBLIC_DIR, 'admin.html')));
-
-app.use((error, req, res, next) => {
-  console.error(error);
-  if (res.headersSent) return next(error);
-  res.status(500).json({ error: 'Something went wrong. Please try again.' });
-});
-
-app.get('*', (req, res) => res.sendFile(path.join(PUBLIC_DIR, 'index.html')));
-
-app.listen(PORT, () => console.log(`${SITE_TITLE} listening on port ${PORT}`));
-
-module.exports = app;
+const express=require('express');
+const helmet=require('helmet');
+const compression=require('compression');
+const path=require('path');
+const app=express();
+const PORT=Number(process.env.PORT||3000);
+const SITE_TITLE=process.env.SITE_TITLE||'BaitLogic';
+const ADMIN_KEY=process.env.ADMIN_KEY||'';
+const PUBLIC_DIR=path.join(__dirname,'public');
+const SUPABASE_URL=process.env.SUPABASE_URL||'https://gibaaxzltpdizayvicgf.supabase.co';
+const SUPABASE_KEY=process.env.SUPABASE_PUBLISHABLE_KEY||'sb_publishable_oUyldV6BybbdjH3GhVRzqw_uVLKl_xN';
+const nowIso=()=>new Date().toISOString();
+const toText=(v,max=300)=>String(v||'').replace(/\s+/g,' ').trim().slice(0,max);
+const validEmail=v=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v||'').trim());
+const naturePhotoPrefix=`${SUPABASE_URL}/storage/v1/object/public/nature-checks/`;
+const rewardCode=()=>`BL-NC-${Math.random().toString(36).slice(2,8).toUpperCase()}`;
+async function supabaseRequest(pathname,options={}){const response=await fetch(`${SUPABASE_URL}/rest/v1/${pathname}`,{...options,headers:{apikey:SUPABASE_KEY,Authorization:`Bearer ${SUPABASE_KEY}`,'Content-Type':'application/json',Prefer:'return=representation',...(options.headers||{})}});const text=await response.text();if(!response.ok)throw new Error(`Supabase error ${response.status}: ${text}`);return text?JSON.parse(text):null}
+const rateMap=new Map();function rateLimit(req,res,next){const key=`${req.ip}:${req.path}`;const current=rateMap.get(key)||{count:0,start:Date.now()};if(Date.now()-current.start>60000){rateMap.set(key,{count:1,start:Date.now()});return next()}if(current.count>=40)return res.status(429).json({error:'Too many requests. Please slow down.'});current.count++;rateMap.set(key,current);next()}
+function adminAuth(req,res,next){if(!ADMIN_KEY)return res.status(503).json({error:'Admin access is not configured.'});const supplied=req.headers['x-admin-key']||req.query.key;if(!supplied||supplied!==ADMIN_KEY)return res.status(401).json({error:'Unauthorized'});next()}
+app.disable('x-powered-by');app.use(helmet({contentSecurityPolicy:false}));app.use(compression());app.use(express.json({limit:'250kb'}));app.use(express.urlencoded({extended:false}));app.use('/api',rateLimit);app.use(express.static(PUBLIC_DIR,{extensions:['html'],maxAge:'5m'}));
+app.get('/api/health',(req,res)=>res.json({ok:true,siteTitle:SITE_TITLE,storage:'supabase',timestamp:nowIso()}));
+app.get('/api/reports',async(req,res,next)=>{try{const rows=await supabaseRequest('reports?select=id,category,name,water,report,gps,created_at&order=created_at.desc&limit=50');res.json({reports:rows||[]})}catch(e){next(e)}});
+app.post('/api/reports',async(req,res,next)=>{try{const category=toText(req.body.category,50)||'Community';const name=toText(req.body.name,60);const water=toText(req.body.water,80);const report=toText(req.body.report,400);const gps=toText(req.body.gps,100);if(!name||!water||!report)return res.status(400).json({error:'Name, water, and report are required.'});const rows=await supabaseRequest('reports',{method:'POST',body:JSON.stringify({category,name,water,report,gps:gps||null,created_at:nowIso()})});res.status(201).json({message:'Report published.',report:rows?.[0]||null})}catch(e){next(e)}});
+app.get('/api/catches',async(req,res,next)=>{try{const rows=await supabaseRequest('public_catches?select=id,species,weight_lb,location,notes,created_at&order=created_at.desc&limit=50');res.json({catches:(rows||[]).map(r=>({id:r.id,species:r.species,weight:r.weight_lb==null?null:Number(r.weight_lb),location:r.location||'',notes:r.notes||'',createdAt:r.created_at}))})}catch(e){next(e)}});
+app.post('/api/catches',async(req,res,next)=>{try{const species=toText(req.body.species,80),location=toText(req.body.location,120),notes=toText(req.body.notes,500);const raw=req.body.weight;const weight=raw===''||raw==null?null:Number(raw);if(!species)return res.status(400).json({error:'Species is required.'});if(weight!==null&&(!Number.isFinite(weight)||weight<0||weight>500))return res.status(400).json({error:'Weight must be between 0 and 500 pounds.'});const rows=await supabaseRequest('public_catches',{method:'POST',body:JSON.stringify({species,weight_lb:weight===null?null:Number(weight.toFixed(2)),location:location||null,notes:notes||null,created_at:nowIso()})});res.status(201).json({message:'Catch saved.',catch:rows?.[0]||null})}catch(e){next(e)}});
+app.post('/api/signups',async(req,res,next)=>{try{const name=toText(req.body.name,80);const email=toText(req.body.email,120).toLowerCase();if(!name||!validEmail(email))return res.status(400).json({error:'Valid name and email required.'});await supabaseRequest('signups',{method:'POST',body:JSON.stringify({name,email,created_at:nowIso()})});res.status(201).json({message:'You are on the BaitLogic list.'})}catch(e){next(e)}});
+app.get('/api/water-snapshot',async(req,res,next)=>{try{const lat=Number(req.query.lat),lon=Number(req.query.lon);if(!Number.isFinite(lat)||!Number.isFinite(lon)||lat<-90||lat>90||lon<-180||lon>180)return res.status(400).json({error:'Valid latitude and longitude are required.'});const d=.35;const bbox=[lon-d,lat-d,lon+d,lat+d].map(v=>v.toFixed(5)).join(',');const url=`https://waterservices.usgs.gov/nwis/iv/?format=json&bBox=${bbox}&parameterCd=00060,00065,00010&siteStatus=active`;const r=await fetch(url,{headers:{'User-Agent':'BaitLogic/1.0 (baitlogic@outlook.com)'}});if(!r.ok)throw new Error(`USGS request failed (${r.status})`);const data=await r.json();const series=data?.value?.timeSeries||[];const bySite=new Map();for(const ts of series){const src=ts.sourceInfo||{};const code=ts.variable?.variableCode?.[0]?.value;const val=ts.values?.[0]?.value?.[0]?.value;const site=src.siteCode?.[0]?.value||'USGS';if(!bySite.has(site))bySite.set(site,{site,name:src.siteName||site,flow:null,gage:null,temp:null});const row=bySite.get(site);const n=val==null?null:Number(val);if(!Number.isFinite(n))continue;if(code==='00060')row.flow=Math.round(n*10)/10;if(code==='00065')row.gage=Math.round(n*100)/100;if(code==='00010')row.temp=Math.round((n*9/5+32)*10)/10}res.json({source:'USGS Water Data for the Nation',stations:[...bySite.values()].slice(0,8),timestamp:nowIso()})}catch(e){next(e)}});
+app.post('/api/nature-checks',async(req,res,next)=>{try{const displayName=toText(req.body.display_name,60),water=toText(req.body.water,120),notes=toText(req.body.notes,500),gps=toText(req.body.gps,100),beforeUrl=toText(req.body.before_url,500),afterUrl=toText(req.body.after_url,500);const bags=Number(req.body.bags||1);if(!displayName||!water)return res.status(400).json({error:'Name and water are required.'});if(!Number.isInteger(bags)||bags<1||bags>50)return res.status(400).json({error:'Cleanup amount must be between 1 and 50 bags.'});if(!afterUrl||!afterUrl.startsWith(naturePhotoPrefix))return res.status(400).json({error:'A valid cleanup photo is required.'});if(beforeUrl&&!beforeUrl.startsWith(naturePhotoPrefix))return res.status(400).json({error:'Before photo URL is invalid.'});const code=rewardCode();const rows=await supabaseRequest('nature_checks',{method:'POST',body:JSON.stringify({display_name:displayName,water,action_type:'shoreline_cleanup',before_url:beforeUrl||null,after_url:afterUrl,notes:notes||null,gps:gps||null,bags,status:'submitted',reward_code:code,created_at:nowIso()})});res.status(201).json({message:'Nature-Check recorded and queued for review.',natureCheck:{id:rows?.[0]?.id||null,displayName,water,bags,rewardCode:code,status:'submitted'}})}catch(e){next(e)}});
+app.get('/api/nature-checks',async(req,res,next)=>{try{const rows=await supabaseRequest('nature_checks?select=id,display_name,water,bags,after_url,created_at&status=eq.approved&order=created_at.desc&limit=25');res.json({natureChecks:rows||[]})}catch(e){next(e)}});
+app.get('/api/admin/summary',adminAuth,async(req,res,next)=>{try{const [reports,catches,natureChecks]=await Promise.all([supabaseRequest('reports?select=id'),supabaseRequest('public_catches?select=id'),supabaseRequest('nature_checks?select=id&status=eq.approved')]);res.json({reports:reports?.length||0,catches:catches?.length||0,natureChecks:natureChecks?.length||0,signups:'protected'})}catch(e){next(e)}});
+app.get('/admin',(req,res)=>res.sendFile(path.join(PUBLIC_DIR,'admin.html')));
+app.use((error,req,res,next)=>{console.error(error);if(res.headersSent)return next(error);res.status(500).json({error:'Something went wrong. Please try again.'})});
+app.get('*',(req,res)=>res.sendFile(path.join(PUBLIC_DIR,'index.html')));
+if(require.main===module)app.listen(PORT,()=>console.log(`${SITE_TITLE} listening on port ${PORT}`));
+module.exports=app;
