@@ -6,7 +6,7 @@ async function loadDashboard(){
   if(!key){alert('Enter the admin key.');return;}
   if(button){button.disabled=true;button.textContent='Loading…';}
   try{
-    const response=await fetch(`/api/admin/summary?key=${encodeURIComponent(key)}`,{cache:'no-store'});
+    const response=await fetch('/api/admin/summary',{cache:'no-store',headers:{'x-admin-key':key}});
     const data=await response.json().catch(()=>({}));
     if(!response.ok)throw new Error(data.error||`Admin request failed (${response.status})`);
     const signups=document.getElementById('signups');
