@@ -1,6 +1,7 @@
 "use strict";
 const W$=s=>document.querySelector(s),Wset=(id,v)=>{const e=W$(id);if(e)e.textContent=v;};
 const waterStyle=document.createElement("style");waterStyle.textContent=`.water-evidence-card{padding:22px}.water-evidence-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}.water-evidence-grid article{padding:13px;border:1px solid var(--line);border-radius:15px;background:#fff}.water-evidence-grid span{display:block;color:var(--muted);font-size:.66rem;font-weight:900;text-transform:uppercase;letter-spacing:.08em}.water-evidence-grid strong{display:block;margin-top:6px;color:var(--ink);font-size:.94rem;line-height:1.3}.water-source{display:block;margin-top:12px;color:var(--muted);font-size:.68rem;line-height:1.4}@media(max-width:620px){.water-evidence-grid{grid-template-columns:1fr 1fr}}`;document.head.appendChild(waterStyle);
+const placeScript=document.createElement("script");placeScript.src="/barometer/place-label.js?v=1";placeScript.defer=true;document.head.appendChild(placeScript);
 async function loadWaterEvidence(){
   const state=W$("#waterEvidenceState");if(!state)return;
   if(!navigator.geolocation){Wset("#waterEvidenceState","NO GPS");Wset("#waterEvidenceNote","Device location is unavailable, so BaitLogic will not guess which water station is relevant.");return;}
