@@ -4,93 +4,24 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>BaitLogic Admin</title>
-
 <style>
-body{
-    background:#07110b;
-    color:white;
-    font-family:Arial,sans-serif;
-    padding:40px;
-}
-
-.card{
-    max-width:800px;
-    margin:auto;
-    background:#111915;
-    padding:30px;
-    border-radius:15px;
-}
-
-h1{
-    color:#5eff7a;
-}
-
-.stat{
-    background:#1a241d;
-    padding:15px;
-    margin:10px 0;
-    border-radius:10px;
-}
-
-input{
-    width:100%;
-    padding:12px;
-    margin:15px 0;
-    border-radius:8px;
-    border:none;
-}
-
-button{
-    padding:12px 20px;
-    background:#5eff7a;
-    color:black;
-    border:none;
-    border-radius:8px;
-    font-weight:bold;
-    cursor:pointer;
-}
+body{background:#07110b;color:white;font-family:Arial,sans-serif;padding:24px}.card{max-width:800px;margin:auto;background:#111915;padding:26px;border-radius:15px}h1{color:#5eff7a}.stat{display:flex;justify-content:space-between;gap:16px;background:#1a241d;padding:15px;margin:10px 0;border-radius:10px}.stat span{font-weight:700;color:#5eff7a}input{box-sizing:border-box;width:100%;padding:12px;margin:15px 0;border-radius:8px;border:none}button{padding:12px 20px;background:#5eff7a;color:black;border:none;border-radius:8px;font-weight:bold;cursor:pointer}.meta{opacity:.7;font-size:.9rem;margin-top:18px}
 </style>
 </head>
-
 <body>
-
 <div class="card">
-
-<h1>BaitLogic Admin</h1>
-
-<p>
-Administrative dashboard for
-BaitLogic conservation and
-community reporting.
-</p>
-
-<input
-id="adminKey"
-type="password"
-placeholder="Admin key">
-
-<button onclick="loadDashboard()">
-Load Dashboard
-</button>
-
-<div class="stat">
-Total Signups:
-<span id="signups">0</span>
+<h1>BaitLogic Live Admin</h1>
+<p>Live counts from the production BaitLogic database. No demo totals.</p>
+<input id="adminKey" type="password" placeholder="Admin key">
+<button onclick="loadDashboard()">Refresh Live Stats</button>
+<div class="stat"><strong>Email Signups</strong><span id="signups">0</span></div>
+<div class="stat"><strong>Waitlist Signups</strong><span id="waitlistSignups">0</span></div>
+<div class="stat"><strong>Community Reports</strong><span id="reports">0</span></div>
+<div class="stat"><strong>Public Catches</strong><span id="catches">0</span></div>
+<div class="stat"><strong>Approved Nature-Checks</strong><span id="natureChecks">0</span></div>
+<div class="stat"><strong>Pending Nature-Checks</strong><span id="natureChecksPending">0</span></div>
+<p class="meta">Last refreshed: <span id="updatedAt">Not yet</span></p>
 </div>
-
-<div class="stat">
-Total Reports:
-<span id="reports">0</span>
-</div>
-
-<div class="stat">
-Total Catches:
-<span id="catches">0</span>
-</div>
-
-</div>
-
 <script src="/admin.js"></script>
-
 </body>
 </html>
