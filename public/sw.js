@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE_NAME="baitlogic-field-console-v8";
+const CACHE_NAME="baitlogic-field-console-v9";
 const APP_SHELL=[
   "/",
   "/site.css?v=1",
@@ -12,7 +12,7 @@ const APP_SHELL=[
   "/launch.css",
   "/barometer/styles.css?v=5",
   "/barometer/premium-v4.css?v=7",
-  "/barometer/app.js?v=7",
+  "/barometer/app.js?v=8",
   "/barometer/water-evidence.js?v=1",
   "/barometer/manifest.webmanifest",
   "/barometer/icon.svg"
