@@ -73,6 +73,8 @@ module.exports = async function handler(req, res) {
     const p6raw = Number(pressures[Math.max(0, idx - 6)]);
     const delta3 = Number.isFinite(p3raw) ? currentPressure - inHg(p3raw) : 0;
     const delta6 = Number.isFinite(p6raw) ? currentPressure - inHg(p6raw) : 0;
+    const sunrise = Array.isArray(d.daily?.sunrise) && d.daily.sunrise.length ? d.daily.sunrise[d.daily.sunrise.length - 1] : null;
+    const sunset = Array.isArray(d.daily?.sunset) && d.daily.sunset.length ? d.daily.sunset[d.daily.sunset.length - 1] : null;
 
     const alerts = alertsResult.status === "fulfilled"
       ? (alertsResult.value.features || []).slice(0, 5).map(feature => ({
@@ -105,8 +107,8 @@ module.exports = async function handler(req, res) {
         cloudCover: Number(c.cloud_cover || 0),
         precipitationIn: Number(c.precipitation || 0),
         isDay: Number(c.is_day ?? 1),
-        sunrise: d.daily?.sunrise?.[0] || null,
-        sunset: d.daily?.sunset?.[0] || null
+        sunrise,
+        sunset
       },
       alerts
     });
