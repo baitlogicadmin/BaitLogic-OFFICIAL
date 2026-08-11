@@ -1,8 +1,11 @@
 "use strict";
 
-const CACHE_NAME="baitlogic-field-console-v5";
+const CACHE_NAME="baitlogic-field-console-v6";
 const APP_SHELL=[
   "/",
+  "/site.css?v=1",
+  "/site.js?v=2",
+  "/manifest.webmanifest",
   "/barometer.html",
   "/nature-check.html",
   "/premium.css",
@@ -32,7 +35,7 @@ self.addEventListener("fetch",event=>{
     event.respondWith(fetch(event.request).then(response=>{
       if(response.ok){const copy=response.clone();caches.open(CACHE_NAME).then(cache=>cache.put(event.request,copy));}
       return response;
-    }).catch(()=>caches.match(event.request).then(cached=>cached||caches.match("/barometer.html"))));
+    }).catch(()=>caches.match(event.request).then(cached=>cached||caches.match("/"))));
     return;
   }
 
