@@ -1,44 +1,257 @@
 "use strict";
-const SUPABASE_URL="https://gibaaxzltpdizayvicgf.supabase.co";
-const SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdpYmFheHpsdHBkaXpheXZpY2dmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzMzAyMzEsImV4cCI6MjA5NDkwNjIzMX0.eJvwEaQ27cu8UZDZMUC-p_WXa9lJrd9DHoaHbSmGG_A";
-const PENDING_KEY="baitlogic-pending-catches-v1",LOCAL_KEY="baitlogic-local-catches";
-const $=s=>document.querySelector(s),set=(n,v)=>{if(n)n.textContent=v;},tm=d=>d?d.toLocaleTimeString([],{hour:"numeric",minute:"2-digit"}):"--",ih=v=>Number(v)*0.0295299830714;
-const esc=v=>String(v||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const E={air:$("#airTemperature"),weather:$("#weatherCondition"),loc:$("#locationName"),locDetail:$("#locationDetail"),gpsState:$("#gpsState"),gpsAccuracy:$("#gpsAccuracy"),dataState:$("#dataState"),sourceState:$("#sourceState"),pressure:$("#pressureValue"),pressureShort:$("#pressureShort"),trend:$("#pressureTrend"),delta:$("#pressureDelta"),bite:$("#biteStatus"),updated:$("#lastUpdated"),locStatus:$("#locationStatus"),dot:$("#locationStatusDot"),line:$("#pressureTrendLine"),refresh:$("#refreshConditions"),retry:$("#retryLocation"),connection:$("#connectionStatus"),wind:$("#windValue"),windDir:$("#windDirection"),cloud:$("#cloudValue"),light:$("#lightState"),catches:$("#recentCatches"),open:$("#openCatchLogger"),bottomLog:$("#bottomLogButton"),bottomRefresh:$("#bottomRefreshButton"),modal:$("#catchLoggerModal"),close:$("#closeCatchLogger"),cancel:$("#cancelCatch"),form:$("#catchForm"),weight:$("#catchWeight"),plus:$("#increaseWeight"),minus:$("#decreaseWeight"),catchLoc:$("#catchLocation"),useLoc:$("#useCatchLocation"),activity:$("#fishActivity"),mood:$("#fishMood"),tactic:$("#tacticAdvice"),activityReason:$("#activityReason"),lure:$("#lureFamily"),lureReason:$("#lureReason"),zone:$("#targetZone"),habitat:$("#habitatShift"),windows:$("#biteWindows"),windowReason:$("#windowReason"),species:$("#speciesMatch"),speciesReason:$("#speciesReason"),confidence:$("#confidenceScore"),confidenceText:$("#confidenceText"),alert:$("#patternAlert"),alertReason:$("#patternReason"),decision:$("#primaryDecision"),decisionReason:$("#decisionReason"),sigPressure:$("#signalPressure"),sigWind:$("#signalWind"),sigSky:$("#signalSky"),sigLocation:$("#signalLocation"),install:$("#installButton")};
-const S={lat:null,lon:null,accuracy:null,place:null,p:null,trend:"steady",temp:null,wind:null,windDir:null,code:null,day:1,cloud:null,sunrise:null,sunset:null,delta3:0,delta6:0,installPrompt:null};
-const W={0:"Clear",1:"Mostly clear",2:"Partly cloudy",3:"Cloudy",45:"Fog",48:"Fog",51:"Light drizzle",53:"Drizzle",55:"Heavy drizzle",61:"Light rain",63:"Rain",65:"Heavy rain",80:"Rain showers",81:"Rain showers",82:"Heavy showers",95:"Thunderstorms",96:"Storms",99:"Severe storms"};
-const compass=d=>{if(!Number.isFinite(d))return"Direction --";const a=["N","NE","E","SE","S","SW","W","NW"];return `${a[Math.round(d/45)%8]} • ${Math.round(d)}°`;};
-function status(text,kind=""){set(E.locStatus,text);if(E.dot){E.dot.classList.remove("locked","error");if(kind)E.dot.classList.add(kind)}}
-function online(){set(E.connection,navigator.onLine?"Online":"Offline");}
-function unavailable(reason){S.lat=S.lon=null;set(E.loc,"Location unavailable");set(E.locDetail,"BaitLogic will not substitute another lake or pretend the reading is local. Enable location and try again.");set(E.gpsState,"GPS unavailable");set(E.gpsAccuracy,"No coordinates used");set(E.dataState,"No local reading");set(E.decision,"LOCATION NEEDED");set(E.decisionReason,reason);set(E.confidence,"0");set(E.confidenceText,"No location means no local field recommendation.");set(E.sigLocation,"No GPS — recommendation withheld");status("Location required for live intelligence","error");}
-async function reverseGeocode(lat,lon){try{const r=await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${encodeURIComponent(lat)}&longitude=${encodeURIComponent(lon)}&localityLanguage=en`,{cache:"no-store"});if(!r.ok)throw Error();const d=await r.json();const locality=d.locality||d.city||d.principalSubdivision||"Current area",region=d.principalSubdivision||"";S.place=region&&locality!==region?`${locality}, ${region}`:locality;set(E.loc,S.place);set(E.locDetail,`${lat.toFixed(4)}, ${lon.toFixed(4)} • live device location`);if(E.catchLoc)E.catchLoc.value=S.place;}catch{S.place=`${lat.toFixed(4)}, ${lon.toFixed(4)}`;set(E.loc,S.place);set(E.locDetail,"GPS coordinates confirmed; place-name lookup unavailable.");}}
-function locate(){status("Requesting your current location");set(E.gpsState,"Requesting GPS");if(!navigator.geolocation)return unavailable("This device/browser does not provide geolocation.");navigator.geolocation.getCurrentPosition(async p=>{S.lat=p.coords.latitude;S.lon=p.coords.longitude;S.accuracy=p.coords.accuracy;set(E.gpsState,"GPS locked");set(E.gpsAccuracy,`±${Math.round(S.accuracy)} m accuracy`);set(E.sigLocation,S.accuracy<=50?`Strong GPS • ±${Math.round(S.accuracy)} m`:S.accuracy<=150?`Usable GPS • ±${Math.round(S.accuracy)} m`:`Broad GPS • ±${Math.round(S.accuracy)} m`);status("Location connected","locked");await reverseGeocode(S.lat,S.lon);await load();},err=>unavailable(err.code===1?"Location permission was denied. BaitLogic needs permission to make a local recommendation.":"A reliable GPS position could not be obtained. Try again outdoors or with location services enabled."),{enableHighAccuracy:true,timeout:12000,maximumAge:120000});}
-function graph(vals){if(!E.line||vals.length<2)return;const min=Math.min(...vals),max=Math.max(...vals),r=max-min||.01;E.line.setAttribute("points",vals.map((v,i)=>`${(i/(vals.length-1)*720).toFixed(1)},${(60-(v-min)/r*50).toFixed(1)}`).join(" "));}
-function classifyTrend(d3,d6){if(d3<=-.12||d6<=-.20)return"falling_fast";if(d3<=-.03||d6<=-.08)return"falling";if(d3>=.12||d6>=.20)return"rising_fast";if(d3>=.03||d6>=.08)return"rising";return"steady";}
-function insights(){let score=50,pressurePts=0,windPts=0,skyPts=0;
-if(S.trend==="falling_fast")pressurePts=22;else if(S.trend==="falling")pressurePts=14;else if(S.trend==="steady")pressurePts=6;else if(S.trend==="rising")pressurePts=-5;else pressurePts=-12;score+=pressurePts;
-if(S.wind>=4&&S.wind<=13)windPts=7;else if(S.wind>13&&S.wind<=20)windPts=2;else if(S.wind>24)windPts=-9;score+=windPts;
-if([2,3,51,53,55,61,63,80,81].includes(S.code))skyPts+=6;if([95,96,99].includes(S.code))skyPts-=18;if(S.cloud>=35&&S.cloud<=88)skyPts+=4;score+=skyPts;
-score=Math.max(15,Math.min(95,Math.round(score)));
-let move="Repeat a productive depth/cover combination and let fish behavior—not the clock—force the next move.",lure="Confidence bait + finesse follow-up",lr="Stable conditions favor controlled experimentation over constant lure changes.",zone="Transitions beside proven cover",hab="Start where shallow cover meets the first meaningful depth change.",alert="PATTERN HOLDING",ar="No major pressure-driven relocation signal is present.";
-if(S.trend.includes("falling")){move="Search with a moving bait, then immediately follow contacts with a slower presentation.";lure="Moving bait → precision follow-up";lr="Falling pressure raises the value of finding roaming fish before slowing down.";zone="Wind-contact edges + travel lanes";hab="Check points, flat-to-drop transitions, shade seams and active shoreline edges.";alert="SEARCH ZONE EXPANDING";ar="Falling pressure can widen the area active fish use.";}
-if(S.trend.includes("rising")){move="Reduce water coverage. Make repeated, precise casts where cover intersects the first depth change.";lure="Compact jig / worm / subtle profile";lr="Rising pressure shifts the priority from search speed to placement precision.";zone="Tight cover + first break";hab="Prioritize docks, wood, vegetation edges, isolated shade and nearby depth.";alert="POSITION TIGHTENING";ar="Rising pressure raises the probability of fish holding tighter to security cover or a narrower depth band.";}
-if(S.trend==="falling_fast"){alert="WINDOW OPENING";ar="Pressure is dropping quickly enough to justify testing aggressive fish first.";}if(S.trend==="rising_fast"){alert="PATTERN RESET";ar="Rapidly rising pressure can invalidate the previous depth/cover pattern.";}if(S.wind>20){zone="Protected structure + controllable wind";hab="Use wind where it creates food movement, but do not sacrifice lure control.";}if(S.day===0){lure="Dark silhouette / vibration / slow contact bait";lr="Low light shifts emphasis toward contrast, vibration and deliberate target contact.";}
-const decision=score>=76?"GO NOW":score>=60?"GO • ADAPT":score>=45?"SELECTIVE":"HIGH-PERCENTAGE ONLY";
-const reason=score>=76?"Multiple live signals support active fish. Start by covering water, then verify the pattern with catches or follows.":score>=60?"Conditions are fishable, but the winning depth and presentation need to be verified quickly.":score>=45?"The bite may be narrow. Fish the best cover/depth intersections and demand evidence before changing zones.":"Environmental signals favor a difficult or compressed pattern. Slow down and prioritize the highest-percentage targets.";
-const mood=score>=80?"Feeding":score>=66?"Active":score<42?"Holding":"Neutral";
-const species=score>=70?(S.wind>=5?"Bass • Crappie":"Bass • Catfish"):(S.trend.includes("rising")?"Crappie • Bluegill":"Bass • Panfish");
-const am=S.sunrise?`${tm(new Date(S.sunrise.getTime()-1800000))}–${tm(new Date(S.sunrise.getTime()+5400000))}`:"--",pm=S.sunset?`${tm(new Date(S.sunset.getTime()-5400000))}–${tm(new Date(S.sunset.getTime()+1800000))}`:"--";
-const confidence=Math.max(35,Math.min(98,Math.round(92-(S.accuracy||300)/12-(navigator.onLine?0:20))));
-set(E.activity,score);set(E.mood,mood);set(E.decision,decision);set(E.decisionReason,reason);set(E.tactic,move);set(E.activityReason,`Pressure ${S.trend.replace("_"," ")} • ${Math.round(S.wind)} mph wind • ${S.cloud}% cloud cover`);set(E.lure,lure);set(E.lureReason,lr);set(E.zone,zone);set(E.habitat,hab);set(E.windows,(S.trend.includes("falling")&&score>=70?"NOW • ":"")+`AM ${am} • PM ${pm}`);set(E.windowReason,S.trend.includes("falling")?"Pressure trend is improving the value of the current window; daylight windows remain secondary checkpoints.":"Primary windows use local sunrise/sunset timing; live pressure decides whether BaitLogic promotes NOW.");set(E.species,species);set(E.speciesReason,"A condition-fit starting group, not a species guarantee. Local water and seasonal biology still matter.");set(E.confidence,confidence);set(E.confidenceText,`Live weather + pressure history + GPS ±${Math.round(S.accuracy||0)} m. Confidence falls when location/data quality falls.`);set(E.alert,alert);set(E.alertReason,ar);
-set(E.sigPressure,`${pressurePts>=0?"+":""}${pressurePts} activity points • ${S.trend.replace("_"," ")} • ${S.delta3>=0?"+":""}${S.delta3.toFixed(2)} inHg / 3h`);set(E.sigWind,`${windPts>=0?"+":""}${windPts} activity points • ${Math.round(S.wind)} mph ${compass(S.windDir).split(" • ")[0]}`);set(E.sigSky,`${skyPts>=0?"+":""}${skyPts} activity points • ${W[S.code]||"Current sky"} • ${S.cloud}% clouds`);}
-async function load(){if(S.lat===null)return locate();if(E.refresh)E.refresh.disabled=true;set(E.dataState,"Fetching live conditions");status("Reading live conditions");try{const u=`https://api.open-meteo.com/v1/forecast?latitude=${encodeURIComponent(S.lat)}&longitude=${encodeURIComponent(S.lon)}&current=temperature_2m,weather_code,pressure_msl,wind_speed_10m,wind_direction_10m,is_day,cloud_cover&hourly=pressure_msl&daily=sunrise,sunset&past_days=1&forecast_days=1&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto`,r=await fetch(u,{cache:"no-store"}),d=await r.json();if(!r.ok||!d.current)throw Error("Live weather request failed");S.temp=Number(d.current.temperature_2m);S.code=Number(d.current.weather_code);S.wind=Number(d.current.wind_speed_10m||0);S.windDir=Number(d.current.wind_direction_10m);S.day=Number(d.current.is_day??1);S.cloud=Number(d.current.cloud_cover||0);S.p=ih(d.current.pressure_msl);S.sunrise=d.daily?.sunrise?.[0]?new Date(d.daily.sunrise[0]):null;S.sunset=d.daily?.sunset?.[0]?new Date(d.daily.sunset[0]):null;set(E.air,`${Math.round(S.temp)}°`);set(E.weather,W[S.code]||"Current conditions");set(E.wind,`${Math.round(S.wind)} mph`);set(E.windDir,compass(S.windDir));set(E.cloud,`${Math.round(S.cloud)}%`);set(E.light,S.day?"Daylight":"Low light / night");set(E.pressure,S.p.toFixed(2));const times=d.hourly?.time||[],vals=d.hourly?.pressure_msl||[];let idx=0,dist=Infinity;times.forEach((x,i)=>{const q=Math.abs(new Date(x).getTime()-Date.now());if(q<dist){dist=q;idx=i;}});const p3=ih(Number(vals[Math.max(0,idx-3)])),p6=ih(Number(vals[Math.max(0,idx-6)]));S.delta3=Number.isFinite(p3)?S.p-p3:0;S.delta6=Number.isFinite(p6)?S.p-p6:0;S.trend=classifyTrend(S.delta3,S.delta6);const story={falling_fast:"Pressure is dropping fast. Prioritize active fish before the window changes.",falling:"Pressure is falling. Search range and feeding movement may expand.",steady:"Pressure is stable. Pattern repetition and local cover/depth matter more than chasing a weather change.",rising:"Pressure is rising. Expect tighter positioning and a narrower productive zone.",rising_fast:"Pressure is rising quickly. Treat this as a possible pattern reset."}[S.trend];set(E.trend,story);set(E.pressureShort,S.trend.replace("_"," "));set(E.delta,`${S.delta6>=0?"+":""}${S.delta6.toFixed(2)} inHg / 6h`);set(E.bite,S.trend.includes("falling")?"EXPANDING":S.trend.includes("rising")?"TIGHTENING":"STABLE");const series=[];for(let i=Math.max(0,idx-6);i<=idx&&i<vals.length;i++){const v=Number(vals[i]);if(Number.isFinite(v))series.push(ih(v));}graph(series);insights();set(E.updated,`Updated ${tm(new Date())}`);set(E.dataState,"Live local reading");status("Live intelligence connected","locked");}catch(err){console.error(err);set(E.dataState,"Live data unavailable");set(E.trend,"Live conditions could not be verified.");set(E.decision,"RETRY");set(E.decisionReason,"BaitLogic will not generate a fresh recommendation without verified live inputs.");set(E.updated,"Update failed");set(E.confidence,"0");status("Live data unavailable","error");}finally{if(E.refresh)E.refresh.disabled=false;}}
-async function sb(path,options={}){const headers={apikey:SUPABASE_KEY,Authorization:`Bearer ${SUPABASE_KEY}`,...(options.headers||{})};const r=await fetch(`${SUPABASE_URL}/rest/v1/${path}`,{...options,headers});if(!r.ok)throw Error(await r.text().catch(()=>"Supabase request failed"));if(r.status===204)return null;const t=await r.text();return t?JSON.parse(t):null;}
-function localFallback(){try{return JSON.parse(localStorage.getItem(LOCAL_KEY)||"[]");}catch{return[];}}function pending(){try{return JSON.parse(localStorage.getItem(PENDING_KEY)||"[]");}catch{return[];}}function savePending(items){localStorage.setItem(PENDING_KEY,JSON.stringify(items.slice(0,50)));}
-function renderCatches(items,offline=false){if(!E.catches)return;E.catches.innerHTML=items.length?items.slice(0,8).map(c=>`<li><strong>${esc(c.species)}</strong>${c.weight_lb||c.weight?` — ${esc(c.weight_lb??c.weight)} lb`:""}${c.location?` · ${esc(c.location)}`:""}${c.notes?`<br><span>${esc(c.notes)}</span>`:""}</li>`).join(""):`<li class="catches-empty">${offline?"No cached catches available offline.":"No catches logged yet — be the first."}</li>`;}
-async function loadCatches(){try{const rows=await sb("public_catches?select=id,species,weight_lb,location,notes,created_at&order=created_at.desc&limit=8");renderCatches(Array.isArray(rows)?rows:[]);}catch{renderCatches([...pending(),...localFallback()],true);}}
-async function postCatch(c){await sb("public_catches",{method:"POST",headers:{"Content-Type":"application/json","Prefer":"return=minimal"},body:JSON.stringify({species:String(c.species||"Catch").slice(0,80),weight_lb:c.weight?Number(c.weight):null,location:String(c.location||"").slice(0,160)||null,notes:String(c.notes||"").slice(0,500)||null})});}
-async function flushPending(){if(!navigator.onLine)return;const items=pending(),remaining=[];for(const item of items){try{await postCatch(item);}catch{remaining.push(item);}}savePending(remaining);if(items.length&&!remaining.length)await loadCatches();}
-function logger(){const open=()=>{if(E.modal)E.modal.hidden=false;},close=()=>{if(E.modal)E.modal.hidden=true;};E.open?.addEventListener("click",open);E.bottomLog?.addEventListener("click",open);E.close?.addEventListener("click",close);E.cancel?.addEventListener("click",close);E.modal?.addEventListener("click",x=>{if(x.target===E.modal)close();});E.plus?.addEventListener("click",()=>E.weight.value=(Number(E.weight.value||0)+.5).toFixed(1));E.minus?.addEventListener("click",()=>E.weight.value=Math.max(0,Number(E.weight.value||0)-.5).toFixed(1));E.useLoc?.addEventListener("click",()=>{if(E.catchLoc)E.catchLoc.value=S.place||`${S.lat?.toFixed(4)||""}, ${S.lon?.toFixed(4)||""}`;});E.form?.addEventListener("submit",async x=>{x.preventDefault();const d=Object.fromEntries(new FormData(E.form).entries()),item={species:d.species||"Catch",weight:d.weight||"",location:d.location||S.place||"",notes:d.notes||""};try{navigator.onLine?await postCatch(item):savePending([item,...pending()]);localStorage.setItem(LOCAL_KEY,JSON.stringify([item,...localFallback()].slice(0,50)));E.form.reset();close();await loadCatches();}catch{savePending([item,...pending()]);localStorage.setItem(LOCAL_KEY,JSON.stringify([item,...localFallback()].slice(0,50)));close();renderCatches([item,...localFallback()],true);}});}
-function pwa(){if("serviceWorker" in navigator)navigator.serviceWorker.register("/sw.js",{scope:"/"}).catch(()=>{});window.addEventListener("beforeinstallprompt",ev=>{ev.preventDefault();S.installPrompt=ev;if(E.install)E.install.hidden=false;});E.install?.addEventListener("click",async()=>{if(!S.installPrompt)return;S.installPrompt.prompt();await S.installPrompt.userChoice;S.installPrompt=null;E.install.hidden=true;});}
-E.refresh?.addEventListener("click",()=>S.lat===null?locate():load());E.retry?.addEventListener("click",locate);E.bottomRefresh?.addEventListener("click",()=>S.lat===null?locate():load());window.addEventListener("online",()=>{online();flushPending();loadCatches();if(S.lat!==null)load();});window.addEventListener("offline",online);online();logger();pwa();loadCatches();flushPending();locate();
+
+const $ = s => document.querySelector(s);
+const set = (el, value) => { if (el) el.textContent = value; };
+const esc = value => String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const toInHg = hpa => Number(hpa) * 0.0295299830714;
+const clock = value => value ? new Date(value).toLocaleTimeString([], {hour:"numeric",minute:"2-digit"}) : "--";
+
+const E = {
+  air: $("#airTemperature"), weather: $("#weatherCondition"), loc: $("#locationName"), locDetail: $("#locationDetail"),
+  gpsState: $("#gpsState"), gpsAccuracy: $("#gpsAccuracy"), dataState: $("#dataState"), sourceState: $("#sourceState"),
+  pressure: $("#pressureValue"), pressureShort: $("#pressureShort"), trend: $("#pressureTrend"), delta: $("#pressureDelta"), bite: $("#biteStatus"),
+  updated: $("#lastUpdated"), locStatus: $("#locationStatus"), dot: $("#locationStatusDot"), line: $("#pressureTrendLine"),
+  refresh: $("#refreshConditions"), retry: $("#retryLocation"), connection: $("#connectionStatus"), wind: $("#windValue"), windDir: $("#windDirection"),
+  cloud: $("#cloudValue"), light: $("#lightState"), catches: $("#recentCatches"), open: $("#openCatchLogger"), bottomLog: $("#bottomLogButton"),
+  bottomRefresh: $("#bottomRefreshButton"), modal: $("#catchLoggerModal"), close: $("#closeCatchLogger"), cancel: $("#cancelCatch"), form: $("#catchForm"),
+  weight: $("#catchWeight"), plus: $("#increaseWeight"), minus: $("#decreaseWeight"), catchLoc: $("#catchLocation"), useLoc: $("#useCatchLocation"),
+  activity: $("#fishActivity"), mood: $("#fishMood"), tactic: $("#tacticAdvice"), activityReason: $("#activityReason"), lure: $("#lureFamily"),
+  lureReason: $("#lureReason"), zone: $("#targetZone"), habitat: $("#habitatShift"), windows: $("#biteWindows"), windowReason: $("#windowReason"),
+  species: $("#speciesMatch"), speciesReason: $("#speciesReason"), confidence: $("#confidenceScore"), confidenceText: $("#confidenceText"),
+  alert: $("#patternAlert"), alertReason: $("#patternReason"), decision: $("#primaryDecision"), decisionReason: $("#decisionReason"),
+  sigPressure: $("#signalPressure"), sigWind: $("#signalWind"), sigSky: $("#signalSky"), sigLocation: $("#signalLocation"), install: $("#installButton")
+};
+
+const S = {lat:null, lon:null, accuracy:null, place:null, weather:null, installPrompt:null};
+const WEATHER = {0:"Clear",1:"Mostly clear",2:"Partly cloudy",3:"Cloudy",45:"Fog",48:"Fog",51:"Light drizzle",53:"Drizzle",55:"Heavy drizzle",61:"Light rain",63:"Rain",65:"Heavy rain",71:"Light snow",73:"Snow",75:"Heavy snow",80:"Rain showers",81:"Rain showers",82:"Heavy showers",95:"Thunderstorms",96:"Thunderstorms / hail",99:"Severe thunderstorms / hail"};
+
+function online(){ set(E.connection, navigator.onLine ? "Online" : "Offline"); }
+function status(text, kind=""){
+  set(E.locStatus, text);
+  if(E.dot){ E.dot.classList.remove("locked","error"); if(kind) E.dot.classList.add(kind); }
+}
+function compass(deg){
+  if(!Number.isFinite(deg)) return "Direction --";
+  const dirs=["N","NE","E","SE","S","SW","W","NW"];
+  return `${dirs[Math.round(deg/45)%8]} • ${Math.round(deg)}°`;
+}
+function classifyTrend(d3,d6){
+  if(d3<=-0.12 || d6<=-0.20) return "falling_fast";
+  if(d3<=-0.03 || d6<=-0.08) return "falling";
+  if(d3>=0.12 || d6>=0.20) return "rising_fast";
+  if(d3>=0.03 || d6>=0.08) return "rising";
+  return "steady";
+}
+function trendStory(trend){
+  return ({
+    falling_fast:"Pressure is dropping quickly. Treat this as a changing window and verify fish activity fast.",
+    falling:"Pressure is falling. Search range may expand, but local fish behavior still decides the pattern.",
+    steady:"Pressure is stable. Cover, depth, light and local water evidence matter more than chasing pressure.",
+    rising:"Pressure is rising. Tighten presentation and prioritize high-percentage cover/depth intersections.",
+    rising_fast:"Pressure is rising quickly. Expect the previous pattern to become less reliable."
+  })[trend];
+}
+
+function fail(message){
+  set(E.dataState,"Live data unavailable");
+  set(E.updated,"Tap Refresh to retry");
+  set(E.decision,"RETRY");
+  set(E.decisionReason,message);
+  set(E.bite,"NO LIVE DATA");
+  set(E.confidence,"0");
+  set(E.confidenceText,"BaitLogic withholds the recommendation when current data cannot be verified.");
+  status("Live conditions unavailable","error");
+  if(E.refresh) E.refresh.disabled=false;
+}
+
+async function fetchWithTimeout(url, ms=12000){
+  const controller=new AbortController();
+  const timer=setTimeout(()=>controller.abort(),ms);
+  try{
+    const r=await fetch(url,{cache:"no-store",signal:controller.signal});
+    let d={}; try{ d=await r.json(); }catch{}
+    if(!r.ok) throw new Error(d.error || `Request failed (${r.status})`);
+    return d;
+  } finally { clearTimeout(timer); }
+}
+
+function reverseGeocode(lat,lon){
+  const controller=new AbortController();
+  const timer=setTimeout(()=>controller.abort(),4000);
+  fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${encodeURIComponent(lat)}&longitude=${encodeURIComponent(lon)}&localityLanguage=en`,{cache:"no-store",signal:controller.signal})
+    .then(r=>r.ok?r.json():Promise.reject())
+    .then(d=>{
+      const locality=d.locality||d.city||d.principalSubdivision||"Current area";
+      const region=d.principalSubdivision||"";
+      S.place=region&&locality!==region?`${locality}, ${region}`:locality;
+      set(E.loc,S.place);
+      set(E.locDetail,`${lat.toFixed(4)}, ${lon.toFixed(4)} • live device location`);
+      if(E.catchLoc) E.catchLoc.value=S.place;
+    })
+    .catch(()=>{})
+    .finally(()=>clearTimeout(timer));
+}
+
+function safetyDecision(w, alerts){
+  const severeAlert=(alerts||[]).find(a=>["Extreme","Severe"].includes(a.severity) || /warning/i.test(a.event||""));
+  const thunder=[95,96,99].includes(w.code);
+  if(thunder) return {word:"STOP • SEEK SHELTER", reason:"Thunderstorm conditions are present. Do not use a fishing score to override lightning safety.", score:15, mood:"Unsafe"};
+  if(severeAlert) return {word:"CHECK OFFICIAL WARNING", reason:`Active NWS alert: ${severeAlert.event}. Review the official warning before heading out.`, score:25, mood:"Alert"};
+
+  let score=58, reasons=[];
+  const trend=classifyTrend(w.pressureDelta3h,w.pressureDelta6h);
+  if(trend==="falling_fast"){score+=17;reasons.push("fast-falling pressure");}
+  else if(trend==="falling"){score+=10;reasons.push("falling pressure");}
+  else if(trend==="steady"){score+=4;reasons.push("stable pressure");}
+  else if(trend==="rising"){score-=5;reasons.push("rising pressure");}
+  else {score-=10;reasons.push("fast-rising pressure");}
+
+  if(w.windMph>=4&&w.windMph<=13) score+=6;
+  else if(w.windMph>22){score-=10;reasons.push("strong wind");}
+  if(w.gustMph>30){score-=8;reasons.push("high gusts");}
+  if(w.cloudCover>=35&&w.cloudCover<=90) score+=5;
+  if(w.precipitationIn>0.15){score-=6;reasons.push("active precipitation");}
+  if(w.apparentTemperatureF>=100){score-=18;reasons.push("dangerous heat stress");}
+  else if(w.apparentTemperatureF>=90){score-=8;reasons.push("high heat");}
+
+  score=Math.max(20,Math.min(92,Math.round(score)));
+  return {
+    word:score>=76?"FAVORABLE":score>=58?"FISHABLE • ADAPT":"SELECTIVE",
+    reason:reasons.length?`Main live signals: ${reasons.join(", ")}. Verify the pattern with actual fish behavior and local water conditions.`:"Current signals are workable. Verify depth, cover and presentation before assuming a pattern.",
+    score,
+    mood:score>=76?"Active":score>=58?"Mixed":"Holding"
+  };
+}
+
+function render(d){
+  const w=d.weather;
+  S.weather=w;
+  const trend=classifyTrend(w.pressureDelta3h,w.pressureDelta6h);
+  const decision=safetyDecision(w,d.alerts||[]);
+
+  set(E.air,`${Math.round(w.temperatureF)}°`);
+  set(E.weather,`${WEATHER[w.code]||"Current conditions"} • feels ${Math.round(w.apparentTemperatureF)}°`);
+  set(E.wind,`${Math.round(w.windMph)} mph`);
+  set(E.windDir,`${compass(w.windDirection)} • gusts ${Math.round(w.gustMph||0)} mph`);
+  set(E.cloud,`${Math.round(w.cloudCover)}%`);
+  set(E.light,w.isDay?"Daylight":"Low light / night");
+  set(E.pressure,Number(w.pressureInHg).toFixed(2));
+  set(E.pressureShort,`${trend.replace("_"," ")} • ${w.pressureDelta3h>=0?"+":""}${Number(w.pressureDelta3h).toFixed(2)} inHg / 3h`);
+  set(E.trend,trendStory(trend));
+  set(E.delta,`3h ${w.pressureDelta3h>=0?"+":""}${Number(w.pressureDelta3h).toFixed(2)} • 6h ${w.pressureDelta6h>=0?"+":""}${Number(w.pressureDelta6h).toFixed(2)} inHg`);
+  set(E.bite,decision.word);
+  set(E.activity,decision.score);
+  set(E.mood,decision.mood);
+  set(E.decision,decision.word);
+  set(E.decisionReason,decision.reason);
+
+  let tactic="Fish a proven depth/cover combination first, then let bites, follows and bait activity decide the next move.";
+  let lure="Confidence bait + finesse follow-up";
+  let zone="Cover beside a depth transition";
+  let alert="PATTERN NEEDS PROOF";
+  let alertReason="Conditions are only inputs. Local fish response is the deciding evidence.";
+  if(trend.includes("falling")){tactic="Search efficiently with a moving bait, then follow contacts with a slower presentation.";lure="Moving bait → precision follow-up";zone="Wind-contact edges + travel lanes";alert="WINDOW MAY BE OPENING";alertReason="Falling pressure can support broader movement, but it is not a guarantee of feeding activity.";}
+  if(trend.includes("rising")){tactic="Reduce water coverage and make precise casts where cover intersects the first useful depth change.";lure="Compact jig / worm / subtle profile";zone="Tight cover + first break";alert="POSITION MAY TIGHTEN";alertReason="Rising pressure can compress the pattern; verify before committing.";}
+  if(w.windMph>20) zone="Protected structure + controllable wind";
+  if([95,96,99].includes(w.code)){tactic="Stop fishing and seek appropriate shelter.";lure="—";zone="Safe shelter";}
+
+  set(E.tactic,tactic);
+  set(E.activityReason,`Pressure ${trend.replace("_"," ")} • ${Math.round(w.windMph)} mph wind • ${Math.round(w.cloudCover)}% clouds • feels ${Math.round(w.apparentTemperatureF)}°F`);
+  set(E.lure,lure);
+  set(E.lureReason,"A starting presentation based on current conditions, not a promise of fish activity.");
+  set(E.zone,zone);
+  set(E.habitat,"Use local structure, cover, water clarity and depth to refine this starting zone.");
+  const am=w.sunrise?`${clock(new Date(new Date(w.sunrise).getTime()-1800000))}–${clock(new Date(new Date(w.sunrise).getTime()+5400000))}`:"--";
+  const pm=w.sunset?`${clock(new Date(new Date(w.sunset).getTime()-5400000))}–${clock(new Date(new Date(w.sunset).getTime()+1800000))}`:"--";
+  set(E.windows,`AM ${am} • PM ${pm}`);
+  set(E.windowReason,"Daylight windows are timing context only; live weather, water and actual fish response matter more.");
+  set(E.species,"Bass • Crappie • Panfish");
+  set(E.speciesReason,"General condition-fit starting group. Seasonal biology and the actual waterbody must refine this.");
+  const confidence=Math.max(35,Math.min(95,Math.round(94-(S.accuracy||250)/15-((d.alerts||[]).length?5:0))));
+  set(E.confidence,confidence);
+  set(E.confidenceText,`Verified BaitLogic server response + live GPS ±${Math.round(S.accuracy||0)} m. Recommendation remains guidance, not a safety guarantee.`);
+  set(E.alert,alert);
+  set(E.alertReason,alertReason);
+  set(E.sigPressure,`${trend.replace("_"," ")} • ${w.pressureDelta3h>=0?"+":""}${Number(w.pressureDelta3h).toFixed(2)} inHg / 3h`);
+  set(E.sigWind,`${Math.round(w.windMph)} mph ${compass(w.windDirection).split(" • ")[0]} • gusts ${Math.round(w.gustMph||0)}`);
+  set(E.sigSky,`${WEATHER[w.code]||"Current sky"} • ${Math.round(w.cloudCover)}% clouds`);
+  set(E.dataState,"Live conditions loaded");
+  set(E.sourceState,d.source?.alerts==="National Weather Service"?"Open-Meteo + NWS":"Open-Meteo");
+  set(E.updated,new Date(d.updatedAt||Date.now()).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"}));
+  status("Live intelligence ready","locked");
+  if(E.refresh) E.refresh.disabled=false;
+}
+
+async function load(){
+  if(S.lat===null || S.lon===null) return locate();
+  if(E.refresh) E.refresh.disabled=true;
+  set(E.dataState,"Fetching live conditions");
+  set(E.updated,"Working…");
+  status("Reading BaitLogic live data");
+  try{
+    const d=await fetchWithTimeout(`/api/barometer-snapshot?lat=${encodeURIComponent(S.lat)}&lon=${encodeURIComponent(S.lon)}`,12000);
+    render(d);
+  }catch(error){
+    fail(error.name==="AbortError"?"Live conditions timed out. Tap Refresh to try again.":error.message||"Live conditions could not be loaded.");
+  }
+}
+
+function locate(){
+  if(!navigator.geolocation){ fail("This browser does not provide location access."); return; }
+  set(E.gpsState,"Requesting GPS");
+  set(E.dataState,"Waiting for GPS");
+  set(E.decision,"LOCATING");
+  status("Requesting your current location");
+  navigator.geolocation.getCurrentPosition(p=>{
+    S.lat=p.coords.latitude; S.lon=p.coords.longitude; S.accuracy=p.coords.accuracy;
+    set(E.gpsState,"GPS locked");
+    set(E.gpsAccuracy,`±${Math.round(S.accuracy)} m accuracy`);
+    set(E.sigLocation,S.accuracy<=50?`Strong GPS • ±${Math.round(S.accuracy)} m`:S.accuracy<=150?`Usable GPS • ±${Math.round(S.accuracy)} m`:`Broad GPS • ±${Math.round(S.accuracy)} m`);
+    set(E.loc,`${S.lat.toFixed(4)}, ${S.lon.toFixed(4)}`);
+    set(E.locDetail,"GPS locked • resolving place name in the background");
+    if(E.catchLoc) E.catchLoc.value=`${S.lat.toFixed(4)}, ${S.lon.toFixed(4)}`;
+    status("GPS locked — loading conditions","locked");
+    reverseGeocode(S.lat,S.lon);
+    load();
+  },err=>{
+    set(E.gpsState,"GPS unavailable");
+    set(E.gpsAccuracy,"No coordinates used");
+    fail(err.code===1?"Location permission was denied. Allow location for bait-logic.com and tap Refresh.":"A reliable GPS position could not be obtained. Try again outdoors or with location services enabled.");
+  },{enableHighAccuracy:true,timeout:12000,maximumAge:60000});
+}
+
+async function loadCatches(){
+  if(!E.catches) return;
+  try{
+    const d=await fetchWithTimeout("/api/catches",8000);
+    const rows=(d.catches||[]).slice(0,6);
+    E.catches.innerHTML=rows.length?rows.map(c=>`<li><strong>${esc(c.species)}</strong><span>${c.weight!=null?`${Number(c.weight).toFixed(1)} lb • `:""}${esc(c.location||"Location not shared")}</span></li>`).join(""):'<li class="catches-empty">No catches logged yet.</li>';
+  }catch{ E.catches.innerHTML='<li class="catches-empty">Catch feed unavailable right now.</li>'; }
+}
+
+function openModal(){ if(E.modal) E.modal.hidden=false; }
+function closeModal(){ if(E.modal) E.modal.hidden=true; }
+function wireCatchLogger(){
+  E.open?.addEventListener("click",openModal); E.bottomLog?.addEventListener("click",openModal); E.close?.addEventListener("click",closeModal); E.cancel?.addEventListener("click",closeModal);
+  E.plus?.addEventListener("click",()=>{E.weight.value=(Number(E.weight.value||0)+0.1).toFixed(1);});
+  E.minus?.addEventListener("click",()=>{E.weight.value=Math.max(0,Number(E.weight.value||0)-0.1).toFixed(1);});
+  E.useLoc?.addEventListener("click",()=>{if(E.catchLoc)E.catchLoc.value=S.place||((S.lat!=null)?`${S.lat.toFixed(4)}, ${S.lon.toFixed(4)}`:"");});
+  E.form?.addEventListener("submit",async e=>{
+    e.preventDefault();
+    const data=Object.fromEntries(new FormData(E.form).entries());
+    try{
+      const r=await fetch("/api/catches",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});
+      const d=await r.json(); if(!r.ok) throw new Error(d.error||"Could not save catch");
+      closeModal(); E.form.reset(); if(E.weight)E.weight.value="1"; loadCatches();
+    }catch(err){ alert(err.message); }
+  });
+}
+
+let installPrompt=null;
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();installPrompt=e;if(E.install)E.install.hidden=false;});
+E.install?.addEventListener("click",async()=>{if(!installPrompt)return;installPrompt.prompt();await installPrompt.userChoice;installPrompt=null;E.install.hidden=true;});
+E.refresh?.addEventListener("click",locate); E.retry?.addEventListener("click",locate); E.bottomRefresh?.addEventListener("click",locate);
+window.addEventListener("online",()=>{online(); if(S.lat!=null)load();}); window.addEventListener("offline",online);
+
+online(); wireCatchLogger(); loadCatches(); locate();
+if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").catch(()=>{});
