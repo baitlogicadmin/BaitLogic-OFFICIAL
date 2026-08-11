@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="BaitLogic local outdoor snapshot combines live weather and nearby official water data so you can see what is changing around you before you head outside.">
+<meta name="theme-color" content="#eafcf9">
+<meta property="og:title" content="BaitLogic — What’s Happening Near Me">
+<meta property="og:description" content="Live local outdoor conditions, nearby water data and community field intelligence in one place.">
+<meta property="og:url" content="https://bait-logic.com/outdoor.html">
+<link rel="canonical" href="https://bait-logic.com/outdoor.html">
+<title>BaitLogic — What’s Happening Near Me</title>
+<link rel="stylesheet" href="/site.css?v=1">
+</head>
+<body>
+<header class="topbar"><div class="shell topbar-inner"><a class="brand" href="/"><span class="brandmark">BL</span><strong>Bait<span>Logic</span></strong></a><nav class="nav"><a href="/">Home</a><a href="/#reports">Community</a><a href="/#conservation">Protect</a><a href="/barometer.html">Fishing Barometer</a></nav></div></header>
+<main>
+<section class="shell hero">
+<div>
+<div class="eyebrow">LOCAL OUTDOOR SNAPSHOT</div>
+<h1>What’s happening around you right now?</h1>
+<p>Use your location to combine current weather conditions with nearby official water measurements. BaitLogic shows reported data, not made-up conditions.</p>
+<div class="btnrow"><button class="btn primary" id="loadSnapshot" type="button">Use My Location</button><a class="btn coral" href="/#reports">Share What You See</a><a class="btn ghost" href="/#conservation">Report & Protect</a></div>
+<div class="message" id="snapshotMessage" aria-live="polite"></div>
+</div>
+<aside class="hero-panel"><span class="status" id="snapshotStatus">Waiting for location</span><h2 id="snapshotPlace">Your local field picture</h2><p id="snapshotSummary">Weather, wind, precipitation and nearby water evidence will appear here after you choose to share your location.</p></aside>
+</section>
+<section class="shell section" id="conditions">
+<div class="section-head"><div><div class="eyebrow">RIGHT NOW</div><h2>Current outdoor conditions</h2><p class="lead">Useful context for fishing, paddling, hiking, camping, wildlife watching, cleanup work and time outside.</p></div></div>
+<div class="grid four">
+<div class="card"><div class="kicker">Temperature</div><div class="metric" id="temperature">—</div><p id="feelsLike">Feels like —</p></div>
+<div class="card"><div class="kicker">Wind</div><div class="metric" id="wind">—</div><p id="gusts">Gusts —</p></div>
+<div class="card"><div class="kicker">Sky</div><div class="metric" id="sky">—</div><p id="clouds">Cloud cover —</p></div>
+<div class="card"><div class="kicker">Precipitation</div><div class="metric" id="precipitation">—</div><p id="daylight">Daylight —</p></div>
+</div>
+<div class="source-note" id="weatherSource">Source: Open-Meteo after location permission.</div>
+</section>
+<section class="shell section" id="localWater">
+<div class="section-head"><div><div class="eyebrow">NEARBY WATER EVIDENCE</div><h2>What official monitoring stations are reporting</h2><p class="lead">Where USGS stations are available, BaitLogic shows flow, gage height and water temperature. Missing measurements stay missing.</p></div></div>
+<div class="water-results" id="waterResults"><div class="feed-item">Use your location to check nearby water stations.</div></div>
+<div class="source-note" id="waterSource">Source: USGS Water Data for the Nation when available.</div>
+</section>
+<section class="shell section">
+<div class="wide-card action-strip">
+<div><div class="eyebrow">COMMUNITY SIGNAL</div><h2>Data tells part of the story. People outside see the rest.</h2><p class="lead">Water color, wildlife movement, blocked access, trash, habitat damage, unusual conditions and fishing patterns become more useful when people share what they actually observe.</p></div>
+<div class="btnrow"><a class="btn primary" href="/#reports">Add a Field Report</a><a class="btn coral" href="/#conservation">Take Conservation Action</a></div>
+</div>
+</section>
+</main>
+<footer class="shell footer"><div class="footer-inner"><div><strong>BaitLogic</strong><br>Know what is changing. Share what you see. Protect what matters.</div><div><a href="mailto:baitlogic@outlook.com">baitlogic@outlook.com</a></div></div></footer>
+<script src="/outdoor.js?v=1" defer></script>
+</body>
+</html>
