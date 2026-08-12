@@ -15,12 +15,13 @@
     a{text-decoration:none}.wrap{width:min(1120px,calc(100% - 32px));margin:auto}.top{padding:18px 0;display:flex;align-items:center;justify-content:space-between;gap:12px}.brand{font-weight:900;font-size:1.15rem;color:var(--ink)}.brand span{color:var(--teal)}.back{color:var(--ink);font-weight:700}
     .hero{padding:56px 0 34px}.eyebrow{font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;font-weight:900;color:var(--teal)}h1{font-size:clamp(3rem,12vw,7.8rem);line-height:.82;margin:14px 0 22px;letter-spacing:-.055em;max-width:900px}.accent{color:var(--coral)}.sub{font-size:clamp(1.2rem,3vw,1.7rem);font-weight:800;max-width:780px;margin:0 0 16px}.lead{font-size:1.05rem;max-width:760px;color:#284b50}
     .proof{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:30px 0}.card{background:rgba(255,255,255,.86);border:1px solid rgba(6,44,51,.12);border-radius:20px;padding:22px;box-shadow:0 12px 38px rgba(6,44,51,.08)}.metric{font-size:2rem;font-weight:950;letter-spacing:-.04em}.card p{margin:5px 0 0;color:var(--muted)}
-    .action{margin:36px 0;padding:30px;border-radius:26px;background:var(--ink);color:white}.action h2,.section h2{font-size:clamp(1.8rem,5vw,3rem);line-height:1.05;margin:8px 0 12px}.action p{color:#d7ebeb;max-width:760px}.buttons{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:12px 17px;border-radius:999px;font-weight:900;border:1px solid transparent;cursor:pointer;font:inherit}.primary{background:var(--coral);color:#191919}.secondary{background:var(--aqua);color:#042b31}.ghost{border-color:#8fb9bc;color:white;background:transparent}.light{border-color:#cbd9d7;color:var(--ink);background:white}
+    .action{margin:36px 0;padding:30px;border-radius:26px;background:var(--ink);color:white}.action h2,.section h2{font-size:clamp(1.8rem,5vw,3rem);line-height:1.05;margin:8px 0 12px}.action p{color:#d7ebeb;max-width:760px}.buttons{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:12px 17px;border-radius:999px;font-weight:900;border:1px solid transparent;cursor:pointer;font:inherit}.primary{background:var(--coral);color:#191919}.secondary{background:var(--aqua);color:#042b31}.ghost{border-color:#8fb9bc;color:white;background:transparent}.light{border-color:#cbd9d7;color:var(--ink);background:white}.social{background:#fff;color:var(--ink);border:1px solid #d4e3e0}
     .section{padding:24px 0}.steps{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.step{background:white;border-radius:18px;padding:19px;border:1px solid #dbe8e5}.num{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#d9f7f2;font-weight:950;color:var(--teal)}.step h3{margin:12px 0 6px}.step p{margin:0;color:var(--muted);font-size:.94rem}
     .local{display:grid;grid-template-columns:1.1fr .9fr;gap:18px;align-items:stretch}.quote{font-size:1.15rem;font-weight:800;margin:0}.source{font-size:.85rem;color:var(--muted)}
-    footer{padding:42px 0 100px;color:var(--muted);font-size:.92rem}.sticky{position:fixed;z-index:20;left:12px;right:12px;bottom:12px;display:flex;gap:10px;justify-content:center}.sticky .btn{box-shadow:0 10px 30px rgba(6,44,51,.24)}
+    .community{background:linear-gradient(135deg,#dffaf6,#fff5f2);border:1px solid #caeae6}.community h2{margin-bottom:8px}.community .buttons{margin-top:16px}
+    footer{padding:42px 0 110px;color:var(--muted);font-size:.92rem}.sticky{position:fixed;z-index:20;left:12px;right:12px;bottom:12px;display:flex;gap:10px;justify-content:center}.sticky .btn{box-shadow:0 10px 30px rgba(6,44,51,.24)}
     @media(max-width:780px){.proof{grid-template-columns:1fr}.steps{grid-template-columns:1fr 1fr}.local{grid-template-columns:1fr}.hero{padding-top:34px}.top .back{font-size:.9rem}}
-    @media(max-width:520px){.steps{grid-template-columns:1fr}.buttons .btn{width:100%}.sticky .btn{flex:1;padding:10px 12px;font-size:.9rem}}
+    @media(max-width:520px){.steps{grid-template-columns:1fr}.buttons .btn{width:100%}.sticky{display:grid;grid-template-columns:1fr 1fr}.sticky .btn{padding:10px 8px;font-size:.78rem}}
   </style>
 </head>
 <body>
@@ -80,16 +81,20 @@
   </section>
 
   <section class="wrap section">
-    <article class="card">
-      <div class="eyebrow">Make noise with purpose</div>
-      <h2>Send one person here today.</h2>
-      <p>Awareness matters only when it creates action. Share this page, choose one action above, and ask one other person to do the same.</p>
-      <div class="buttons"><button class="btn primary" id="shareBtn2" type="button">SHARE THE CAMPAIGN</button><a class="btn light" href="mailto:baitlogic@outlook.com?subject=Illinois%20Prairie%20Action&body=I%20want%20to%20help%20with%20BaitLogic%27s%20conservation%20action%20work.">I WANT TO HELP BAITLOGIC</a></div>
+    <article class="card community">
+      <div class="eyebrow">Keep the movement alive</div>
+      <h2>Take action here. Then bring the conversation back to the BaitLogic community.</h2>
+      <p>Facebook is our primary community hub. Instagram carries the visuals, updates and campaign amplification. Every BaitLogic campaign should lead people back into the community so awareness becomes participation.</p>
+      <div class="buttons">
+        <a class="btn primary" target="_blank" rel="noopener" href="https://www.facebook.com/share/1C3i4dL3vk/">JOIN BAITLOGIC ON FACEBOOK</a>
+        <a class="btn secondary" target="_blank" rel="noopener" href="https://www.instagram.com/baitlogicadmin?igsh=MTVuOHV2dDljaTd3Yg==">FOLLOW @BAITLOGICADMIN</a>
+        <button class="btn social" id="shareBtn2" type="button">SHARE THE CAMPAIGN</button>
+      </div>
     </article>
   </section>
 </main>
-<footer class="wrap">BaitLogic · Free outdoor knowledge · Conservation action · Community intelligence<br>Sources: HeartLands Conservancy and Illinois Department of Natural Resources. Facts are linked directly above.</footer>
-<div class="sticky"><a class="btn primary" href="#take-action">TAKE ACTION</a><button class="btn secondary" id="shareSticky" type="button">SHARE</button></div>
+<footer class="wrap">BaitLogic · Free outdoor knowledge · Conservation action · Community intelligence<br><a href="https://www.facebook.com/share/1C3i4dL3vk/" target="_blank" rel="noopener">Facebook</a> · <a href="https://www.instagram.com/baitlogicadmin?igsh=MTVuOHV2dDljaTd3Yg==" target="_blank" rel="noopener">Instagram @baitlogicadmin</a><br>Sources: HeartLands Conservancy and Illinois Department of Natural Resources. Facts are linked directly above.</footer>
+<div class="sticky"><a class="btn primary" href="#take-action">TAKE ACTION</a><a class="btn secondary" target="_blank" rel="noopener" href="https://www.facebook.com/share/1C3i4dL3vk/">FACEBOOK</a></div>
 <script>
   async function shareCampaign(){
     const data={title:'LESS THAN 1% REMAINS — BaitLogic',text:"Less than 1% of Illinois' original prairie remains. We don't get another Illinois. Know it. Protect it. Restore it. Pass it on.",url:location.href};
@@ -97,7 +102,6 @@
   }
   document.getElementById('shareBtn').addEventListener('click',shareCampaign);
   document.getElementById('shareBtn2').addEventListener('click',shareCampaign);
-  document.getElementById('shareSticky').addEventListener('click',shareCampaign);
 </script>
 </body>
 </html>
