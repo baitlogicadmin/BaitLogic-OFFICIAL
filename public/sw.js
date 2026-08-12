@@ -1,7 +1,7 @@
 "use strict";
 
-const CACHE_NAME="baitlogic-offline-v10";
-const DATA_CACHE="baitlogic-data-v10";
+const CACHE_NAME="baitlogic-offline-v11";
+const DATA_CACHE="baitlogic-data-v11";
 const QUEUE_DB="baitlogic-offline-queue-v1";
 const QUEUE_STORE="requests";
 
@@ -83,15 +83,34 @@ function offlineQueuedResponse(){
   });
 }
 
-async function networkFirst(request,cacheName=DATA_CACHE){
+async function markOffline(response){
+  try{
+    const blob=await response.clone().blob();
+    const headers=new Headers(response.headers);
+    headers.set("X-BaitLogic-Offline","cached");
+    headers.set("X-BaitLogic-Stale","true");
+    return new Response(blob,{status:200,statusText:"OK",headers});
+  }catch{return response;}
+}
+
+function latestKeyFor(url){
+  return new Request(`${self.location.origin}/__offline_latest${url.pathname}`);
+}
+
+async function networkFirst(request,{cacheName=DATA_CACHE,latest=false}={}){
   const cache=await caches.open(cacheName);
+  const url=new URL(request.url);
   try{
     const response=await fetch(request);
-    if(response && (response.ok || response.type==="opaque")) cache.put(request,response.clone()).catch(()=>{});
+    if(response && (response.ok || response.type==="opaque")){
+      cache.put(request,response.clone()).catch(()=>{});
+      if(latest && response.ok) cache.put(latestKeyFor(url),response.clone()).catch(()=>{});
+    }
     return response;
   }catch{
-    const cached=await cache.match(request);
-    if(cached) return cached;
+    let cached=await cache.match(request);
+    if(!cached && latest) cached=await cache.match(latestKeyFor(url));
+    if(cached) return latest?markOffline(cached):cached;
     throw new Error("offline-no-cache");
   }
 }
@@ -140,13 +159,11 @@ self.addEventListener("fetch",event=>{
     return;
   }
 
-  // Live/API data: network first, retain last successful response for offline use.
   if(url.origin===self.location.origin && url.pathname.startsWith("/api/")){
-    event.respondWith(networkFirst(request));
+    event.respondWith(networkFirst(request,{latest:true}));
     return;
   }
 
-  // External weather, alert, geocoding and air-quality requests can reuse the exact last response offline.
   if(url.origin!==self.location.origin){
     if(["api.open-meteo.com","air-quality-api.open-meteo.com","api.weather.gov","api.bigdatacloud.net","nominatim.openstreetmap.org"].includes(url.hostname)){
       event.respondWith(networkFirst(request));
