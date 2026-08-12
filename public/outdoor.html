@@ -56,9 +56,9 @@ function recommend(x){
   let label='FAVORABLE',reasons=[];
   const warning=activeAlerts.find(a=>/warning|emergency/i.test(a.event||''));
   const watch=activeAlerts.find(a=>/watch/i.test(a.event||''));
+  const official=warning||watch||activeAlerts[0];
   if([95,96,99].includes(x.code)){label='STOP / SEEK SHELTER';reasons.push('thunderstorm signal');}
-  else if(warning){label=`NWS: ${String(warning.event||'WARNING').toUpperCase()}`;reasons.push('official warning active');}
-  else if(watch){label='USE CAUTION';reasons.push(`NWS ${watch.event||'watch'} active`);}
+  else if(official){label=`NWS: ${String(official.event||'ALERT').toUpperCase()}`;reasons.push(`official ${official.event||'weather alert'} active`);}
   if(x.feels>=105){label=label==='FAVORABLE'?'HIGH HEAT CAUTION':label;reasons.push(`feels like ${Math.round(x.feels)}°F`)}else if(x.feels>=90)reasons.push('elevated heat stress');
   if(x.aqi>150){label=label==='FAVORABLE'?'AIR QUALITY CAUTION':label;reasons.push('unhealthy modeled AQI')}else if(x.aqi>100)reasons.push('sensitive groups: air quality');
   const windLimit=activity==='paddle'?15:activity==='fish'?20:30;
