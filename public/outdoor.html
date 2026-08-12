@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="/site.css?v=1">
 <link rel="manifest" href="/manifest.webmanifest">
 <style>
-.live-grid{margin-top:18px}.live-grid .metric{font-size:1.55rem}.live-status{margin-top:12px}.result-note{font-size:.86rem;opacity:.78}.selected-activity{outline:3px solid rgba(18,184,176,.28)}.alert-card{border:2px solid #ff7a66}.alert-card h3{margin-bottom:6px}.alert-none{opacity:.8}.source-stack{display:grid;gap:6px;margin-top:14px}.read-label{font-size:1.2rem!important}
+.live-grid{margin-top:18px}.live-grid .metric{font-size:1.55rem}.live-status{margin-top:12px}.result-note{font-size:.86rem;opacity:.78}.selected-activity{outline:3px solid rgba(18,184,176,.28)}.alert-card{border:2px solid #ff7a66}.alert-card h3{margin-bottom:6px}.alert-none{opacity:.8}.source-stack{display:grid;gap:6px;margin-top:14px}.read-label{font-size:1.2rem!important}.pressure-detail{font-weight:700;color:#287f7c}.stale-note{color:#9a4f3c;font-weight:700}
 </style>
 </head>
 <body>
@@ -32,27 +32,98 @@
 <div class="grid four live-grid">
 <div class="card"><div class="kicker">Daylight</div><div class="metric" id="sunsetNow">—</div><p id="sunriseNow">Sunrise / sunset pending</p></div>
 <div class="card"><div class="kicker">Rain / Storm</div><div class="metric" id="rainNow">—</div><p id="rainLabel">Precipitation pending</p></div>
-<div class="card"><div class="kicker">Pressure</div><div class="metric" id="pressureNow">—</div><p>Current surface pressure, not a trend by itself.</p></div>
+<div class="card"><div class="kicker">Pressure</div><div class="metric" id="pressureNow">—</div><p class="pressure-detail" id="pressureLabel">Sea-level barometric pressure + trend pending.</p></div>
 <div class="card"><div class="kicker">BaitLogic Activity Read</div><div class="metric read-label" id="goNow">—</div><p id="goCopy">Load live conditions. Official alerts always override this summary.</p></div>
 </div>
-<div id="waterLive" class="water-results"></div><div class="source-stack source-note result-note"><span>Weather & modeled AQI: Open-Meteo. AQI is model-derived, not a local regulatory monitor reading.</span><span>Official watches, warnings and advisories: NOAA/National Weather Service.</span><span>Water data, when relevant and available: U.S. Geological Survey.</span></div></section>
+<div id="waterLive" class="water-results"></div><div class="source-stack source-note result-note"><span>Weather & pressure: Open-Meteo through the BaitLogic live-data service.</span><span>Modeled AQI: Open-Meteo. AQI is model-derived, not a local regulatory monitor reading.</span><span>Official watches, warnings and advisories: NOAA/National Weather Service.</span><span>Water data, when relevant and available: U.S. Geological Survey.</span></div></section>
 <section class="shell section"><div class="wide-card action-strip"><div><div class="eyebrow">PEOPLE COMPLETE THE PICTURE</div><h2>Public data cannot tell you everything.</h2><p class="lead">Add what you actually see: wildlife movement, trail problems, blocked access, trash, habitat changes, unusual water, fishing patterns and conservation concerns.</p></div><div class="btnrow"><a class="btn primary" href="/#reports">Share What You See</a><a class="btn coral" href="/#conservation">Report & Protect</a></div></div></section>
 </main>
 <footer class="shell footer"><div class="footer-inner"><div><strong>BaitLogic</strong><br>Know what changed. Share what you see. Protect what matters.</div><div><a href="mailto:baitlogic@outlook.com">baitlogic@outlook.com</a></div></div></footer>
 <script>
-const $=s=>document.querySelector(s);let activity='family',activeAlerts=[];
-const modes={hike:['Hike / Walk','Heat, storms, wind, daylight and access matter most.'],camp:['Camp','Storms, overnight weather, wind, temperature swings and daylight matter most.'],paddle:['Paddle','Lightning, wind, storms, temperature and water conditions matter most.'],fish:['Fish','Lightning, weather, pressure context, daylight and water evidence matter most.'],wildlife:['Wildlife Watch','Dawn/dusk timing, weather, modeled AQI and recent sightings matter most.'],hunt:['Hunt','Weather, wind, daylight, access and habitat observations matter most.'],family:['Family Outside','Feels-like temperature, modeled AQI, daylight and official alerts matter most.'],conservation:['Conservation','Official alerts, community habitat reports, pollution, trash and reporting paths matter most.']};
+const $=s=>document.querySelector(s);
+let activity='family',activeAlerts=[];
+const modes={hike:['Hike / Walk','Heat, storms, wind, daylight and access matter most.'],camp:['Camp','Storms, overnight weather, wind, temperature swings and daylight matter most.'],paddle:['Paddle','Lightning, wind, storms, temperature and water conditions matter most.'],fish:['Fish','Lightning, weather, pressure trend, daylight and water evidence matter most.'],wildlife:['Wildlife Watch','Dawn/dusk timing, weather, modeled AQI and recent sightings matter most.'],hunt:['Hunt','Weather, wind, daylight, access and habitat observations matter most.'],family:['Family Outside','Feels-like temperature, modeled AQI, daylight and official alerts matter most.'],conservation:['Conservation','Official alerts, community habitat reports, pollution, trash and reporting paths matter most.']};
 const wxText=c=>({0:'Clear sky',1:'Mainly clear',2:'Partly cloudy',3:'Overcast',45:'Fog',48:'Rime fog',51:'Light drizzle',53:'Drizzle',55:'Heavy drizzle',61:'Light rain',63:'Rain',65:'Heavy rain',71:'Light snow',73:'Snow',75:'Heavy snow',80:'Rain showers',81:'Rain showers',82:'Heavy showers',95:'Thunderstorms',96:'Thunderstorms / hail',99:'Severe thunderstorms / hail'})[c]||'Current conditions';
 const aqiText=n=>n==null?'Unavailable':n<=50?'Good':n<=100?'Moderate':n<=150?'Unhealthy for sensitive groups':n<=200?'Unhealthy':n<=300?'Very unhealthy':'Hazardous';
+const inHgToHpa=n=>Number(n)/0.0295299830714;
 function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function clock(value){return value?new Date(value).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}):'—'}
+function classifyTrend(d3,d6){if(d3<=-0.12||d6<=-0.20)return'falling_fast';if(d3<=-0.03||d6<=-0.08)return'falling';if(d3>=0.12||d6>=0.20)return'rising_fast';if(d3>=0.03||d6>=0.08)return'rising';return'steady'}
+function trendText(t){return({falling_fast:['↓','falling fast'],falling:['↘','falling'],steady:['→','steady'],rising:['↗','rising'],rising_fast:['↑','rising fast']})[t]}
 function setActivity(a,b){activity=a;document.querySelectorAll('.activity').forEach(x=>x.classList.remove('selected-activity'));b?.classList.add('selected-activity');const m=modes[a];$('#modeStatus').textContent='Activity selected';$('#modeTitle').textContent=m[0];$('#modeCopy').textContent=m[1];if(window.lastLive)recommend(window.lastLive)}
 document.querySelectorAll('.activity').forEach(b=>b.addEventListener('click',()=>setActivity(b.dataset.activity,b)));
-function recommend(x){let label='FAVORABLE',reasons=[];const warning=activeAlerts.some(a=>['Warning','Emergency'].some(k=>(a.event||'').includes(k)));const watch=activeAlerts.some(a=>(a.event||'').includes('Watch'));if(warning){label='CHECK OFFICIAL WARNING';reasons.push('active NWS warning');}else if(x.code>=95){label='STOP / SEEK SHELTER';reasons.push('thunderstorm signal');}else if(watch){label='USE CAUTION';reasons.push('active NWS watch');}if(x.feels>=105){label=label==='FAVORABLE'?'HIGH HEAT CAUTION':label;reasons.push(`feels like ${Math.round(x.feels)}°F`)}else if(x.feels>=90)reasons.push('elevated heat stress');if(x.aqi>150){label=label==='FAVORABLE'?'AIR QUALITY CAUTION':label;reasons.push('unhealthy modeled AQI')}else if(x.aqi>100)reasons.push('sensitive groups: air quality');const windLimit=activity==='paddle'?15:activity==='fish'?20:30;if(x.wind>windLimit||x.gust>35){if(label==='FAVORABLE')label='USE CAUTION';reasons.push('strong wind/gusts')}if(x.rain>0.15){if(label==='FAVORABLE')label='USE CAUTION';reasons.push('current precipitation')}$('#goNow').textContent=label;$('#goCopy').textContent=reasons.length?`Watch: ${[...new Set(reasons)].join(', ')}.`:'No major flags were found in the currently loaded signals. Keep watching local conditions.';}
-async function loadAlerts(lat,lon){const box=$('#alertsBox');box.innerHTML='<div class="card"><h3>Checking official alerts…</h3></div>';try{const r=await fetch(`https://api.weather.gov/alerts/active?point=${lat.toFixed(4)},${lon.toFixed(4)}`,{headers:{Accept:'application/geo+json'}});if(!r.ok)throw new Error('NWS alert service unavailable');const d=await r.json();activeAlerts=(d.features||[]).map(f=>f.properties||{});box.innerHTML=activeAlerts.length?activeAlerts.slice(0,6).map(a=>`<article class="card alert-card"><div class="kicker">${esc(a.severity||'Official Alert')}</div><h3>${esc(a.event||'NWS Alert')}</h3><p><strong>${esc(a.headline||'Active National Weather Service alert')}</strong></p><p>${esc((a.instruction||a.description||'').slice(0,500))}</p></article>`).join(''):'<div class="card alert-none"><h3>No active NWS alerts found for this point</h3><p>Conditions can change quickly; continue to monitor official weather information.</p></div>';if(window.lastLive)recommend(window.lastLive)}catch(e){activeAlerts=[];box.innerHTML=`<div class="card"><h3>Official alert check unavailable</h3><p>${esc(e.message)}. Do not treat this as confirmation that no alert exists.</p></div>`;}}
-async function loadLive(lat,lon){$('#liveStatus').textContent='Loading live outdoor conditions…';$('#resultPlace').textContent=`Near ${lat.toFixed(3)}, ${lon.toFixed(3)}`;loadAlerts(lat,lon);try{const wurl=`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,relative_humidity_2m,precipitation,weather_code,surface_pressure,wind_speed_10m,wind_gusts_10m&daily=sunrise,sunset&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=auto&forecast_days=1`;const aurl=`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&current=us_aqi&timezone=auto`;const [wr,ar]=await Promise.all([fetch(wurl),fetch(aurl)]);if(!wr.ok)throw new Error('Weather source did not respond');const w=await wr.json();const a=ar.ok?await ar.json():{};const c=w.current||{},aqi=a.current?.us_aqi??null;const live={temp:Number(c.temperature_2m),feels:Number(c.apparent_temperature),humidity:Number(c.relative_humidity_2m),wind:Number(c.wind_speed_10m),gust:Number(c.wind_gusts_10m),rain:Number(c.precipitation),code:Number(c.weather_code),pressure:Number(c.surface_pressure),aqi:aqi==null?null:Number(aqi)};window.lastLive=live;$('#tempNow').textContent=Number.isFinite(live.temp)?`${Math.round(live.temp)}°F`:'—';$('#weatherNow').textContent=wxText(live.code);$('#feelsNow').textContent=Number.isFinite(live.feels)?`${Math.round(live.feels)}°F`:'—';$('#humidityNow').textContent=Number.isFinite(live.humidity)?`Humidity ${Math.round(live.humidity)}%`:'Humidity unavailable';$('#windNow').textContent=Number.isFinite(live.wind)?`${Math.round(live.wind)} mph`:'—';$('#gustNow').textContent=Number.isFinite(live.gust)?`Gusts ${Math.round(live.gust)} mph`:'Gust data unavailable';$('#aqiNow').textContent=live.aqi==null?'—':Math.round(live.aqi);$('#aqiLabel').textContent=`Modeled U.S. AQI · ${aqiText(live.aqi)}`;$('#sunsetNow').textContent=w.daily?.sunset?.[0]?new Date(w.daily.sunset[0]).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}):'—';$('#sunriseNow').textContent=w.daily?.sunrise?.[0]?`Sunrise ${new Date(w.daily.sunrise[0]).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'})}`:'Daylight unavailable';$('#rainNow').textContent=Number.isFinite(live.rain)?`${live.rain.toFixed(2)} in`:'—';$('#rainLabel').textContent=live.code>=95?'Thunderstorm signal present':live.rain>0?'Precipitation currently reported':'No current precipitation reported';$('#pressureNow').textContent=Number.isFinite(live.pressure)?`${Math.round(live.pressure)} hPa`:'—';recommend(live);$('#liveStatus').textContent='Live results loaded.';if(activity==='fish'||activity==='paddle')loadWater(lat,lon);else $('#waterLive').innerHTML='';}catch(e){$('#liveStatus').textContent=`Live results unavailable: ${e.message}`;}}
+function recommend(x){
+  let label='FAVORABLE',reasons=[];
+  const warning=activeAlerts.find(a=>/warning|emergency/i.test(a.event||''));
+  const watch=activeAlerts.find(a=>/watch/i.test(a.event||''));
+  if([95,96,99].includes(x.code)){label='STOP / SEEK SHELTER';reasons.push('thunderstorm signal');}
+  else if(warning){label=`NWS: ${String(warning.event||'WARNING').toUpperCase()}`;reasons.push('official warning active');}
+  else if(watch){label='USE CAUTION';reasons.push(`NWS ${watch.event||'watch'} active`);}
+  if(x.feels>=105){label=label==='FAVORABLE'?'HIGH HEAT CAUTION':label;reasons.push(`feels like ${Math.round(x.feels)}°F`)}else if(x.feels>=90)reasons.push('elevated heat stress');
+  if(x.aqi>150){label=label==='FAVORABLE'?'AIR QUALITY CAUTION':label;reasons.push('unhealthy modeled AQI')}else if(x.aqi>100)reasons.push('sensitive groups: air quality');
+  const windLimit=activity==='paddle'?15:activity==='fish'?20:30;
+  if(x.wind>windLimit||x.gust>35){if(label==='FAVORABLE')label='USE CAUTION';reasons.push('strong wind/gusts')}
+  if(x.rain>0.15){if(label==='FAVORABLE')label='USE CAUTION';reasons.push('current precipitation')}
+  $('#goNow').textContent=label;
+  $('#goCopy').textContent=reasons.length?`Watch: ${[...new Set(reasons)].join(', ')}.`:'No major flags were found in the currently loaded signals. Keep watching local conditions.';
+}
+function renderAlerts(alerts){
+  activeAlerts=alerts||[];
+  const box=$('#alertsBox');
+  box.innerHTML=activeAlerts.length?activeAlerts.slice(0,6).map(a=>`<article class="card alert-card"><div class="kicker">${esc(a.severity||'Official Alert')}</div><h3>${esc(a.event||'NWS Alert')}</h3><p><strong>${esc(a.headline||'Active National Weather Service alert')}</strong></p><p>${esc((a.instruction||'').slice(0,500))}</p></article>`).join(''):'<div class="card alert-none"><h3>No active NWS alerts found for this point</h3><p>Conditions can change quickly; continue to monitor official weather information.</p></div>';
+}
+function reverseGeocode(lat,lon){
+  fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${encodeURIComponent(lat)}&longitude=${encodeURIComponent(lon)}&localityLanguage=en`,{cache:'no-store'})
+    .then(r=>r.ok?r.json():Promise.reject())
+    .then(d=>{const locality=d.locality||d.city||d.principalSubdivision||'Current area';const region=d.principalSubdivision||'';$('#resultPlace').textContent=region&&locality!==region?`${locality}, ${region}`:locality;})
+    .catch(()=>{});
+}
+async function loadLive(lat,lon){
+  $('#liveStatus').textContent='Loading verified BaitLogic live conditions…';
+  $('#resultPlace').textContent=`Near ${lat.toFixed(3)}, ${lon.toFixed(3)}`;
+  reverseGeocode(lat,lon);
+  try{
+    const snapshotUrl=`/api/barometer-snapshot?lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}`;
+    const aurl=`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&current=us_aqi&timezone=auto`;
+    const [sr,aqResult]=await Promise.all([fetch(snapshotUrl,{cache:'no-store'}),fetch(aurl,{cache:'no-store'}).catch(()=>null)]);
+    if(!sr.ok){let err={};try{err=await sr.json()}catch{}throw new Error(err.error||'BaitLogic live-data service did not respond')}
+    const d=await sr.json();
+    const a=aqResult&&aqResult.ok?await aqResult.json():{};
+    const w=d.weather||{},aqi=a.current?.us_aqi??null;
+    const live={temp:Number(w.temperatureF),feels:Number(w.apparentTemperatureF),humidity:Number(w.humidity),wind:Number(w.windMph),gust:Number(w.gustMph),rain:Number(w.precipitationIn),code:Number(w.code),pressureInHg:Number(w.pressureInHg),pressureDelta3h:Number(w.pressureDelta3h),pressureDelta6h:Number(w.pressureDelta6h),aqi:aqi==null?null:Number(aqi)};
+    window.lastLive=live;
+    renderAlerts(d.alerts||[]);
+    $('#tempNow').textContent=Number.isFinite(live.temp)?`${Math.round(live.temp)}°F`:'—';
+    $('#weatherNow').textContent=wxText(live.code);
+    $('#feelsNow').textContent=Number.isFinite(live.feels)?`${Math.round(live.feels)}°F`:'—';
+    $('#humidityNow').textContent=Number.isFinite(live.humidity)?`Humidity ${Math.round(live.humidity)}%`:'Humidity unavailable';
+    $('#windNow').textContent=Number.isFinite(live.wind)?`${Math.round(live.wind)} mph`:'—';
+    $('#gustNow').textContent=Number.isFinite(live.gust)?`Gusts ${Math.round(live.gust)} mph`:'Gust data unavailable';
+    $('#aqiNow').textContent=live.aqi==null?'—':Math.round(live.aqi);
+    $('#aqiLabel').textContent=`Modeled U.S. AQI · ${aqiText(live.aqi)}`;
+    $('#sunsetNow').textContent=clock(w.sunset);
+    $('#sunriseNow').textContent=w.sunrise?`Sunrise ${clock(w.sunrise)}`:'Daylight unavailable';
+    $('#rainNow').textContent=Number.isFinite(live.rain)?`${live.rain.toFixed(2)} in`:'—';
+    $('#rainLabel').textContent=[95,96,99].includes(live.code)?'Thunderstorm signal present':live.rain>0?'Precipitation currently reported':'No current precipitation reported';
+    if(Number.isFinite(live.pressureInHg)){
+      const trend=classifyTrend(live.pressureDelta3h,live.pressureDelta6h),[icon,label]=trendText(trend);
+      $('#pressureNow').textContent=`${live.pressureInHg.toFixed(2)} inHg ${icon}`;
+      $('#pressureLabel').textContent=`${Math.round(inHgToHpa(live.pressureInHg))} hPa · ${label} · 3h ${live.pressureDelta3h>=0?'+':''}${live.pressureDelta3h.toFixed(2)} · 6h ${live.pressureDelta6h>=0?'+':''}${live.pressureDelta6h.toFixed(2)} inHg`;
+    }else{$('#pressureNow').textContent='—';$('#pressureLabel').textContent='Barometric pressure unavailable.'}
+    recommend(live);
+    const stale=sr.headers.get('X-BaitLogic-Stale')==='true'||sr.headers.get('X-BaitLogic-Offline')==='cached';
+    $('#liveStatus').innerHTML=stale?'<span class="stale-note">Offline — showing the last saved BaitLogic conditions. Reconnect to refresh.</span>':'Live results loaded from the BaitLogic data service.';
+    if(activity==='fish'||activity==='paddle')loadWater(lat,lon);else $('#waterLive').innerHTML='';
+  }catch(e){
+    activeAlerts=[];
+    $('#alertsBox').innerHTML='<div class="card"><h3>Official/live data unavailable</h3><p>BaitLogic could not verify current conditions. Do not treat this as confirmation that no alert exists.</p></div>';
+    $('#liveStatus').textContent=`Live results unavailable: ${e.message}`;
+  }
+}
 async function loadWater(lat,lon){const box=$('#waterLive');box.innerHTML='<div class="feed-item">Checking nearby USGS water stations…</div>';try{const r=await fetch(`/api/water-snapshot?lat=${lat}&lon=${lon}`);const d=await r.json();const rows=d.stations||[];box.innerHTML=rows.length?'<div class="section-head"><div><div class="eyebrow">NEARBY WATER EVIDENCE</div><h2>Official USGS stations</h2></div></div>'+rows.slice(0,4).map(s=>`<div class="water-row"><span><strong>${esc(s.name)}</strong>${esc(s.site)}</span><span><strong>${esc(s.flow??'—')}</strong>Flow cfs</span><span><strong>${esc(s.gage??'—')}</strong>Gage ft</span><span><strong>${esc(s.temp??'—')}</strong>Water °F</span></div>`).join(''):'<div class="feed-item">No nearby active USGS station returned for this location.</div>';}catch{box.innerHTML='<div class="feed-item">USGS water evidence could not load right now.</div>';}}
-$('#useLocation').addEventListener('click',()=>{if(!navigator.geolocation){$('#liveStatus').textContent='Location is not supported on this device.';return}$('#liveStatus').textContent='Requesting your location…';navigator.geolocation.getCurrentPosition(p=>loadLive(p.coords.latitude,p.coords.longitude),e=>{$('#liveStatus').textContent=e.code===1?'Location permission was denied. Allow location for bait-logic.com and try again.':'Could not get your location. Try again outside or with location services enabled.'},{enableHighAccuracy:false,timeout:10000,maximumAge:300000})});
-setActivity('family',document.querySelector('[data-activity="family"]'));if('serviceWorker' in navigator)navigator.serviceWorker.register('/sw.js').catch(()=>{});
+$('#useLocation').addEventListener('click',()=>{if(!navigator.geolocation){$('#liveStatus').textContent='Location is not supported on this device.';return}$('#liveStatus').textContent='Requesting a fresh GPS location…';navigator.geolocation.getCurrentPosition(p=>loadLive(p.coords.latitude,p.coords.longitude),e=>{$('#liveStatus').textContent=e.code===1?'Location permission was denied. Allow location for bait-logic.com and try again.':'Could not get a fresh location. Try again outside or with location services enabled.'},{enableHighAccuracy:true,timeout:15000,maximumAge:60000})});
+setActivity('family',document.querySelector('[data-activity="family"]'));
+if('serviceWorker' in navigator)navigator.serviceWorker.register('/sw.js').catch(()=>{});
 </script>
 </body>
 </html>
