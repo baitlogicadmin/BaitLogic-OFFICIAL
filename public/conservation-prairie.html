@@ -102,6 +102,7 @@
   }
   document.getElementById('shareBtn').addEventListener('click',shareCampaign);
   document.getElementById('shareBtn2').addEventListener('click',shareCampaign);
+  if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(()=>{})}
 </script>
 </body>
 </html>
