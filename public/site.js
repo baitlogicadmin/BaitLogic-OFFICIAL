@@ -1,5 +1,5 @@
 "use strict";
-const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],safe=v=>String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;","&gt;":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],safe=v=>String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
 async function api(url,opts={}){const r=await fetch(url,{headers:{"Content-Type":"application/json",...(opts.headers||{})},...opts});let d={};try{d=await r.json()}catch{}if(!r.ok)throw new Error(d.error||`Request failed (${r.status})`);d._offline=r.headers.get("X-BaitLogic-Offline")||null;d._stale=r.headers.get("X-BaitLogic-Stale")==="true";return d}
 function msg(id,text,ok=false){const e=$(id);if(!e)return;e.textContent=text;e.style.color=ok?"#126642":""}
 function visitorId(){let id=localStorage.getItem("bl_visitor");if(!id){id=(crypto.randomUUID?.()||`${Date.now()}-${Math.random()}`);localStorage.setItem("bl_visitor",id)}return id}
