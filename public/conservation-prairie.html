@@ -3,53 +3,70 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="description" content="Less than 1% of Illinois' original prairie remains. BaitLogic connects that fact to immediate conservation action: learn, volunteer, support restoration, report damage, and restore habitat.">
+  <meta name="description" content="Less than 1% of Illinois' original prairie remains. BaitLogic Community Action #001 sends people directly to HeartLands Conservancy's Knoll Wildlife Sanctuary restoration, volunteer, and conservation resources.">
   <meta name="theme-color" content="#062c33">
-  <meta property="og:title" content="LESS THAN 1% REMAINS — BaitLogic Conservation Action">
-  <meta property="og:description" content="We don't get another Illinois. Know it. Protect it. Restore it. Pass it on.">
+  <meta property="og:title" content="LESS THAN 1% REMAINS — BaitLogic Community Action #001">
+  <meta property="og:description" content="Over 99% is gone. Help the people restoring what remains. Learn, volunteer, support, and share.">
   <meta property="og:url" content="https://bait-logic.com/conservation-prairie.html">
-  <title>Less Than 1% Remains | BaitLogic</title>
+  <link rel="canonical" href="https://bait-logic.com/conservation-prairie.html">
+  <title>Community Action #001 — Less Than 1% Remains | BaitLogic</title>
   <style>
-    :root{--ink:#062c33;--teal:#0b7f86;--aqua:#35c7c2;--coral:#ff6f61;--sand:#f5f1e8;--white:#fff;--muted:#5b6e70}
-    *{box-sizing:border-box}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:linear-gradient(180deg,#e8fbf8 0,#f8f6ef 48%,#fff 100%);line-height:1.5}
-    a{text-decoration:none}.wrap{width:min(1120px,calc(100% - 32px));margin:auto}.top{padding:18px 0;display:flex;align-items:center;justify-content:space-between;gap:12px}.brand{font-weight:900;font-size:1.15rem;color:var(--ink)}.brand span{color:var(--teal)}.back{color:var(--ink);font-weight:700}
-    .hero{padding:56px 0 34px}.eyebrow{font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;font-weight:900;color:var(--teal)}h1{font-size:clamp(3rem,12vw,7.8rem);line-height:.82;margin:14px 0 22px;letter-spacing:-.055em;max-width:900px}.accent{color:var(--coral)}.sub{font-size:clamp(1.2rem,3vw,1.7rem);font-weight:800;max-width:780px;margin:0 0 16px}.lead{font-size:1.05rem;max-width:760px;color:#284b50}
-    .proof{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:30px 0}.card{background:rgba(255,255,255,.86);border:1px solid rgba(6,44,51,.12);border-radius:20px;padding:22px;box-shadow:0 12px 38px rgba(6,44,51,.08)}.metric{font-size:2rem;font-weight:950;letter-spacing:-.04em}.card p{margin:5px 0 0;color:var(--muted)}
-    .action{margin:36px 0;padding:30px;border-radius:26px;background:var(--ink);color:white}.action h2,.section h2{font-size:clamp(1.8rem,5vw,3rem);line-height:1.05;margin:8px 0 12px}.action p{color:#d7ebeb;max-width:760px}.buttons{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:12px 17px;border-radius:999px;font-weight:900;border:1px solid transparent;cursor:pointer;font:inherit}.primary{background:var(--coral);color:#191919}.secondary{background:var(--aqua);color:#042b31}.ghost{border-color:#8fb9bc;color:white;background:transparent}.light{border-color:#cbd9d7;color:var(--ink);background:white}.social{background:#fff;color:var(--ink);border:1px solid #d4e3e0}
+    :root{--ink:#062c33;--teal:#0b7f86;--aqua:#35c7c2;--coral:#ff6f61;--sand:#f5f1e8;--white:#fff;--muted:#5b6e70;--alert:#c9362b;--gold:#f6bd32}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:linear-gradient(180deg,#e8fbf8 0,#f8f6ef 48%,#fff 100%);line-height:1.5}
+    a{text-decoration:none}.wrap{width:min(1120px,calc(100% - 32px));margin:auto}.top{padding:18px 0;display:flex;align-items:center;justify-content:space-between;gap:12px}.brand{font-weight:950;font-size:1.15rem;color:var(--ink)}.brand span{color:var(--teal)}.back{color:var(--ink);font-weight:800}
+    .hero{padding:48px 0 30px}.eyebrow{font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;font-weight:950;color:var(--teal)}h1{font-size:clamp(3rem,12vw,7.8rem);line-height:.82;margin:14px 0 22px;letter-spacing:-.055em;max-width:940px}.accent{color:var(--coral)}.sub{font-size:clamp(1.2rem,3vw,1.75rem);font-weight:950;max-width:800px;margin:0 0 14px}.lead{font-size:1.05rem;max-width:820px;color:#284b50}
+    .severity{margin:26px 0;padding:20px;border:3px solid #ec5147;border-radius:22px;background:linear-gradient(135deg,#571712,#b52e25);color:#fff;box-shadow:0 16px 42px rgba(120,22,17,.22)}.severity-top{display:flex;align-items:center;gap:16px;flex-wrap:wrap}.severity strong{font-size:clamp(2rem,7vw,4.2rem);line-height:.9}.severity .lost{color:#ffd54b}.lossbar{height:26px;border-radius:999px;overflow:hidden;display:grid;grid-template-columns:1fr 99fr;margin-top:16px;background:#7c1812;border:2px solid rgba(255,255,255,.5)}.lossbar span:first-child{background:#a8d545;min-width:10px}.lossbar span:last-child{background:#e84d3f}.losslabels{display:flex;justify-content:space-between;font-weight:900;font-size:.82rem;margin-top:7px}
+    .match{margin:22px 0;padding:18px 20px;border-radius:18px;background:#fff2bd;border:2px solid #e9b62e;color:#352704;font-weight:850}.match b{color:#9d2e1d}.match a{color:#075e66;text-decoration:underline;font-weight:950}
+    .proof{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:30px 0}.card{background:rgba(255,255,255,.9);border:1px solid rgba(6,44,51,.12);border-radius:20px;padding:22px;box-shadow:0 12px 38px rgba(6,44,51,.08)}.metric{font-size:2rem;font-weight:950;letter-spacing:-.04em}.card p{margin:5px 0 0;color:var(--muted)}
+    .action{margin:36px 0;padding:30px;border-radius:26px;background:var(--ink);color:white}.action h2,.section h2{font-size:clamp(1.8rem,5vw,3rem);line-height:1.05;margin:8px 0 12px}.action p{color:#d7ebeb;max-width:820px}.buttons{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}.btn{display:inline-flex;align-items:center;justify-content:center;min-height:50px;padding:12px 17px;border-radius:999px;font-weight:950;border:1px solid transparent;cursor:pointer;font:inherit;text-align:center}.primary{background:var(--coral);color:#191919}.secondary{background:var(--aqua);color:#042b31}.gold{background:var(--gold);color:#2a2100}.ghost{border-color:#8fb9bc;color:white;background:transparent}.light{border-color:#cbd9d7;color:var(--ink);background:white}.social{background:#fff;color:var(--ink);border:1px solid #d4e3e0}
+    .action-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:11px;margin-top:22px}.action-tile{display:flex;min-height:150px;flex-direction:column;justify-content:space-between;padding:17px;border-radius:18px;background:#fff;color:var(--ink);border:2px solid transparent}.action-tile:hover,.action-tile:focus{border-color:var(--aqua)}.action-tile strong{font-size:1.05rem}.action-tile small{display:block;color:var(--muted);margin-top:6px}.tile-icon{font-size:1.55rem}
     .section{padding:24px 0}.steps{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.step{background:white;border-radius:18px;padding:19px;border:1px solid #dbe8e5}.num{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#d9f7f2;font-weight:950;color:var(--teal)}.step h3{margin:12px 0 6px}.step p{margin:0;color:var(--muted);font-size:.94rem}
-    .local{display:grid;grid-template-columns:1.1fr .9fr;gap:18px;align-items:stretch}.quote{font-size:1.15rem;font-weight:800;margin:0}.source{font-size:.85rem;color:var(--muted)}
+    .local{display:grid;grid-template-columns:1.1fr .9fr;gap:18px;align-items:stretch}.quote{font-size:1.15rem;font-weight:850;margin:0}.source{font-size:.85rem;color:var(--muted)}
+    .impact{border:2px solid #b9e4dd;background:linear-gradient(135deg,#f4fffd,#fffaf4)}.impact-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:18px}.impact-cell{padding:16px;border-radius:16px;background:#fff;border:1px solid #d8e8e5}.impact-cell strong{display:block;font-size:1.15rem}.impact-cell span{font-size:.82rem;color:var(--muted)}
     .community{background:linear-gradient(135deg,#dffaf6,#fff5f2);border:1px solid #caeae6}.community h2{margin-bottom:8px}.community .buttons{margin-top:16px}
     footer{padding:42px 0 110px;color:var(--muted);font-size:.92rem}.sticky{position:fixed;z-index:20;left:12px;right:12px;bottom:12px;display:flex;gap:10px;justify-content:center}.sticky .btn{box-shadow:0 10px 30px rgba(6,44,51,.24)}
+    @media(max-width:900px){.action-grid{grid-template-columns:1fr 1fr}.impact-grid{grid-template-columns:1fr 1fr}}
     @media(max-width:780px){.proof{grid-template-columns:1fr}.steps{grid-template-columns:1fr 1fr}.local{grid-template-columns:1fr}.hero{padding-top:34px}.top .back{font-size:.9rem}}
-    @media(max-width:520px){.steps{grid-template-columns:1fr}.buttons .btn{width:100%}.sticky{display:grid;grid-template-columns:1fr 1fr}.sticky .btn{padding:10px 8px;font-size:.78rem}}
+    @media(max-width:520px){.steps,.action-grid,.impact-grid{grid-template-columns:1fr}.buttons .btn{width:100%}.sticky{display:grid;grid-template-columns:1fr 1fr}.sticky .btn{padding:10px 8px;font-size:.78rem}.severity-top{display:block}.severity strong{display:block;margin-bottom:8px}}
   </style>
 </head>
 <body>
 <header class="wrap top"><a class="brand" href="/">Bait<span>Logic</span></a><a class="back" href="/">← Back to BaitLogic</a></header>
 <main>
   <section class="wrap hero">
-    <div class="eyebrow">BaitLogic Conservation Action</div>
+    <div class="eyebrow">BaitLogic Community Action #001</div>
     <h1>LESS THAN <span class="accent">1%</span> REMAINS.</h1>
     <p class="sub">WE DON'T GET ANOTHER ILLINOIS.</p>
-    <p class="lead">Prairies once covered roughly two-thirds of Illinois. HeartLands Conservancy reports that less than 1% of original Illinois prairie remains. The response cannot stop at awareness: protect remnants, restore habitat, support the people doing the work, and make it easier for ordinary residents to act.</p>
+    <p class="lead">Prairies once covered roughly two-thirds of Illinois. HeartLands Conservancy reports that less than 1% of original Illinois prairie remains. This first BaitLogic Community Action makes the next step immediate: learn what is being lost, support people already restoring it, volunteer if you can, and put the facts in front of someone else.</p>
+
+    <div class="severity" aria-label="More than 99 percent of Illinois original prairie has been lost">
+      <div class="severity-top"><strong>ONLY <span class="lost">1%</span> LEFT</strong><span>Over 99% of Illinois' original prairie is gone.</span></div>
+      <div class="lossbar" aria-hidden="true"><span></span><span></span></div>
+      <div class="losslabels"><span>1% REMAINING</span><span>99%+ LOST</span></div>
+    </div>
+
+    <div class="match"><b>ACT NOW:</b> HeartLands' current Knoll Habitat &amp; Access page says donations are being <b>matched 3×</b> for the first $7,000 by the Prairie State Conservation Coalition. <a data-action="match_source" href="https://heartlandsconservancy.org/project/knoll-habitat/" target="_blank" rel="noopener">Verify on HeartLands →</a></div>
+
     <div class="buttons"><a class="btn primary" href="#take-action">TAKE ONE ACTION TODAY</a><button class="btn light" id="shareBtn" type="button">SHARE THIS</button></div>
 
     <div class="proof">
       <article class="card"><div class="metric">&lt;1%</div><p>of original Illinois prairie remains, according to HeartLands Conservancy.</p></article>
-      <article class="card"><div class="metric">40 acres</div><p>at Knoll Family Wildlife Sanctuary were acquired by HeartLands in 2023 and are under active restoration.</p></article>
-      <article class="card"><div class="metric">2,300 acres</div><p>of high-quality prairie remained statewide by 1978, according to Illinois DNR.</p></article>
+      <article class="card"><div class="metric">40 acres</div><p>at Knoll Wildlife Sanctuary in Madison County, under active HeartLands restoration.</p></article>
+      <article class="card"><div class="metric">Direct action</div><p>No message-us step. BaitLogic sends you straight to the organization and official resources doing the work.</p></article>
     </div>
   </section>
 
   <section class="wrap action" id="take-action">
-    <div class="eyebrow" style="color:#7ce4dc">Do more than react</div>
-    <h2>Choose your action. Do it now.</h2>
-    <p>You do not have to own a preserve or run an organization to matter. Pick the action that fits what you can do today.</p>
-    <div class="buttons">
-      <a class="btn primary" target="_blank" rel="noopener" href="https://heartlandsconservancy.org/project/knoll-family-wildlife-sanctuary/">SUPPORT KNOLL RESTORATION</a>
-      <a class="btn secondary" target="_blank" rel="noopener" href="https://heartlandsconservancy.org/protected-lands/">FIND A LOCAL PROJECT</a>
-      <a class="btn ghost" target="_blank" rel="noopener" href="https://dnr.illinois.gov/education/atoz/ilprairies.html">LEARN FROM IDNR</a>
-      <a class="btn ghost" target="_blank" rel="noopener" href="https://www.epa.gov/pesticide-incidents/how-report-spills-and-environmental-violations">REPORT ENVIRONMENTAL DAMAGE</a>
+    <div class="eyebrow" style="color:#7ce4dc">Choose the action that fits you</div>
+    <h2>Learn something. Do something. Pass it on.</h2>
+    <p>You do not need to be a scientist, landowner, angler, or conservation expert. Pick one useful action. Every external button below goes directly to the organization or official resource responsible for that action.</p>
+
+    <div class="action-grid">
+      <a class="action-tile" data-action="knoll_project" target="_blank" rel="noopener" href="https://heartlandsconservancy.org/project/knoll-habitat/"><span class="tile-icon">♥</span><span><strong>Support Knoll</strong><small>Direct Knoll Habitat &amp; Access project page. Current 3× match details live here.</small></span></a>
+      <a class="action-tile" data-action="heartlands_volunteer" target="_blank" rel="noopener" href="https://heartlandsconservancy.org/volunteer/"><span class="tile-icon">◎</span><span><strong>Volunteer</strong><small>HeartLands' official volunteer form includes Knoll Wildlife Sanctuary.</small></span></a>
+      <a class="action-tile" data-action="report_damage" target="_blank" rel="noopener" href="https://epa.illinois.gov/pollution-complaint/submit-a-complaint.html"><span class="tile-icon">!</span><span><strong>Report Damage</strong><small>Send Illinois pollution/environmental concerns to the official state complaint route.</small></span></a>
+      <a class="action-tile" data-action="conserve_land" target="_blank" rel="noopener" href="https://heartlandsconservancy.org/land/"><span class="tile-icon">⌂</span><span><strong>Conserve Your Land</strong><small>HeartLands explains voluntary conservation options for Southern Illinois landowners.</small></span></a>
+      <a class="action-tile" data-action="funding_resources" target="_blank" rel="noopener" href="https://dnr.illinois.gov/grants.html"><span class="tile-icon">$</span><span><strong>Find Funding</strong><small>Current Illinois DNR grant opportunities and program links.</small></span></a>
     </div>
   </section>
 
@@ -68,37 +85,57 @@
   <section class="wrap section local">
     <article class="card">
       <div class="eyebrow">First local focus</div>
-      <h2>Knoll Family Wildlife Sanctuary</h2>
-      <p>Madison County, Illinois · 40 acres · rare sand prairie. HeartLands Conservancy owns and manages the property and says it is actively restoring prairie habitat while planning future public access.</p>
-      <div class="buttons"><a class="btn primary" target="_blank" rel="noopener" href="https://heartlandsconservancy.org/project/knoll-family-wildlife-sanctuary/">SEE THE PROJECT + HELP</a></div>
-      <p class="source">BaitLogic is highlighting this existing conservation effort. This page does not claim a formal partnership with HeartLands Conservancy.</p>
+      <h2>Knoll Wildlife Sanctuary</h2>
+      <p>Madison County, Illinois · 40 acres · rare sand prairie and sand savanna. HeartLands Conservancy owns and manages the property and says active work includes invasive-species removal, native prairie establishment, pond-edge restoration, wildlife habitat protection, and future public access planning.</p>
+      <div class="buttons"><a class="btn gold" data-action="knoll_project_secondary" target="_blank" rel="noopener" href="https://heartlandsconservancy.org/project/knoll-habitat/">GO DIRECTLY TO KNOLL PROJECT</a></div>
+      <p class="source">BaitLogic is highlighting and supporting this existing conservation effort. This page does not claim a formal partnership with HeartLands Conservancy.</p>
     </article>
     <article class="card">
       <div class="eyebrow">Why this belongs here</div>
-      <p class="quote">Healthy land and healthy water are the same conservation story. Prairie roots hold soil, absorb rainfall and reduce erosion. Habitat protection supports wildlife, watersheds and the outdoor places our communities depend on.</p>
-      <p class="source">Illinois DNR notes that dense prairie sod helps conserve both soil and water.</p>
+      <p class="quote">Healthy land and healthy water are the same conservation story. Prairie roots protect soil and water, while prairie habitat supports pollinators, birds, amphibians, reptiles and the outdoor places our communities depend on.</p>
+      <p class="source"><a href="https://heartlandsconservancy.org/project/knoll-family-wildlife-sanctuary/" target="_blank" rel="noopener">Read HeartLands' full sanctuary profile and access restrictions.</a></p>
+    </article>
+  </section>
+
+  <section class="wrap section" id="impact">
+    <article class="card impact">
+      <div class="eyebrow">BaitLogic public action log</div>
+      <h2>Impact should be proven, not invented.</h2>
+      <p>Tracking begins with Community Action #001. BaitLogic records outbound action clicks privately for campaign learning, but public impact numbers are only published when a participant or HeartLands can confirm the action. We will never turn estimates into conservation claims.</p>
+      <div class="impact-grid">
+        <div class="impact-cell"><strong>Tracking</strong><span>Direct project visits</span></div>
+        <div class="impact-cell"><strong>Tracking</strong><span>Volunteer interest</span></div>
+        <div class="impact-cell"><strong>Tracking</strong><span>Campaign shares</span></div>
+        <div class="impact-cell"><strong>Verified only</strong><span>Volunteer hours / ecological outcomes</span></div>
+      </div>
     </article>
   </section>
 
   <section class="wrap section">
     <article class="card community">
       <div class="eyebrow">Keep the movement alive</div>
-      <h2>Take action here. Then bring the conversation back to the BaitLogic community.</h2>
-      <p>Facebook is our primary community hub. Instagram carries the visuals, updates and campaign amplification. Every BaitLogic campaign should lead people back into the community so awareness becomes participation.</p>
+      <h2>Take action there. Bring what you learned back here.</h2>
+      <p>Facebook is BaitLogic's primary community hub. Instagram carries the visuals and campaign amplification. The goal is not to keep people inside BaitLogic — it is to help people find the right place to act, then bring the learning and momentum back to the community.</p>
       <div class="buttons">
-        <a class="btn primary" target="_blank" rel="noopener" href="https://www.facebook.com/share/1C3i4dL3vk/">JOIN BAITLOGIC ON FACEBOOK</a>
-        <a class="btn secondary" target="_blank" rel="noopener" href="https://www.instagram.com/baitlogicadmin?igsh=MTVuOHV2dDljaTd3Yg==">FOLLOW @BAITLOGICADMIN</a>
+        <a class="btn primary" data-action="facebook" target="_blank" rel="noopener" href="https://www.facebook.com/share/1C3i4dL3vk/">BAITLOGIC ON FACEBOOK</a>
+        <a class="btn secondary" data-action="instagram" target="_blank" rel="noopener" href="https://www.instagram.com/baitlogicadmin?igsh=MTVuOHV2dDljaTd3Yg==">@BAITLOGICADMIN</a>
         <button class="btn social" id="shareBtn2" type="button">SHARE THE CAMPAIGN</button>
       </div>
     </article>
   </section>
 </main>
-<footer class="wrap">BaitLogic · Free outdoor knowledge · Conservation action · Community intelligence<br><a href="https://www.facebook.com/share/1C3i4dL3vk/" target="_blank" rel="noopener">Facebook</a> · <a href="https://www.instagram.com/baitlogicadmin?igsh=MTVuOHV2dDljaTd3Yg==" target="_blank" rel="noopener">Instagram @baitlogicadmin</a><br>Sources: HeartLands Conservancy and Illinois Department of Natural Resources. Facts are linked directly above.</footer>
-<div class="sticky"><a class="btn primary" href="#take-action">TAKE ACTION</a><a class="btn secondary" target="_blank" rel="noopener" href="https://www.facebook.com/share/1C3i4dL3vk/">FACEBOOK</a></div>
+<footer class="wrap">BaitLogic · Free outdoor knowledge · Conservation action · Community intelligence<br>Community Action #001 highlights HeartLands Conservancy's Knoll Wildlife Sanctuary work without claiming a formal partnership.<br>Primary factual sources: HeartLands Conservancy and Illinois Department of Natural Resources.</footer>
+<div class="sticky"><a class="btn primary" href="#take-action">TAKE ACTION</a><a class="btn secondary" data-action="knoll_sticky" target="_blank" rel="noopener" href="https://heartlandsconservancy.org/project/knoll-habitat/">KNOLL PROJECT</a></div>
 <script>
+  function trackAction(name){
+    if(!navigator.onLine)return;
+    const visitor=localStorage.getItem('bl_visitor')||(()=>{const v=(crypto.randomUUID?.()||`${Date.now()}-${Math.random()}`);localStorage.setItem('bl_visitor',v);return v})();
+    fetch('/api/events',{method:'POST',headers:{'Content-Type':'application/json'},keepalive:true,body:JSON.stringify({event_name:`community_action_001_${name}`,path:location.pathname,session_id:visitor,visitor_id:visitor,referrer:document.referrer||null})}).catch(()=>{});
+  }
+  document.querySelectorAll('[data-action]').forEach(el=>el.addEventListener('click',()=>trackAction(el.dataset.action)));
   async function shareCampaign(){
-    const data={title:'LESS THAN 1% REMAINS — BaitLogic',text:"Less than 1% of Illinois' original prairie remains. We don't get another Illinois. Know it. Protect it. Restore it. Pass it on.",url:location.href};
-    try{if(navigator.share){await navigator.share(data)}else{await navigator.clipboard.writeText(location.href);alert('Campaign link copied.')}}catch(e){}
+    const data={title:'LESS THAN 1% REMAINS — BaitLogic Community Action #001',text:"Over 99% of Illinois' original prairie is gone. Help the people restoring what remains.",url:location.href};
+    try{if(navigator.share){await navigator.share(data);trackAction('share')}else{await navigator.clipboard.writeText(location.href);trackAction('copy_link');alert('Campaign link copied.')}}catch(e){}
   }
   document.getElementById('shareBtn').addEventListener('click',shareCampaign);
   document.getElementById('shareBtn2').addEventListener('click',shareCampaign);
