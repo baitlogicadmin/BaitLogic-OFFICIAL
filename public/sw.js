@@ -1,7 +1,7 @@
 "use strict";
 
-const CACHE_NAME="baitlogic-offline-v12";
-const DATA_CACHE="baitlogic-data-v12";
+const CACHE_NAME="baitlogic-offline-v13";
+const DATA_CACHE="baitlogic-data-v13";
 const QUEUE_DB="baitlogic-offline-queue-v1";
 const QUEUE_STORE="requests";
 
@@ -12,8 +12,9 @@ const APP_SHELL=[
   "/barometer.html",
   "/nature-check.html",
   "/conservation-prairie.html",
-  "/site.css?v=1",
-  "/site.js?v=2",
+  "/site.css?v=2",
+  "/field-check.css?v=1",
+  "/site.js?v=3",
   "/premium.css",
   "/launch.css",
   "/manifest.webmanifest",
@@ -93,24 +94,22 @@ async function markOffline(response){
   }catch{return response;}
 }
 
-function latestKeyFor(url){
-  return new Request(`${self.location.origin}/__offline_latest${url.pathname}`);
-}
+function latestKeyFor(url){return new Request(`${self.location.origin}/__offline_latest${url.pathname}`)}
 
 async function networkFirst(request,{cacheName=DATA_CACHE,latest=false}={}){
   const cache=await caches.open(cacheName);
   const url=new URL(request.url);
   try{
     const response=await fetch(request);
-    if(response && (response.ok || response.type==="opaque")){
+    if(response&&(response.ok||response.type==="opaque")){
       cache.put(request,response.clone()).catch(()=>{});
-      if(latest && response.ok) cache.put(latestKeyFor(url),response.clone()).catch(()=>{});
+      if(latest&&response.ok)cache.put(latestKeyFor(url),response.clone()).catch(()=>{});
     }
     return response;
   }catch{
     let cached=await cache.match(request);
-    if(!cached && latest) cached=await cache.match(latestKeyFor(url));
-    if(cached) return latest?markOffline(cached):cached;
+    if(!cached&&latest)cached=await cache.match(latestKeyFor(url));
+    if(cached)return latest?markOffline(cached):cached;
     throw new Error("offline-no-cache");
   }
 }
@@ -127,25 +126,20 @@ self.addEventListener("activate",event=>{
   ]));
 });
 
-self.addEventListener("sync",event=>{
-  if(event.tag==="baitlogic-sync") event.waitUntil(flushQueue());
-});
-
-self.addEventListener("message",event=>{
-  if(event.data?.type==="BAITLOGIC_FLUSH_QUEUE") event.waitUntil?.(flushQueue());
-});
+self.addEventListener("sync",event=>{if(event.tag==="baitlogic-sync")event.waitUntil(flushQueue())});
+self.addEventListener("message",event=>{if(event.data?.type==="BAITLOGIC_FLUSH_QUEUE")event.waitUntil?.(flushQueue())});
 
 self.addEventListener("fetch",event=>{
   const request=event.request;
   const url=new URL(request.url);
 
   if(request.method!=="GET"){
-    if(url.origin===self.location.origin && url.pathname.startsWith("/api/") && request.method==="POST" && !url.pathname.endsWith("/events")){
+    if(url.origin===self.location.origin&&url.pathname.startsWith("/api/")&&request.method==="POST"&&!url.pathname.endsWith("/events")){
       event.respondWith((async()=>{
         try{
           const response=await fetch(request.clone());
-          if(response.ok) return response;
-          if(response.status<500) return response;
+          if(response.ok)return response;
+          if(response.status<500)return response;
           await queueRequest(request);
           self.registration.sync?.register("baitlogic-sync").catch(()=>{});
           return offlineQueuedResponse();
@@ -159,15 +153,13 @@ self.addEventListener("fetch",event=>{
     return;
   }
 
-  if(url.origin===self.location.origin && url.pathname.startsWith("/api/")){
+  if(url.origin===self.location.origin&&url.pathname.startsWith("/api/")){
     event.respondWith(networkFirst(request,{latest:true}));
     return;
   }
 
   if(url.origin!==self.location.origin){
-    if(["api.open-meteo.com","air-quality-api.open-meteo.com","api.weather.gov","api.bigdatacloud.net","nominatim.openstreetmap.org"].includes(url.hostname)){
-      event.respondWith(networkFirst(request));
-    }
+    if(["api.open-meteo.com","air-quality-api.open-meteo.com","api.weather.gov","api.bigdatacloud.net","nominatim.openstreetmap.org"].includes(url.hostname))event.respondWith(networkFirst(request));
     return;
   }
 
@@ -176,11 +168,11 @@ self.addEventListener("fetch",event=>{
       const cache=await caches.open(CACHE_NAME);
       try{
         const response=await fetch(request);
-        if(response.ok) cache.put(request,response.clone()).catch(()=>{});
+        if(response.ok)cache.put(request,response.clone()).catch(()=>{});
         flushQueue().catch(()=>{});
         return response;
       }catch{
-        return (await cache.match(request)) || (await cache.match(url.pathname)) || (await cache.match("/"));
+        return(await cache.match(request))||(await cache.match(url.pathname))||(await cache.match("/"));
       }
     })());
     return;
@@ -190,15 +182,13 @@ self.addEventListener("fetch",event=>{
     const cache=await caches.open(CACHE_NAME);
     const cached=await cache.match(request);
     if(cached){
-      fetch(request).then(response=>{if(response.ok)cache.put(request,response.clone());}).catch(()=>{});
+      fetch(request).then(response=>{if(response.ok)cache.put(request,response.clone())}).catch(()=>{});
       return cached;
     }
     try{
       const response=await fetch(request);
-      if(response.ok) cache.put(request,response.clone()).catch(()=>{});
+      if(response.ok)cache.put(request,response.clone()).catch(()=>{});
       return response;
-    }catch{
-      return new Response("Offline",{status:503,statusText:"Offline"});
-    }
+    }catch{return new Response("Offline",{status:503,statusText:"Offline"})}
   })());
 });
