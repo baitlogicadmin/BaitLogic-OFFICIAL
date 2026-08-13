@@ -24,14 +24,38 @@ function nearestIndex(times, targetMs) {
   return best;
 }
 
-function placeFrom(data) {
+function placeFromNominatim(data) {
+  const a = data?.address || {};
+  const locality = a.city || a.town || a.village || a.municipality || a.borough || a.suburb || a.hamlet || null;
+  const region = a.state || a.region || null;
+  const country = a.country || null;
+  if (!locality) return null;
+  return {
+    name: region && locality.toLowerCase() !== region.toLowerCase() ? `${locality}, ${region}` : locality,
+    locality,
+    region,
+    country
+  };
+}
+
+function placeFromBigData(data) {
   if (!data) return null;
-  const locality = data.city || data.locality || data.localityInfo?.administrative?.[2]?.name || data.localityInfo?.administrative?.[1]?.name || null;
-  const region = data.principalSubdivision || data.localityInfo?.administrative?.[1]?.name || null;
+  const direct = data.city || null;
+  const candidates = [
+    direct,
+    data.locality,
+    ...(data.localityInfo?.informative || []).filter(x => /city|town|village|municipality|borough/i.test(x.description || x.type || "")).map(x => x.name)
+  ].filter(Boolean);
+  const locality = candidates.find(name => !/township|county|district/i.test(name)) || null;
+  const region = data.principalSubdivision || null;
   const country = data.countryName || null;
-  let name = locality || region || country || null;
-  if (locality && region && locality.toLowerCase() !== region.toLowerCase()) name = `${locality}, ${region}`;
-  return name ? { name, locality, region, country } : null;
+  if (!locality) return null;
+  return {
+    name: region && locality.toLowerCase() !== region.toLowerCase() ? `${locality}, ${region}` : locality,
+    locality,
+    region,
+    country
+  };
 }
 
 module.exports = async function handler(req, res) {
@@ -64,12 +88,14 @@ module.exports = async function handler(req, res) {
     }).toString();
 
     const alertsUrl = `https://api.weather.gov/alerts/active?point=${lat.toFixed(4)},${lon.toFixed(4)}`;
-    const placeUrl = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${encodeURIComponent(lat)}&longitude=${encodeURIComponent(lon)}&localityLanguage=en`;
+    const nominatimUrl = `https://nominatim.openstreetmap.org/reverse?lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}&format=jsonv2&addressdetails=1&zoom=12&layer=address`;
+    const bigDataUrl = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${encodeURIComponent(lat)}&longitude=${encodeURIComponent(lon)}&localityLanguage=en`;
 
-    const [weatherResult, alertsResult, placeResult] = await Promise.allSettled([
+    const [weatherResult, alertsResult, nominatimResult, bigDataResult] = await Promise.allSettled([
       fetchJson(weatherUrl.toString(), { headers: { "User-Agent": "BaitLogic/1.0 baitlogic@outlook.com" } }, 6500),
       fetchJson(alertsUrl, { headers: { "User-Agent": "BaitLogic/1.0 (baitlogic@outlook.com)", "Accept": "application/geo+json" } }, 1500),
-      fetchJson(placeUrl, { headers: { "User-Agent": "BaitLogic/1.0 baitlogic@outlook.com" } }, 2200)
+      fetchJson(nominatimUrl, { headers: { "User-Agent": "BaitLogic/1.0 (baitlogic@outlook.com)", "Accept-Language": "en" } }, 2500),
+      fetchJson(bigDataUrl, { headers: { "User-Agent": "BaitLogic/1.0 baitlogic@outlook.com" } }, 2200)
     ]);
 
     if (weatherResult.status !== "fulfilled") {
@@ -104,14 +130,19 @@ module.exports = async function handler(req, res) {
         }))
       : [];
 
+    const nominatimPlace = nominatimResult.status === "fulfilled" ? placeFromNominatim(nominatimResult.value) : null;
+    const bigDataPlace = bigDataResult.status === "fulfilled" ? placeFromBigData(bigDataResult.value) : null;
+    const place = nominatimPlace || bigDataPlace || null;
+    const placeSource = nominatimPlace ? "OpenStreetMap Nominatim" : bigDataPlace ? "BigDataCloud" : "GPS only";
+
     return res.status(200).json({
       source: {
         weather: "Open-Meteo",
         alerts: alertsResult.status === "fulfilled" ? "National Weather Service" : "NWS unavailable",
-        location: placeResult.status === "fulfilled" ? "BigDataCloud" : "GPS only"
+        location: placeSource
       },
       updatedAt: new Date().toISOString(),
-      location: placeResult.status === "fulfilled" ? placeFrom(placeResult.value) : null,
+      location: place,
       weather: {
         temperatureF: Number(c.temperature_2m),
         apparentTemperatureF: Number(c.apparent_temperature),
