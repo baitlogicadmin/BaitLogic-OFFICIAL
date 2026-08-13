@@ -1,0 +1,1 @@
+setInterval(()=>{const s=(document.querySelector('#connectionStatus')?.textContent||'Online').toLowerCase(),p=document.querySelector('#connectionPill');if(p){p.dataset.mode=s.includes('offline')?'offline':'live';const x=p.querySelector('span');if(x)x.textContent=s.includes('offline')?'OFFLINE • SAVED':'LIVE';}},700);
