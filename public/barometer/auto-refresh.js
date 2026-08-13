@@ -1,0 +1,1 @@
+setInterval(()=>{if(navigator.onLine&&!document.hidden)document.querySelector('#refreshConditions')?.click();},900000);
