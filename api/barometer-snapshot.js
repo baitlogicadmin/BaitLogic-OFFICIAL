@@ -2,7 +2,7 @@
 
 const inHg = hpa => Number(hpa) * 0.0295299830714;
 
-async function fetchJson(url, options = {}, timeoutMs = 9000) {
+async function fetchJson(url, options = {}, timeoutMs = 6500) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
@@ -25,6 +25,12 @@ function nearestIndex(times, targetMs) {
 }
 
 module.exports = async function handler(req, res) {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.setHeader("Cache-Control", "no-store, max-age=0");
+  if (req.method === "OPTIONS") return res.status(204).end();
+
   try {
     const lat = Number(req.query.lat);
     const lon = Number(req.query.lon);
@@ -50,8 +56,8 @@ module.exports = async function handler(req, res) {
     const alertsUrl = `https://api.weather.gov/alerts/active?point=${lat.toFixed(4)},${lon.toFixed(4)}`;
 
     const [weatherResult, alertsResult] = await Promise.allSettled([
-      fetchJson(weatherUrl.toString(), { headers: { "User-Agent": "BaitLogic/1.0 baitlogic@outlook.com" } }, 9000),
-      fetchJson(alertsUrl, { headers: { "User-Agent": "BaitLogic/1.0 (baitlogic@outlook.com)", "Accept": "application/geo+json" } }, 7000)
+      fetchJson(weatherUrl.toString(), { headers: { "User-Agent": "BaitLogic/1.0 baitlogic@outlook.com" } }, 6500),
+      fetchJson(alertsUrl, { headers: { "User-Agent": "BaitLogic/1.0 (baitlogic@outlook.com)", "Accept": "application/geo+json" } }, 1500)
     ]);
 
     if (weatherResult.status !== "fulfilled") {
@@ -86,7 +92,6 @@ module.exports = async function handler(req, res) {
         }))
       : [];
 
-    res.setHeader("Cache-Control", "no-store");
     return res.status(200).json({
       source: {
         weather: "Open-Meteo",
