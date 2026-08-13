@@ -24,6 +24,16 @@ function nearestIndex(times, targetMs) {
   return best;
 }
 
+function placeFrom(data) {
+  if (!data) return null;
+  const locality = data.city || data.locality || data.localityInfo?.administrative?.[2]?.name || data.localityInfo?.administrative?.[1]?.name || null;
+  const region = data.principalSubdivision || data.localityInfo?.administrative?.[1]?.name || null;
+  const country = data.countryName || null;
+  let name = locality || region || country || null;
+  if (locality && region && locality.toLowerCase() !== region.toLowerCase()) name = `${locality}, ${region}`;
+  return name ? { name, locality, region, country } : null;
+}
+
 module.exports = async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
@@ -54,10 +64,12 @@ module.exports = async function handler(req, res) {
     }).toString();
 
     const alertsUrl = `https://api.weather.gov/alerts/active?point=${lat.toFixed(4)},${lon.toFixed(4)}`;
+    const placeUrl = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${encodeURIComponent(lat)}&longitude=${encodeURIComponent(lon)}&localityLanguage=en`;
 
-    const [weatherResult, alertsResult] = await Promise.allSettled([
+    const [weatherResult, alertsResult, placeResult] = await Promise.allSettled([
       fetchJson(weatherUrl.toString(), { headers: { "User-Agent": "BaitLogic/1.0 baitlogic@outlook.com" } }, 6500),
-      fetchJson(alertsUrl, { headers: { "User-Agent": "BaitLogic/1.0 (baitlogic@outlook.com)", "Accept": "application/geo+json" } }, 1500)
+      fetchJson(alertsUrl, { headers: { "User-Agent": "BaitLogic/1.0 (baitlogic@outlook.com)", "Accept": "application/geo+json" } }, 1500),
+      fetchJson(placeUrl, { headers: { "User-Agent": "BaitLogic/1.0 baitlogic@outlook.com" } }, 2200)
     ]);
 
     if (weatherResult.status !== "fulfilled") {
@@ -95,9 +107,11 @@ module.exports = async function handler(req, res) {
     return res.status(200).json({
       source: {
         weather: "Open-Meteo",
-        alerts: alertsResult.status === "fulfilled" ? "National Weather Service" : "NWS unavailable"
+        alerts: alertsResult.status === "fulfilled" ? "National Weather Service" : "NWS unavailable",
+        location: placeResult.status === "fulfilled" ? "BigDataCloud" : "GPS only"
       },
       updatedAt: new Date().toISOString(),
+      location: placeResult.status === "fulfilled" ? placeFrom(placeResult.value) : null,
       weather: {
         temperatureF: Number(c.temperature_2m),
         apparentTemperatureF: Number(c.apparent_temperature),
