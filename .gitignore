@@ -5,3 +5,6 @@ node_modules/
 .vercel/
 .DS_Store
 npm-debug.log*
+mobile-app/node_modules
+mobile-app/test-results/
+mobile-app/playwright-report/

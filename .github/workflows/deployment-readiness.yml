@@ -1,0 +1,35 @@
+name: BaitLogic Deployment Readiness
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  readiness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      VITE_TURNSTILE_SITE_KEY: ${{ secrets.VITE_TURNSTILE_SITE_KEY }}
+      BAITLOGIC_PRODUCTION_TARGET: vercel
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: mobile-app/package-lock.json
+
+      - name: Install locked dependencies
+        run: npm ci
+        working-directory: mobile-app
+
+      - name: Run deployment readiness gate
+        run: npm run check:readiness
+        working-directory: mobile-app

@@ -1,0 +1,14 @@
+{
+  "name": "BaitLogic Outdoors",
+  "short_name": "BaitLogic",
+  "description": "Local field intelligence for weather, water, wildlife, trails, and conservation.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f5f4ef",
+  "theme_color": "#061535",
+  "icons": [
+    { "src": "/assets/app-icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/assets/app-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

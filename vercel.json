@@ -1,1 +1,31 @@
-{"version":2,"builds":[{"src":"api/barometer-snapshot.js","use":"@vercel/node"},{"src":"server.js","use":"@vercel/node"}],"routes":[{"src":"/api/barometer-snapshot","dest":"api/barometer-snapshot.js"},{"src":"/(.*)","dest":"server.js"}]}
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "vite",
+  "installCommand": "npm --prefix mobile-app ci",
+  "buildCommand": "npm run build",
+  "outputDirectory": "mobile-app/dist/client",
+  "headers": [
+    {
+      "source": "/sw.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        }
+      ]
+    }
+  ]
+}

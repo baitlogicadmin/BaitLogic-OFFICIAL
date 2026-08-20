@@ -2,11 +2,14 @@
   "name": "baitlogic-deployable",
   "version": "1.0.0",
   "private": true,
-  "description": "Full-stack deployable BaitLogic fishing intel site",
+  "description": "BaitLogic Outdoors mobile-first community intelligence PWA",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node server.js"
+    "dev": "node server.js",
+    "build": "npm --prefix mobile-app run check:readiness",
+    "check:readiness": "npm --prefix mobile-app run check:readiness",
+    "test:legacy-api": "node --test tests/server.test.js"
   },
   "dependencies": {
     "compression": "^1.8.1",
@@ -15,4 +18,3 @@
     "helmet": "^8.1.0"
   }
 }
-
