@@ -7,6 +7,7 @@
 button { font:inherit; }
 .app-shell { height:100%; min-height:0; overflow:hidden; background:var(--paper); color:var(--ink); font-family:Roboto,system-ui,sans-serif; position:relative; }
 .app-screen { height:100%; background:var(--paper); }
+.native-scroll { position:absolute; inset:0; overflow-x:hidden; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior-y:contain; touch-action:pan-y; }
 .screen-content { min-height:100%; padding:116px 16px calc(var(--mobile-safe-area-height) + 98px); }
 .app-header { position:absolute; z-index:20; inset:0 0 auto; height:104px; padding:42px 14px 10px; display:grid; grid-template-columns:54px 1fr 36px; align-items:center; gap:10px; color:white; background:linear-gradient(180deg,#03102d,var(--navy)); border-bottom:2px solid rgba(244,181,29,.9); }
 .brand-logo { width:52px; height:52px; object-fit:cover; border-radius:50%; border:1px solid rgba(255,193,43,.8); box-shadow:0 2px 12px rgba(0,0,0,.38); }
@@ -44,60 +45,6 @@ button { font:inherit; }
 .toast{position:absolute;z-index:100;left:50%;bottom:calc(var(--mobile-safe-area-height) + 83px);transform:translateX(-50%);width:max-content;max-width:calc(100% - 34px);padding:10px 13px;display:flex;align-items:center;gap:7px;border-radius:30px;color:white;background:rgba(4,18,44,.95);box-shadow:0 7px 25px rgba(0,0,0,.25);font-size:10px;font-weight:600}.scroll-spacer{height:8px}
 @media(max-width:400px){.screen-content{padding-left:13px;padding-right:13px}.hero-card{height:210px}.feed-card{grid-template-columns:94px 1fr}.feed-card>img{width:94px}}
 
-/* Production runtime: use the visitor's real viewport instead of the design-preview device shell. */
-.phone-stage {
-  display: block;
-  width: 100%;
-  height: 100%;
-  padding: 0;
-}
-
-.phone-scale-box,
-.phone-device,
-.device-screen {
-  position: absolute !important;
-  inset: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
-  transform: none !important;
-  border: 0 !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-}
-
-.device-screen {
-  overflow: hidden;
-  cursor: auto !important;
-  -webkit-user-select: auto;
-  user-select: auto;
-}
-
-.device-screen *,
-.device-screen input,
-.device-screen textarea,
-.device-screen button,
-.device-screen a,
-.device-screen [role="button"] {
-  cursor: auto !important;
-}
-
-.device-menu-bar,
-.phone-bezel,
-.device-camera,
-.status-bar,
-.home-indicator-svg,
-.android-navigation-bar,
-.keyboard-dock,
-.mobile-cursor {
-  display: none !important;
-}
-
-.mobile-app-viewport,
-.mobile-app-viewport[data-platform="android"][data-keyboard-visible="false"] {
-  inset: 0 !important;
-  bottom: 0 !important;
-}
-
 .app-header {
   height: calc(76px + env(safe-area-inset-top));
   padding: max(10px, env(safe-area-inset-top)) 14px 10px;
@@ -119,3 +66,11 @@ button { font:inherit; }
 .toast {
   bottom: calc(83px + env(safe-area-inset-bottom));
 }
+
+.native-sheet-layer { position:absolute; z-index:90; inset:0; }
+.native-sheet-overlay { width:100%; height:100%; border:0; padding:0; cursor:pointer; }
+.native-bottom-sheet { bottom:0; max-height:80dvh; padding-bottom:env(safe-area-inset-bottom); touch-action:auto; }
+.native-sheet-header { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
+.native-sheet-header>div { min-width:0; }
+.sheet-close { flex:0 0 auto; width:36px; height:36px; border:0; border-radius:50%; display:grid; place-items:center; color:var(--navy); background:#eef0f2; cursor:pointer; }
+.sheet-close:focus-visible { outline:3px solid rgba(33,104,165,.28); outline-offset:2px; }
