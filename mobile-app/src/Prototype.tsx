@@ -4,7 +4,7 @@ import {
   Cross2Icon, Crosshair2Icon, ExternalLinkIcon, EyeOpenIcon, GlobeIcon, HeartIcon, HomeIcon, LockClosedIcon,
   MagnifyingGlassIcon, PaperPlaneIcon, PersonIcon, PlusIcon, ReloadIcon, Share1Icon,
 } from "@radix-ui/react-icons";
-import { BottomSheet, KeyboardInput, KeyboardTextarea, MobileScroll, useKeyboard } from "./mobile";
+import { BottomSheet, MobileScroll } from "./mobile";
 import {
   addFieldCheck, backendConfigured, persistSavedIds, readFieldChecks, readSavedIds, relativeTime,
   saveWeeklyEmail, syncBaitLogicData, type FieldCheck, type SyncMode,
@@ -82,7 +82,6 @@ function ConnectionPill({ online, mode }: { online: boolean; mode: SyncMode }) {
 }
 
 export default function Prototype() {
-  const keyboard = useKeyboard();
   const [tab, setTab] = useState<Tab>("home");
   const [online, setOnline] = useState(navigator.onLine);
   const [reportOpen, setReportOpen] = useState(false);
@@ -143,7 +142,7 @@ export default function Prototype() {
   const submitReport = async () => {
     if (!note.trim()) { setNotice("Add one quick observation first"); return; }
     setReports(addFieldCheck(category, note)); setNote("");
-    keyboard.hide(); setReportOpen(false); setTab("community");
+    setReportOpen(false); setTab("community");
     setNotice(online && backendConfigured ? "Submitting Field Check" : "Saved on this device");
     const result = await syncBaitLogicData(navigator.onLine, { field: reportCaptcha });
     setReports(result.fieldChecks); setSyncMode(result.mode);
@@ -153,7 +152,7 @@ export default function Prototype() {
 
   const join = async () => {
     if (!email.includes("@")) { setNotice("Enter a valid email"); return; }
-    saveWeeklyEmail(email); keyboard.hide(); setJoinOpen(false);
+    saveWeeklyEmail(email); setJoinOpen(false);
     const result = await syncBaitLogicData(navigator.onLine, { email: emailCaptcha });
     setReports(result.fieldChecks); setSyncMode(result.mode);
     setEmailCaptcha(undefined);
@@ -164,7 +163,7 @@ export default function Prototype() {
     if (!navigator.onLine) { setNotice("Reconnect before syncing"); return; }
     const result = await syncBaitLogicData(true, { field: syncCaptcha });
     setReports(result.fieldChecks); setSyncMode(result.mode);
-    if (result.mode === "synced") { keyboard.hide(); setSyncOpen(false); setSyncCaptcha(undefined); }
+    if (result.mode === "synced") { setSyncOpen(false); setSyncCaptcha(undefined); }
     setNotice(result.mode === "synced" ? "Field Checks submitted for review" : "Still saved safely on this device");
   };
 
@@ -176,7 +175,7 @@ export default function Prototype() {
     } catch { setNotice("Sharing canceled"); }
   };
 
-  const showTab = (next: Tab) => { keyboard.hide(); setTab(next); };
+  const showTab = (next: Tab) => setTab(next);
   const topics = [["Water", "Clear edges · 68°"], ["Wildlife", "Movement before noon"], ["Trails", "Dry with shaded mud"], ["Conservation", "1 event this week"]];
   const visibleTopics = topics.filter(([name, detail]) => `${name} ${detail}`.toLowerCase().includes(search.trim().toLowerCase()));
 
@@ -216,7 +215,7 @@ export default function Prototype() {
             </section>
           </>}
 
-          {tab === "explore" && <section className="tab-view"><div className="view-kicker"><GlobeIcon /> LOCAL INTELLIGENCE</div><h1>Explore Highland</h1><p className="view-lead">A broad outdoor picture—water, wildlife, weather, access, and stewardship—in one place.</p><div className="search-shell"><MagnifyingGlassIcon /><KeyboardInput aria-label="Search places, species, or reports" value={search} onChange={(event) => setSearch(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter") keyboard.hide(); }} placeholder="Search places, species, or reports" />{search ? <button aria-label="Clear search" onClick={() => { setSearch(""); keyboard.hide(); }}><Cross2Icon /></button> : null}</div><div className="topic-grid">{visibleTopics.map(([name, detail]) => <button key={name} onClick={() => setNotice(`${name} view selected`)}><strong>{name}</strong><span>{detail}</span><ChevronRightIcon /></button>)}</div>{visibleTopics.length === 0 ? <p className="empty-state">No local topics match that search yet.</p> : null}<div className="map-card"><Crosshair2Icon /><div><strong>Highland area</strong><span>Precise community locations stay private.</span></div></div></section>}
+          {tab === "explore" && <section className="tab-view"><div className="view-kicker"><GlobeIcon /> LOCAL INTELLIGENCE</div><h1>Explore Highland</h1><p className="view-lead">A broad outdoor picture—water, wildlife, weather, access, and stewardship—in one place.</p><div className="search-shell"><MagnifyingGlassIcon /><input aria-label="Search places, species, or reports" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search places, species, or reports" />{search ? <button aria-label="Clear search" onClick={() => setSearch("")}><Cross2Icon /></button> : null}</div><div className="topic-grid">{visibleTopics.map(([name, detail]) => <button key={name} onClick={() => setNotice(`${name} view selected`)}><strong>{name}</strong><span>{detail}</span><ChevronRightIcon /></button>)}</div>{visibleTopics.length === 0 ? <p className="empty-state">No local topics match that search yet.</p> : null}<div className="map-card"><Crosshair2Icon /><div><strong>Highland area</strong><span>Precise community locations stay private.</span></div></div></section>}
 
           {tab === "community" && <section className="tab-view"><div className="view-kicker"><PersonIcon /> COMMUNITY FIELD NOTES</div><h1>Useful beats impressive.</h1><p className="view-lead">Real observations from people who care about the same places.</p><button className="compact-cta" onClick={() => setReportOpen(true)}><PlusIcon /> What did you notice?</button><div className="report-list">{reports.map((report) => <article key={report.id}><div className={`avatar ${report.syncState === "approved" ? "verified" : ""}`}>BL</div><div><span>{report.category} · {relativeTime(report.createdAt)}</span><strong>{report.note}</strong><small>{report.syncState === "approved" ? <CheckCircledIcon /> : <LockClosedIcon />} {report.syncState === "approved" ? "Community approved" : report.syncState === "submitted" ? "Awaiting review" : "Saved on this device"} · {report.place}</small></div></article>)}<article><div className="avatar verified">KM</div><div><span>Wildlife sample · 46 min ago</span><strong>Two doe moving along the east timber.</strong><small><CheckCircledIcon /> Example community note · Highland area</small></div></article><article><div className="avatar">DR</div><div><span>Trail sample · 1 hr ago</span><strong>South loop is clear; soft ground near the bridge.</strong><small><LockClosedIcon /> Example note · exact location protected</small></div></article></div></section>}
 
@@ -229,8 +228,8 @@ export default function Prototype() {
         <button className={tab === "home" ? "active" : ""} onClick={() => showTab("home")}><HomeIcon /><span>Home</span></button><button className={tab === "explore" ? "active" : ""} onClick={() => showTab("explore")}><MagnifyingGlassIcon /><span>Explore</span></button><button className="report-tab" onClick={() => setReportOpen(true)}><span><PlusIcon /></span><small>Report</small></button><button className={tab === "community" ? "active" : ""} onClick={() => showTab("community")}><HeartIcon /><span>Community</span></button><button className={tab === "saved" ? "active" : ""} onClick={() => showTab("saved")}><BookmarkIcon /><span>Saved</span></button>
       </nav>
 
-      <BottomSheet open={reportOpen} onOpenChange={(open) => { setReportOpen(open); if (!open) setReportCaptcha(undefined); }} title="What did you notice?" description="A quick Field Check helps everyone understand the local picture." snap={0.8}><div className="sheet-form"><label>WHAT KIND OF SIGNAL?</label><div className="category-row">{["Water", "Wildlife", "Trail", "Weather", "Conservation"].map((item) => <button className={category === item ? "selected" : ""} onClick={() => setCategory(item)} key={item}>{item}</button>)}</div><label htmlFor="observation">WHAT DID YOU NOTICE?</label><KeyboardTextarea id="observation" value={note} onChange={(event) => setNote(event.target.value)} placeholder="Example: Clear water near the bank; more bird movement than yesterday…" /><div className="privacy-card"><LockClosedIcon /><div><strong>Privacy is the default</strong><span>We show “Highland area,” never your exact spot.</span></div></div>{online && backendConfigured ? <TurnstileChallenge onToken={setReportCaptcha} /> : null}<button className="submit-button" disabled={captchaEnabled && online && backendConfigured && !reportCaptcha} onClick={() => void submitReport()}>{online && backendConfigured ? "Submit Field Check" : online ? "Save on this device" : "Save offline"}<ChevronRightIcon /></button></div></BottomSheet>
-      <BottomSheet open={joinOpen} onOpenChange={(open) => { setJoinOpen(open); if (!open) setEmailCaptcha(undefined); }} title="Get the weekly local picture" description="One genuinely useful email. No paywall, no clutter." snap={captchaEnabled ? 0.66 : 0.52}><div className="sheet-form"><label htmlFor="email">EMAIL</label><KeyboardInput id="email" type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="you@example.com" /><div className="trust-row"><CheckCircledIcon /> Unsubscribe anytime · exact locations never included.</div>{online && backendConfigured ? <TurnstileChallenge onToken={setEmailCaptcha} /> : null}<button className="submit-button" disabled={captchaEnabled && online && backendConfigured && !emailCaptcha} onClick={() => void join()}>Join free <ChevronRightIcon /></button></div></BottomSheet>
+      <BottomSheet open={reportOpen} onOpenChange={(open) => { setReportOpen(open); if (!open) setReportCaptcha(undefined); }} title="What did you notice?" description="A quick Field Check helps everyone understand the local picture." snap={0.8}><div className="sheet-form"><label>WHAT KIND OF SIGNAL?</label><div className="category-row">{["Water", "Wildlife", "Trail", "Weather", "Conservation"].map((item) => <button className={category === item ? "selected" : ""} onClick={() => setCategory(item)} key={item}>{item}</button>)}</div><label htmlFor="observation">WHAT DID YOU NOTICE?</label><textarea id="observation" value={note} onChange={(event) => setNote(event.target.value)} placeholder="Example: Clear water near the bank; more bird movement than yesterday…" /><div className="privacy-card"><LockClosedIcon /><div><strong>Privacy is the default</strong><span>We show “Highland area,” never your exact spot.</span></div></div>{online && backendConfigured ? <TurnstileChallenge onToken={setReportCaptcha} /> : null}<button className="submit-button" disabled={captchaEnabled && online && backendConfigured && !reportCaptcha} onClick={() => void submitReport()}>{online && backendConfigured ? "Submit Field Check" : online ? "Save on this device" : "Save offline"}<ChevronRightIcon /></button></div></BottomSheet>
+      <BottomSheet open={joinOpen} onOpenChange={(open) => { setJoinOpen(open); if (!open) setEmailCaptcha(undefined); }} title="Get the weekly local picture" description="One genuinely useful email. No paywall, no clutter." snap={captchaEnabled ? 0.66 : 0.52}><div className="sheet-form"><label htmlFor="email">EMAIL</label><input id="email" type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="you@example.com" /><div className="trust-row"><CheckCircledIcon /> Unsubscribe anytime · exact locations never included.</div>{online && backendConfigured ? <TurnstileChallenge onToken={setEmailCaptcha} /> : null}<button className="submit-button" disabled={captchaEnabled && online && backendConfigured && !emailCaptcha} onClick={() => void join()}>Join free <ChevronRightIcon /></button></div></BottomSheet>
       <BottomSheet open={syncOpen} onOpenChange={(open) => { setSyncOpen(open); if (!open) setSyncCaptcha(undefined); }} title="Sync saved Field Checks" description="One quick privacy-friendly check, then your offline notes can join the review queue." snap={0.46}><div className="sheet-form"><TurnstileChallenge onToken={setSyncCaptcha} /><button className="submit-button" disabled={!syncCaptcha} onClick={() => void syncPending()}>Verify & sync <ReloadIcon /></button></div></BottomSheet>
       {notice && <div className="toast" role="status"><CheckCircledIcon /> {notice}</div>}
     </div>
