@@ -1,16 +1,68 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { type PropsWithChildren, useEffect, useId, useMemo, useRef, useState } from "react";
 import {
   BellIcon, BookmarkFilledIcon, BookmarkIcon, CheckCircledIcon, ChevronRightIcon,
   Cross2Icon, Crosshair2Icon, ExternalLinkIcon, EyeOpenIcon, GlobeIcon, HeartIcon, HomeIcon, LockClosedIcon,
   MagnifyingGlassIcon, PaperPlaneIcon, PersonIcon, PlusIcon, ReloadIcon, Share1Icon,
 } from "@radix-ui/react-icons";
-import { BottomSheet, MobileScroll } from "./mobile";
 import {
   addFieldCheck, backendConfigured, persistSavedIds, readFieldChecks, readSavedIds, relativeTime,
   saveWeeklyEmail, syncBaitLogicData, type FieldCheck, type SyncMode,
 } from "./data/baitlogicData";
 
 type Tab = "home" | "explore" | "community" | "saved";
+
+type AppSheetProps = PropsWithChildren<{
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  title: string;
+  description?: string;
+  snap?: number;
+}>;
+
+function AppSheet({ open, onOpenChange, title, description, snap = 0.72, children }: AppSheetProps) {
+  const titleId = useId();
+  const descriptionId = useId();
+
+  useEffect(() => {
+    if (!open) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onOpenChange(false);
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [onOpenChange, open]);
+
+  if (!open) return null;
+
+  return (
+    <div className="native-sheet-layer">
+      <button
+        type="button"
+        className="sheet-overlay native-sheet-overlay"
+        aria-label={`Close ${title}`}
+        onClick={() => onOpenChange(false)}
+      />
+      <section
+        className="bottom-sheet native-bottom-sheet"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        aria-describedby={description ? descriptionId : undefined}
+        style={{ maxHeight: `${Math.round(snap * 100)}dvh` }}
+      >
+        <div className="sheet-handle-zone" aria-hidden="true"><div className="sheet-handle" /></div>
+        <div className="sheet-header native-sheet-header">
+          <div>
+            <h2 id={titleId} className="sheet-title">{title}</h2>
+            {description ? <p id={descriptionId} className="sheet-description">{description}</p> : null}
+          </div>
+          <button type="button" className="sheet-close" aria-label={`Close ${title}`} onClick={() => onOpenChange(false)}><Cross2Icon /></button>
+        </div>
+        <div className="sheet-content">{children}</div>
+      </section>
+    </div>
+  );
+}
 
 type TurnstileApi = {
   render: (container: HTMLElement, options: Record<string, unknown>) => string;
@@ -187,7 +239,7 @@ export default function Prototype() {
         <button className="icon-button" aria-label="Notifications" onClick={() => setNotice("You’re all caught up")}><BellIcon /></button>
       </header>
 
-      <MobileScroll className="app-screen">
+      <div className="app-screen native-scroll">
         <main className="screen-content" data-testid="baitlogic-home" aria-label="BaitLogic Outdoors local field intelligence">
           {tab === "home" && <>
             <section className="hero-card">
@@ -222,15 +274,15 @@ export default function Prototype() {
           {tab === "saved" && <section className="tab-view"><div className="view-kicker"><BookmarkIcon /> YOUR FIELD KIT</div><h1>Saved for the next outing.</h1><p className="view-lead">Your important local notes remain available when service drops.</p><div className="offline-panel"><ReloadIcon /><div><strong>{online ? syncMode === "synced" ? "Device copy and community are current" : "Offline copy is current" : "You’re viewing the offline copy"}</strong><span>{saved.length + reports.length + 3} items stored on this device</span></div><CheckCircledIcon /></div>{captchaEnabled && online && reports.some((report) => report.syncState === "pending") ? <button className="sync-button" onClick={() => setSyncOpen(true)}><ReloadIcon /> Verify & sync saved Field Checks</button> : null}<div className="feed-list saved-list">{localPicture.filter((item) => saved.includes(item.id)).map((item) => <article className="feed-card" key={item.id}><img src={item.image} alt="" /><div className="feed-body"><p className={`feed-eyebrow ${item.accent}`}>{item.eyebrow}</p><h3>{item.title}</h3><span>{item.detail}</span><div className="feed-actions"><button onClick={() => toggleSave(item.id)}><BookmarkFilledIcon /> Saved</button></div></div></article>)}</div></section>}
           <div className="scroll-spacer" />
         </main>
-      </MobileScroll>
+      </div>
 
       <nav className="bottom-nav" aria-label="Primary navigation">
         <button className={tab === "home" ? "active" : ""} onClick={() => showTab("home")}><HomeIcon /><span>Home</span></button><button className={tab === "explore" ? "active" : ""} onClick={() => showTab("explore")}><MagnifyingGlassIcon /><span>Explore</span></button><button className="report-tab" onClick={() => setReportOpen(true)}><span><PlusIcon /></span><small>Report</small></button><button className={tab === "community" ? "active" : ""} onClick={() => showTab("community")}><HeartIcon /><span>Community</span></button><button className={tab === "saved" ? "active" : ""} onClick={() => showTab("saved")}><BookmarkIcon /><span>Saved</span></button>
       </nav>
 
-      <BottomSheet open={reportOpen} onOpenChange={(open) => { setReportOpen(open); if (!open) setReportCaptcha(undefined); }} title="What did you notice?" description="A quick Field Check helps everyone understand the local picture." snap={0.8}><div className="sheet-form"><label>WHAT KIND OF SIGNAL?</label><div className="category-row">{["Water", "Wildlife", "Trail", "Weather", "Conservation"].map((item) => <button className={category === item ? "selected" : ""} onClick={() => setCategory(item)} key={item}>{item}</button>)}</div><label htmlFor="observation">WHAT DID YOU NOTICE?</label><textarea id="observation" value={note} onChange={(event) => setNote(event.target.value)} placeholder="Example: Clear water near the bank; more bird movement than yesterday…" /><div className="privacy-card"><LockClosedIcon /><div><strong>Privacy is the default</strong><span>We show “Highland area,” never your exact spot.</span></div></div>{online && backendConfigured ? <TurnstileChallenge onToken={setReportCaptcha} /> : null}<button className="submit-button" disabled={captchaEnabled && online && backendConfigured && !reportCaptcha} onClick={() => void submitReport()}>{online && backendConfigured ? "Submit Field Check" : online ? "Save on this device" : "Save offline"}<ChevronRightIcon /></button></div></BottomSheet>
-      <BottomSheet open={joinOpen} onOpenChange={(open) => { setJoinOpen(open); if (!open) setEmailCaptcha(undefined); }} title="Get the weekly local picture" description="One genuinely useful email. No paywall, no clutter." snap={captchaEnabled ? 0.66 : 0.52}><div className="sheet-form"><label htmlFor="email">EMAIL</label><input id="email" type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="you@example.com" /><div className="trust-row"><CheckCircledIcon /> Unsubscribe anytime · exact locations never included.</div>{online && backendConfigured ? <TurnstileChallenge onToken={setEmailCaptcha} /> : null}<button className="submit-button" disabled={captchaEnabled && online && backendConfigured && !emailCaptcha} onClick={() => void join()}>Join free <ChevronRightIcon /></button></div></BottomSheet>
-      <BottomSheet open={syncOpen} onOpenChange={(open) => { setSyncOpen(open); if (!open) setSyncCaptcha(undefined); }} title="Sync saved Field Checks" description="One quick privacy-friendly check, then your offline notes can join the review queue." snap={0.46}><div className="sheet-form"><TurnstileChallenge onToken={setSyncCaptcha} /><button className="submit-button" disabled={!syncCaptcha} onClick={() => void syncPending()}>Verify & sync <ReloadIcon /></button></div></BottomSheet>
+      <AppSheet open={reportOpen} onOpenChange={(open) => { setReportOpen(open); if (!open) setReportCaptcha(undefined); }} title="What did you notice?" description="A quick Field Check helps everyone understand the local picture." snap={0.8}><div className="sheet-form"><label>WHAT KIND OF SIGNAL?</label><div className="category-row">{["Water", "Wildlife", "Trail", "Weather", "Conservation"].map((item) => <button className={category === item ? "selected" : ""} onClick={() => setCategory(item)} key={item}>{item}</button>)}</div><label htmlFor="observation">WHAT DID YOU NOTICE?</label><textarea id="observation" value={note} onChange={(event) => setNote(event.target.value)} placeholder="Example: Clear water near the bank; more bird movement than yesterday…" /><div className="privacy-card"><LockClosedIcon /><div><strong>Privacy is the default</strong><span>We show “Highland area,” never your exact spot.</span></div></div>{online && backendConfigured ? <TurnstileChallenge onToken={setReportCaptcha} /> : null}<button className="submit-button" disabled={captchaEnabled && online && backendConfigured && !reportCaptcha} onClick={() => void submitReport()}>{online && backendConfigured ? "Submit Field Check" : online ? "Save on this device" : "Save offline"}<ChevronRightIcon /></button></div></AppSheet>
+      <AppSheet open={joinOpen} onOpenChange={(open) => { setJoinOpen(open); if (!open) setEmailCaptcha(undefined); }} title="Get the weekly local picture" description="One genuinely useful email. No paywall, no clutter." snap={captchaEnabled ? 0.66 : 0.52}><div className="sheet-form"><label htmlFor="email">EMAIL</label><input id="email" type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="you@example.com" /><div className="trust-row"><CheckCircledIcon /> Unsubscribe anytime · exact locations never included.</div>{online && backendConfigured ? <TurnstileChallenge onToken={setEmailCaptcha} /> : null}<button className="submit-button" disabled={captchaEnabled && online && backendConfigured && !emailCaptcha} onClick={() => void join()}>Join free <ChevronRightIcon /></button></div></AppSheet>
+      <AppSheet open={syncOpen} onOpenChange={(open) => { setSyncOpen(open); if (!open) setSyncCaptcha(undefined); }} title="Sync saved Field Checks" description="One quick privacy-friendly check, then your offline notes can join the review queue." snap={0.46}><div className="sheet-form"><TurnstileChallenge onToken={setSyncCaptcha} /><button className="submit-button" disabled={!syncCaptcha} onClick={() => void syncPending()}>Verify & sync <ReloadIcon /></button></div></AppSheet>
       {notice && <div className="toast" role="status"><CheckCircledIcon /> {notice}</div>}
     </div>
   );
