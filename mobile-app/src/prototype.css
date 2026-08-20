@@ -43,3 +43,79 @@ button { font:inherit; }
 .sheet-form{display:flex;flex-direction:column;gap:10px;padding-bottom:10px}.sheet-form label{margin-top:3px;color:#73520a;font-size:9px;font-weight:700;letter-spacing:.1em}.category-row{display:flex;gap:6px;flex-wrap:wrap}.category-row button{border:1px solid #d7d7d1;border-radius:30px;padding:7px 10px;color:#586273;background:white;font-size:9px;font-weight:600}.category-row button.selected{border-color:var(--navy);color:white;background:var(--navy)}.sheet-form input,.sheet-form textarea{width:100%;border:1px solid #cfd2d4;border-radius:13px;padding:12px;color:var(--ink);background:white;font:12px/1.4 Roboto,sans-serif;outline:none}.sheet-form textarea{min-height:90px;resize:none}.sheet-form input:focus,.sheet-form textarea:focus{border-color:#2168a5;box-shadow:0 0 0 3px rgba(33,104,165,.12)}.privacy-card{padding:11px;display:flex;gap:10px;align-items:center;border-radius:12px;background:#eef4f0;color:#176542}.privacy-card>div{display:flex;flex-direction:column;gap:3px}.privacy-card strong{font-size:11px}.privacy-card span{font-size:9px}.submit-button{width:100%;border:0;border-radius:13px;padding:13px 14px;display:flex;align-items:center;justify-content:center;gap:7px;color:white;background:var(--navy);font-size:12px;font-weight:700}.submit-button:disabled{opacity:.48;cursor:not-allowed}.trust-row{display:flex;align-items:center;gap:6px;color:#476452;font-size:9px}.turnstile-shell{display:flex;flex-direction:column;gap:5px;padding:7px;border:1px solid #e0ddd3;border-radius:12px;background:#faf9f4}.turnstile-shell>div{min-height:65px}.turnstile-shell small{color:#667085;font-size:8px;text-align:center}.sync-button{width:100%;margin:10px 0 14px;border:1px solid #c18b10;border-radius:12px;padding:11px;display:flex;align-items:center;justify-content:center;gap:7px;color:var(--navy);background:#fff8df;font-size:10px;font-weight:700}
 .toast{position:absolute;z-index:100;left:50%;bottom:calc(var(--mobile-safe-area-height) + 83px);transform:translateX(-50%);width:max-content;max-width:calc(100% - 34px);padding:10px 13px;display:flex;align-items:center;gap:7px;border-radius:30px;color:white;background:rgba(4,18,44,.95);box-shadow:0 7px 25px rgba(0,0,0,.25);font-size:10px;font-weight:600}.scroll-spacer{height:8px}
 @media(max-width:400px){.screen-content{padding-left:13px;padding-right:13px}.hero-card{height:210px}.feed-card{grid-template-columns:94px 1fr}.feed-card>img{width:94px}}
+
+/* Production runtime: use the visitor's real viewport instead of the design-preview device shell. */
+.phone-stage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+}
+
+.phone-scale-box,
+.phone-device,
+.device-screen {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  transform: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.device-screen {
+  overflow: hidden;
+  cursor: auto !important;
+  -webkit-user-select: auto;
+  user-select: auto;
+}
+
+.device-screen *,
+.device-screen input,
+.device-screen textarea,
+.device-screen button,
+.device-screen a,
+.device-screen [role="button"] {
+  cursor: auto !important;
+}
+
+.device-menu-bar,
+.phone-bezel,
+.device-camera,
+.status-bar,
+.home-indicator-svg,
+.android-navigation-bar,
+.keyboard-dock,
+.mobile-cursor {
+  display: none !important;
+}
+
+.mobile-app-viewport,
+.mobile-app-viewport[data-platform="android"][data-keyboard-visible="false"] {
+  inset: 0 !important;
+  bottom: 0 !important;
+}
+
+.app-header {
+  height: calc(76px + env(safe-area-inset-top));
+  padding: max(10px, env(safe-area-inset-top)) 14px 10px;
+}
+
+.screen-content {
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  padding-top: calc(88px + env(safe-area-inset-top));
+  padding-bottom: calc(94px + env(safe-area-inset-bottom));
+}
+
+.bottom-nav {
+  height: calc(72px + env(safe-area-inset-bottom));
+  padding-bottom: max(8px, env(safe-area-inset-bottom));
+}
+
+.toast {
+  bottom: calc(83px + env(safe-area-inset-bottom));
+}
