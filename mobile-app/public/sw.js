@@ -1,4 +1,4 @@
-const CACHE = "baitlogic-field-kit-v3";
+const CACHE = "baitlogic-field-kit-v4";
 const CORE = [
   "/manifest.webmanifest",
   "/assets/baitlogic-logo.png",
@@ -45,6 +45,27 @@ self.addEventListener("fetch", (event) => {
           return response;
         })
         .catch(() => caches.match("/")),
+    );
+    return;
+  }
+
+  if (requestUrl.pathname === "/api/barometer-snapshot") {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          if (response.ok) caches.open(CACHE).then((cache) => cache.put(event.request, response.clone()));
+          return response;
+        })
+        .catch(async () => {
+          const cached = await caches.match(event.request);
+          if (!cached) return new Response(JSON.stringify({ error: "No saved conditions are available offline." }), {
+            status: 503,
+            headers: { "Content-Type": "application/json", "X-BaitLogic-Source": "offline-miss" },
+          });
+          const headers = new Headers(cached.headers);
+          headers.set("X-BaitLogic-Source", "offline-cache");
+          return new Response(cached.body, { status: cached.status, statusText: cached.statusText, headers });
+        }),
     );
     return;
   }

@@ -32,6 +32,108 @@ test("weekly signup accepts and preserves native email typing", async ({ page })
   await expect(email).toHaveValue("angler@example.com");
 });
 
+const verifiedConditions = {
+  updatedAt: "2026-08-21T15:30:00.000Z",
+  location: { name: "Highland, Illinois", locality: "Highland", region: "Illinois" },
+  weather: {
+    temperatureF: 71.4,
+    apparentTemperatureF: 70.1,
+    code: 2,
+    pressureInHg: 29.83,
+    pressureDelta3h: -0.04,
+    pressureDelta6h: -0.06,
+    windMph: 11.2,
+    windDirection: 225,
+    gustMph: 18.6,
+    cloudCover: 54,
+    precipitationIn: 0,
+  },
+  alerts: [],
+};
+
+async function mockDeviceLocation(page: Page) {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "geolocation", {
+      configurable: true,
+      value: {
+        getCurrentPosition: (success: PositionCallback) => success({
+          coords: { latitude: 38.7395, longitude: -89.6712, accuracy: 12 },
+        } as GeolocationPosition),
+      },
+    });
+  });
+}
+
+test("home renders verified live conditions instead of sample values", async ({ page }) => {
+  await mockDeviceLocation(page);
+  await page.route("**/api/barometer-snapshot**", (route) => route.fulfill({
+    status: 200,
+    contentType: "application/json",
+    body: JSON.stringify(verifiedConditions),
+  }));
+  await page.goto("/");
+
+  await expect(page.getByRole("button", { name: "Refresh current location and conditions" })).toContainText("Highland, Illinois");
+  const conditions = page.getByLabel("Verified local weather conditions");
+  await expect(conditions).toContainText("71°");
+  await expect(conditions).toContainText("29.83 inHg");
+  await expect(conditions).toContainText("11 mph");
+  await expect(page.getByText("Live conditions verified.")).toHaveCount(0);
+  await expect(page.getByText("Sample conditions")).toHaveCount(0);
+  await expect(page.getByText("Two doe moving along the east timber.")).toHaveCount(0);
+});
+
+test("offline mode clearly dates the last verified conditions", async ({ page }) => {
+  await page.addInitScript((snapshot) => {
+    localStorage.setItem("baitlogic-live-conditions-v1", JSON.stringify(snapshot));
+    Object.defineProperty(navigator, "onLine", { configurable: true, get: () => false });
+  }, verifiedConditions);
+  await page.goto("/");
+
+  await expect(page.getByRole("button", { name: /Saved ·/ })).toBeVisible();
+  await expect(page.getByLabel("Verified local weather conditions")).toContainText("29.83 inHg");
+  await expect(page.getByText("WEATHER · SAVED OFFLINE")).toBeVisible();
+});
+
+test("location denial leaves honest blanks and a retry path", async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "geolocation", {
+      configurable: true,
+      value: { getCurrentPosition: (_success: PositionCallback, error: PositionErrorCallback) => error({ code: 1 } as GeolocationPositionError) },
+    });
+  });
+  await page.goto("/");
+
+  await expect(page.getByText("Location permission is off.", { exact: false })).toBeVisible();
+  await expect(page.getByLabel("Verified local weather conditions")).not.toContainText("82°");
+  await expect(page.getByRole("button", { name: "Use my location" })).toBeVisible();
+});
+
+test("official reporting is prominent, educational, and routes to both states", async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "geolocation", {
+      configurable: true,
+      value: { getCurrentPosition: (_success: PositionCallback, error: PositionErrorCallback) => error({ code: 1 } as GeolocationPositionError) },
+    });
+  });
+  await page.goto("/");
+
+  await expect(page.getByText("SEE SOMETHING? SAY SOMETHING.", { exact: true })).toBeVisible();
+  await expect(page.getByText("Document safely", { exact: false })).toBeVisible();
+  await page.getByRole("button", { name: "Open the official reporting guide" }).click();
+
+  const dialog = page.getByRole("dialog", { name: "See something? Say something." });
+  await expect(dialog.getByText("A BaitLogic Field Check does not notify officials.", { exact: false })).toBeVisible();
+  await expect(dialog.getByRole("link", { name: /Call Illinois DNR/ })).toHaveAttribute("href", "tel:+18772367529");
+  await expect(dialog.getByRole("link", { name: /Submit a pollution complaint/ })).toHaveAttribute("href", "https://epa.illinois.gov/pollution-complaint/submit-a-complaint.html");
+  await expect(dialog.getByRole("link", { name: /Wildlife reporting details/ })).toHaveAttribute("href", "https://dnr.illinois.gov/lawenforcement/target-poachers.html");
+
+  await dialog.getByRole("button", { name: "Missouri" }).click();
+  await expect(dialog.getByRole("link", { name: /Call Missouri Conservation/ })).toHaveAttribute("href", "tel:+18003921111");
+  await expect(dialog.getByRole("link", { name: /Report an environmental concern/ })).toHaveAttribute("href", "https://dnr.mo.gov/reporting/environmental-concern");
+  await expect(dialog.getByRole("link", { name: /24-hour spill line/ })).toHaveAttribute("href", "tel:+15736342436");
+});
+
 test("horizontal intent stays in Carousel and cannot create parent momentum", async ({ page }) => {
   const carousel = page.locator(".fixture-carousel");
   const card = page.locator(".carousel-card").nth(1);

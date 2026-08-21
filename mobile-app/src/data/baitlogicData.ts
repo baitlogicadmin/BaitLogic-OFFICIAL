@@ -23,7 +23,7 @@ type FieldCheckRow = {
 
 const FIELD_CHECKS_KEY = "baitlogic-field-checks-v2";
 const LEGACY_FIELD_CHECKS_KEY = "baitlogic-field-checks";
-const SAVED_KEY = "baitlogic-saved-items-v1";
+const SAVED_KEY = "baitlogic-saved-items-v2";
 const WEEKLY_EMAIL_KEY = "baitlogic-weekly-email-v2";
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL?.trim()
@@ -81,7 +81,7 @@ function migrateLegacyFieldChecks(): FieldCheck[] {
     id: `legacy-${item.id}`,
     category: item.category,
     note: item.note,
-    place: item.place || "Highland area",
+    place: item.place || "Area not shared",
     createdAt: new Date(item.id || Date.now()).toISOString(),
     syncState: "pending" as const,
   }));
@@ -95,7 +95,7 @@ export function readFieldChecks(): FieldCheck[] {
   return current.length ? current : migrateLegacyFieldChecks();
 }
 
-export function addFieldCheck(category: string, note: string, place = "Highland area") {
+export function addFieldCheck(category: string, note: string, place = "Area not shared") {
   const item: FieldCheck = {
     id: makeId(),
     category,
@@ -110,7 +110,7 @@ export function addFieldCheck(category: string, note: string, place = "Highland 
 }
 
 export function readSavedIds() {
-  return readJson<number[]>(SAVED_KEY, [2]);
+  return readJson<number[]>(SAVED_KEY, []);
 }
 
 export function persistSavedIds(ids: number[]) {
