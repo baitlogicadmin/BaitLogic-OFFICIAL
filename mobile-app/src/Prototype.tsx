@@ -128,8 +128,16 @@ function MiniLogo() {
   return <img className="brand-logo" src="/assets/baitlogic-logo.png" alt="BaitLogic Outdoors" />;
 }
 
-function ConnectionPill({ online, mode }: { online: boolean; mode: SyncMode }) {
-  const label = !online ? "Offline ready" : mode === "syncing" ? "Syncing" : mode === "synced" ? "Community synced" : "Device copy";
+function ConnectionPill({ online, mode, communityCount }: { online: boolean; mode: SyncMode; communityCount: number }) {
+  const label = !online
+    ? "Offline ready"
+    : mode === "syncing"
+      ? "Syncing"
+      : mode === "synced"
+        ? communityCount > 0
+          ? `${communityCount} community ${communityCount === 1 ? "note" : "notes"}`
+          : "BaitLogic connected"
+        : "Device copy";
   return <span className={`connection-pill ${online ? "is-online" : "is-offline"}`}><span className="connection-dot" />{label}</span>;
 }
 
@@ -150,6 +158,7 @@ export default function Prototype() {
   const [reportCaptcha, setReportCaptcha] = useState<string>();
   const [emailCaptcha, setEmailCaptcha] = useState<string>();
   const [syncCaptcha, setSyncCaptcha] = useState<string>();
+  const approvedReports = reports.filter((report) => report.syncState === "approved");
 
   useEffect(() => {
     let current = true;
@@ -177,9 +186,9 @@ export default function Prototype() {
   }, [notice]);
 
   const localPicture = useMemo(() => [
-    { id: 1, eyebrow: "WATER · VERIFIED", title: "Clear edges, light surface chop", detail: "Silver Lake · 18 min ago", image: "/assets/water-pulse.png", accent: "water" },
-    { id: 2, eyebrow: "WILDLIFE · COMMUNITY", title: "Two doe moving along the east timber", detail: "Highland area · 46 min ago", image: "/assets/hero-observer.png", accent: "wildlife" },
-    { id: 3, eyebrow: "CONSERVATION · THIS SATURDAY", title: "Help restore the creek bank", detail: "Meet at 8:00 AM · supplies provided", image: "/assets/habitat-restoration.png", accent: "conservation" },
+    { id: 1, eyebrow: "SAMPLE · WATER", title: "Clear edges, light surface chop", detail: "Example local signal", image: "/assets/water-pulse.png", accent: "water" },
+    { id: 2, eyebrow: "SAMPLE · WILDLIFE", title: "Two doe moving along the east timber", detail: "Example community observation", image: "/assets/hero-observer.png", accent: "wildlife" },
+    { id: 3, eyebrow: "SAMPLE · CONSERVATION", title: "Help restore the creek bank", detail: "Example conservation opportunity", image: "/assets/habitat-restoration.png", accent: "conservation" },
   ], []);
 
   const toggleSave = (id: number) => {
@@ -245,7 +254,7 @@ export default function Prototype() {
           {tab === "home" && <>
             <section className="hero-card">
               <img src="/assets/hero-observer.png" alt="Outdoor observer beside a southern Illinois lake" /><div className="hero-shade" />
-              <div className="hero-topline"><ConnectionPill online={online} mode={syncMode} /><span>Sample conditions</span></div>
+              <div className="hero-topline"><ConnectionPill online={online} mode={syncMode} communityCount={approvedReports.length} /><span>Sample conditions</span></div>
               <div className="hero-copy"><p>{currentDateLabel}</p><h1>Highland outdoor pulse</h1><span>One calm, useful picture before you head outside.</span></div>
             </section>
             <section className="conditions-grid" aria-label="Sample local conditions">
@@ -255,7 +264,7 @@ export default function Prototype() {
             <button className="primary-cta" onClick={() => setReportOpen(true)}><span className="cta-icon"><PlusIcon /></span><span><strong>What did you notice?</strong><small>30 seconds · any outdoor observation</small></span><ChevronRightIcon /></button>
             <p className="privacy-line"><LockClosedIcon /> No expertise needed. Exact spots stay private.</p>
             <section className="section-block">
-              <div className="section-heading"><div><p>AROUND HIGHLAND</p><h2>The local picture</h2></div><button onClick={() => showTab("explore")}>Explore <ChevronRightIcon /></button></div>
+              <div className="section-heading"><div><p>AROUND HIGHLAND</p><h2>The local picture</h2><small>{approvedReports.length > 0 ? `${approvedReports.length} approved community ${approvedReports.length === 1 ? "observation" : "observations"}` : "No approved community observations yet · examples are clearly labeled below"}</small></div><button onClick={() => showTab("explore")}>Explore <ChevronRightIcon /></button></div>
               <div className="feed-list">{localPicture.map((item) => <article className="feed-card" key={item.id}><img src={item.image} alt="" /><div className="feed-body"><p className={`feed-eyebrow ${item.accent}`}>{item.eyebrow}</p><h3>{item.title}</h3><span>{item.detail}</span><div className="feed-actions"><button onClick={() => toggleSave(item.id)}>{saved.includes(item.id) ? <BookmarkFilledIcon /> : <BookmarkIcon />}{saved.includes(item.id) ? "Saved" : "Save"}</button><button onClick={() => void shareItem(item.title, item.detail)}><Share1Icon /> Share</button></div></div></article>)}</div>
             </section>
             <section className="weekly-card"><div className="weekly-icon"><PaperPlaneIcon /></div><div><span>THE WEEKLY LOCAL PICTURE</span><strong>Weather, water, wildlife, and one good way to help.</strong><small>Free. Useful. Never noisy.</small></div><button onClick={() => setJoinOpen(true)}>Join free</button></section>
@@ -270,9 +279,9 @@ export default function Prototype() {
 
           {tab === "explore" && <section className="tab-view"><div className="view-kicker"><GlobeIcon /> LOCAL INTELLIGENCE</div><h1>Explore Highland</h1><p className="view-lead">A broad outdoor picture—water, wildlife, weather, access, and stewardship—in one place.</p><div className="search-shell"><MagnifyingGlassIcon /><input aria-label="Search places, species, or reports" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search places, species, or reports" />{search ? <button aria-label="Clear search" onClick={() => setSearch("")}><Cross2Icon /></button> : null}</div><div className="topic-grid">{visibleTopics.map(([name, detail]) => <button key={name} onClick={() => setNotice(`${name} view selected`)}><strong>{name}</strong><span>{detail}</span><ChevronRightIcon /></button>)}</div>{visibleTopics.length === 0 ? <p className="empty-state">No local topics match that search yet.</p> : null}<div className="map-card"><Crosshair2Icon /><div><strong>Highland area</strong><span>Precise community locations stay private.</span></div></div></section>}
 
-          {tab === "community" && <section className="tab-view"><div className="view-kicker"><PersonIcon /> COMMUNITY FIELD NOTES</div><h1>Useful beats impressive.</h1><p className="view-lead">Real observations from people who care about the same places.</p><button className="compact-cta" onClick={() => setReportOpen(true)}><PlusIcon /> What did you notice?</button><div className="report-list">{reports.map((report) => <article key={report.id}><div className={`avatar ${report.syncState === "approved" ? "verified" : ""}`}>BL</div><div><span>{report.category} · {relativeTime(report.createdAt)}</span><strong>{report.note}</strong><small>{report.syncState === "approved" ? <CheckCircledIcon /> : <LockClosedIcon />} {report.syncState === "approved" ? "Community approved" : report.syncState === "submitted" ? "Awaiting review" : "Saved on this device"} · {report.place}</small></div></article>)}<article><div className="avatar verified">KM</div><div><span>Wildlife sample · 46 min ago</span><strong>Two doe moving along the east timber.</strong><small><CheckCircledIcon /> Example community note · Highland area</small></div></article><article><div className="avatar">DR</div><div><span>Trail sample · 1 hr ago</span><strong>South loop is clear; soft ground near the bridge.</strong><small><LockClosedIcon /> Example note · exact location protected</small></div></article></div></section>}
+          {tab === "community" && <section className="tab-view"><div className="view-kicker"><PersonIcon /> COMMUNITY FIELD NOTES</div><h1>Useful beats impressive.</h1><p className="view-lead">Real observations from people who care about the same places.</p><button className="compact-cta" onClick={() => setReportOpen(true)}><PlusIcon /> What did you notice?</button><div className="report-list">{reports.length > 0 ? reports.map((report) => <article key={report.id}><div className={`avatar ${report.syncState === "approved" ? "verified" : ""}`}>BL</div><div><span>{report.category} · {relativeTime(report.createdAt)}</span><strong>{report.note}</strong><small>{report.syncState === "approved" ? <CheckCircledIcon /> : <LockClosedIcon />} {report.syncState === "approved" ? "Community approved" : report.syncState === "submitted" ? "Awaiting review" : "Saved on this device"} · {report.place}</small></div></article>) : <p className="empty-state">No Field Checks have reached the community yet. Your observation can be the first.</p>}</div></section>}
 
-          {tab === "saved" && <section className="tab-view"><div className="view-kicker"><BookmarkIcon /> YOUR FIELD KIT</div><h1>Saved for the next outing.</h1><p className="view-lead">Your important local notes remain available when service drops.</p><div className="offline-panel"><ReloadIcon /><div><strong>{online ? syncMode === "synced" ? "Device copy and community are current" : "Offline copy is current" : "You’re viewing the offline copy"}</strong><span>{saved.length + reports.length + 3} items stored on this device</span></div><CheckCircledIcon /></div>{captchaEnabled && online && reports.some((report) => report.syncState === "pending") ? <button className="sync-button" onClick={() => setSyncOpen(true)}><ReloadIcon /> Verify & sync saved Field Checks</button> : null}<div className="feed-list saved-list">{localPicture.filter((item) => saved.includes(item.id)).map((item) => <article className="feed-card" key={item.id}><img src={item.image} alt="" /><div className="feed-body"><p className={`feed-eyebrow ${item.accent}`}>{item.eyebrow}</p><h3>{item.title}</h3><span>{item.detail}</span><div className="feed-actions"><button onClick={() => toggleSave(item.id)}><BookmarkFilledIcon /> Saved</button></div></div></article>)}</div></section>}
+          {tab === "saved" && <section className="tab-view"><div className="view-kicker"><BookmarkIcon /> YOUR FIELD KIT</div><h1>Saved for the next outing.</h1><p className="view-lead">Your important local notes remain available when service drops.</p><div className="offline-panel"><ReloadIcon /><div><strong>{online ? syncMode === "synced" ? "Device copy is synced with BaitLogic" : "Offline copy is current" : "You’re viewing the offline copy"}</strong><span>{saved.length + reports.length + 3} items stored on this device</span></div><CheckCircledIcon /></div>{captchaEnabled && online && reports.some((report) => report.syncState === "pending") ? <button className="sync-button" onClick={() => setSyncOpen(true)}><ReloadIcon /> Verify & sync saved Field Checks</button> : null}<div className="feed-list saved-list">{localPicture.filter((item) => saved.includes(item.id)).map((item) => <article className="feed-card" key={item.id}><img src={item.image} alt="" /><div className="feed-body"><p className={`feed-eyebrow ${item.accent}`}>{item.eyebrow}</p><h3>{item.title}</h3><span>{item.detail}</span><div className="feed-actions"><button onClick={() => toggleSave(item.id)}><BookmarkFilledIcon /> Saved</button></div></div></article>)}</div></section>}
           <div className="scroll-spacer" />
         </main>
       </div>
