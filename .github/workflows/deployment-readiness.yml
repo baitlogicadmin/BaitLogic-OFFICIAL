@@ -13,7 +13,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 12
     env:
-      VITE_TURNSTILE_SITE_KEY: ${{ secrets.VITE_TURNSTILE_SITE_KEY }}
+      # CI uses Cloudflare's documented public test sitekey when the optional
+      # repository secret is absent. Vercel preview/production still use the real key.
+      VITE_TURNSTILE_SITE_KEY: ${{ secrets.VITE_TURNSTILE_SITE_KEY || '1x00000000000000000000AA' }}
       BAITLOGIC_PRODUCTION_TARGET: vercel
     steps:
       - name: Check out source
