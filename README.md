@@ -9,3 +9,9 @@ Our mission is to help people make smarter decisions outdoors, strengthen local 
 Built by the community. Powered by shared knowledge. Preserved for generations to come.
 
 BaitLogic — Beyond the Bite. Powered by People and Purpose.
+
+## Owner operations
+
+- [BaitLogic Independence Pack](BAITLOGIC_INDEPENDENCE_PACK.md) — recovery, setup, testing, deployment, rollback, backups, accounts, and honest current status
+- [Source of Truth](docs/BAITLOGIC_SOURCE_OF_TRUTH.md) — locked architecture, product, brand, security, and change-control decisions
+- [Deployment Readiness Gate](mobile-app/DEPLOYMENT_READINESS.md) — automated and human release requirements
