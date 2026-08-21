@@ -232,8 +232,16 @@ function MiniLogo() {
   return <img className="brand-logo" src="/assets/baitlogic-logo.png" alt="BaitLogic Outdoors" />;
 }
 
-function ConnectionPill({ online, mode }: { online: boolean; mode: SyncMode }) {
-  const label = !online ? "Offline ready" : mode === "syncing" ? "Syncing" : mode === "synced" ? "Community synced" : "Device copy";
+function ConnectionPill({ online, mode, communityCount }: { online: boolean; mode: SyncMode; communityCount: number }) {
+  const label = !online
+    ? "Offline ready"
+    : mode === "syncing"
+      ? "Syncing"
+      : mode === "synced"
+        ? communityCount > 0
+          ? `${communityCount} community ${communityCount === 1 ? "note" : "notes"}`
+          : "BaitLogic connected"
+        : "Device copy";
   return <span className={`connection-pill ${online ? "is-online" : "is-offline"}`}><span className="connection-dot" />{label}</span>;
 }
 
@@ -261,6 +269,7 @@ export default function Prototype() {
     return { status: navigator.onLine ? "idle" : "error", message: navigator.onLine ? "Waiting for location." : "No saved conditions are available offline yet." };
   });
   const conditionsStarted = useRef(false);
+  const approvedReports = reports.filter((report) => report.syncState === "approved");
 
   const loadConditions = useCallback(async () => {
     const cached = readConditionsCache();
@@ -463,7 +472,7 @@ export default function Prototype() {
           {tab === "home" && <>
             <section className="hero-card">
               <img src="/assets/hero-observer.png" alt="Outdoor observer beside a southern Illinois lake" /><div className="hero-shade" />
-              <div className="hero-topline"><ConnectionPill online={online} mode={syncMode} /><button className="conditions-status" onClick={() => void loadConditions()}>{conditionsStatus}</button></div>
+              <div className="hero-topline"><ConnectionPill online={online} mode={syncMode} communityCount={approvedReports.length} /><button className="conditions-status" onClick={() => void loadConditions()}>{conditionsStatus}</button></div>
               <div className="hero-copy"><p>{currentDateLabel}</p><h1>{conditions.data?.location?.locality || conditions.data?.location?.name?.split(",")[0] || "Your"} outdoor pulse</h1><span>Verified weather when online. Clearly dated saved conditions when offline.</span></div>
             </section>
             <section className="conditions-grid" aria-label="Verified local weather conditions" aria-live="polite">
@@ -499,7 +508,7 @@ export default function Prototype() {
 
           {tab === "community" && <section className="tab-view"><div className="view-kicker"><PersonIcon /> COMMUNITY FIELD NOTES</div><h1>Useful beats impressive.</h1><p className="view-lead">Only actual submitted or locally saved observations appear here.</p><button className="compact-cta" onClick={() => setReportOpen(true)}><PlusIcon /> What did you notice?</button><div className="report-list">{reports.map((report) => <article key={report.id}><div className={`avatar ${report.syncState === "approved" ? "verified" : ""}`}>BL</div><div><span>{report.category} · {relativeTime(report.createdAt)}</span><strong>{report.note}</strong><small>{report.syncState === "approved" ? <CheckCircledIcon /> : <LockClosedIcon />} {report.syncState === "approved" ? "Community approved" : report.syncState === "submitted" ? "Awaiting review" : "Saved on this device"} · {report.place}</small></div></article>)}{reports.length === 0 ? <p className="empty-state">No real Field Checks have been posted for this device or community yet.</p> : null}</div></section>}
 
-          {tab === "saved" && <section className="tab-view"><div className="view-kicker"><BookmarkIcon /> YOUR FIELD KIT</div><h1>Saved for the next outing.</h1><p className="view-lead">Your actual reports and last verified conditions remain available when service drops.</p><div className="offline-panel"><ReloadIcon /><div><strong>{online ? syncMode === "synced" ? "Device copy and community are current" : "Offline copy is current" : "You’re viewing the offline copy"}</strong><span>{storedItemCount} verified or user-created {storedItemCount === 1 ? "item" : "items"} stored on this device</span></div><CheckCircledIcon /></div>{captchaEnabled && online && reports.some((report) => report.syncState === "pending") ? <button className="sync-button" onClick={() => setSyncOpen(true)}><ReloadIcon /> Verify & sync saved Field Checks</button> : null}<div className="feed-list saved-list">{localPicture.filter((item) => saved.includes(item.id)).map((item) => <article className="feed-card" key={item.id}><img src={item.image} alt="" /><div className="feed-body"><p className={`feed-eyebrow ${item.accent}`}>{item.eyebrow}</p><h3>{item.title}</h3><span>{item.detail}</span><div className="feed-actions"><button onClick={() => toggleSave(item.id)}><BookmarkFilledIcon /> Saved</button></div></div></article>)}</div></section>}
+          {tab === "saved" && <section className="tab-view"><div className="view-kicker"><BookmarkIcon /> YOUR FIELD KIT</div><h1>Saved for the next outing.</h1><p className="view-lead">Your actual reports and last verified conditions remain available when service drops.</p><div className="offline-panel"><ReloadIcon /><div><strong>{online ? syncMode === "synced" ? "Device copy is synced with BaitLogic" : "Offline copy is current" : "You’re viewing the offline copy"}</strong><span>{storedItemCount} verified or user-created {storedItemCount === 1 ? "item" : "items"} stored on this device</span></div><CheckCircledIcon /></div>{captchaEnabled && online && reports.some((report) => report.syncState === "pending") ? <button className="sync-button" onClick={() => setSyncOpen(true)}><ReloadIcon /> Verify & sync saved Field Checks</button> : null}<div className="feed-list saved-list">{localPicture.filter((item) => saved.includes(item.id)).map((item) => <article className="feed-card" key={item.id}><img src={item.image} alt="" /><div className="feed-body"><p className={`feed-eyebrow ${item.accent}`}>{item.eyebrow}</p><h3>{item.title}</h3><span>{item.detail}</span><div className="feed-actions"><button onClick={() => toggleSave(item.id)}><BookmarkFilledIcon /> Saved</button></div></div></article>)}</div></section>}
           <div className="scroll-spacer" />
         </main>
       </div>
