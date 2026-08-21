@@ -27,7 +27,7 @@ test("weekly signup accepts and preserves native email typing", async ({ page })
   await page.getByRole("button", { name: "Join free", exact: true }).click();
 
   const email = page.getByLabel("EMAIL", { exact: true });
-  await email.fill("angler@example.com");
+  await email.pressSequentially("angler@example.com", { delay: 20 });
 
   await expect(email).toHaveValue("angler@example.com");
 });
