@@ -56,9 +56,23 @@ Deno.serve(async (request) => {
         html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;color:#061535"><p style="color:#b78300;font-weight:700;letter-spacing:.08em">BAITLOGIC OUTDOORS</p><h1>Your weekly local picture</h1><p>Weather, water, wildlife, trails, and conservation—kept useful and local.</p><ul style="padding-left:20px">${localPicture}</ul><p><a href="${publicSite}" style="display:inline-block;padding:12px 18px;border-radius:10px;background:#061535;color:#fff;text-decoration:none">Open BaitLogic</a></p><p style="font-size:12px;color:#667085">Exact locations are never included. <a href="${unsubscribeUrl}">Unsubscribe</a></p></div>`,
       }),
     });
-    if (!response.ok) { failed += 1; continue; }
+    const attemptedAt = new Date().toISOString();
+    if (!response.ok) {
+      failed += 1;
+      await supabase.from("weekly_signups").update({
+        last_delivery_attempt_at: attemptedAt,
+        last_delivery_error: `resend_http_${response.status}`,
+        updated_at: attemptedAt,
+      }).eq("email", signup.email);
+      continue;
+    }
     sent += 1;
-    await supabase.from("weekly_signups").update({ last_sent_at: new Date().toISOString() }).eq("email", signup.email);
+    await supabase.from("weekly_signups").update({
+      last_sent_at: attemptedAt,
+      last_delivery_attempt_at: attemptedAt,
+      last_delivery_error: null,
+      updated_at: attemptedAt,
+    }).eq("email", signup.email);
   }
 
   return json({ sent, failed, eligible: signups?.length ?? 0 });

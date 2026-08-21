@@ -1,12 +1,12 @@
 import { type PropsWithChildren, useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import {
-  BellIcon, BookmarkFilledIcon, BookmarkIcon, CheckCircledIcon, ChevronRightIcon,
+  ArrowDownIcon, ArrowUpIcon, BellIcon, BookmarkFilledIcon, BookmarkIcon, CheckCircledIcon, ChevronRightIcon,
   Cross2Icon, Crosshair2Icon, ExternalLinkIcon, EyeOpenIcon, GlobeIcon, HeartIcon, HomeIcon, LockClosedIcon,
-  MagnifyingGlassIcon, PaperPlaneIcon, PersonIcon, PlusIcon, ReloadIcon, Share1Icon,
+  MagnifyingGlassIcon, MinusIcon, PaperPlaneIcon, PersonIcon, PlusIcon, ReloadIcon, Share1Icon,
 } from "@radix-ui/react-icons";
 import {
   addFieldCheck, backendConfigured, persistSavedIds, readFieldChecks, readSavedIds, relativeTime,
-  saveWeeklyEmail, syncBaitLogicData, type FieldCheck, type SyncMode,
+  readWeeklySignup, saveWeeklyEmail, syncBaitLogicData, type FieldCheck, type SyncMode,
 } from "./data/baitlogicData";
 
 type Tab = "home" | "explore" | "community" | "saved";
@@ -75,13 +75,27 @@ function compassDirection(degrees: number) {
   return points[Math.round((((degrees % 360) + 360) % 360) / 45) % 8];
 }
 
-function pressureTrend(delta3: number, delta6: number) {
+type PressureTrend = "Falling fast" | "Falling" | "Rising fast" | "Rising" | "Steady";
+
+function pressureTrend(delta3: number, delta6: number): PressureTrend {
   const delta = Math.abs(delta3) >= 0.02 ? delta3 : delta6 / 2;
   if (delta <= -0.06) return "Falling fast";
   if (delta < -0.02) return "Falling";
   if (delta >= 0.06) return "Rising fast";
   if (delta > 0.02) return "Rising";
   return "Steady";
+}
+
+function pressureChange(value: number) {
+  return `${value > 0 ? "+" : ""}${value.toFixed(2)}`;
+}
+
+function pressureFieldRead(trend: PressureTrend) {
+  if (trend === "Falling fast") return "Fast weather change—check alerts and wind before choosing a pattern.";
+  if (trend === "Falling") return "A changing window. Compare pressure with wind, clouds, and recent local reports.";
+  if (trend === "Rising fast") return "Fast post-change pattern. Recheck wind and temperature before moving.";
+  if (trend === "Rising") return "Conditions are rebuilding. Test depth and cover instead of assuming one bite pattern.";
+  return "A stable pattern. Let recent depth, cover, and local observations lead.";
 }
 
 function updatedLabel(iso?: string, includeDate = false) {
@@ -258,6 +272,9 @@ export default function Prototype() {
   const [category, setCategory] = useState("Water");
   const [note, setNote] = useState("");
   const [email, setEmail] = useState("");
+  const [joining, setJoining] = useState(false);
+  const [joinMessage, setJoinMessage] = useState("");
+  const [weeklySignup, setWeeklySignup] = useState(readWeeklySignup);
   const [search, setSearch] = useState("");
   const [selectedReportingState, setSelectedReportingState] = useState<ReportingState>();
   const [reportCaptcha, setReportCaptcha] = useState<string>();
@@ -335,6 +352,7 @@ export default function Prototype() {
       if (!current) return;
       setReports(result.fieldChecks);
       setSyncMode(result.mode);
+      setWeeklySignup(readWeeklySignup());
     };
     const connected = () => void refresh(true);
     const disconnected = () => void refresh(false);
@@ -366,7 +384,9 @@ export default function Prototype() {
   const locationName = conditions.data?.location?.name || "Current area";
   const localityName = conditions.data?.location?.locality || conditions.data?.location?.name?.split(",")[0] || "your area";
   const conditionName = weather ? weatherLabels[weather.code] || "Current conditions" : "Conditions unavailable";
-  const trend = weather ? pressureTrend(weather.pressureDelta3h, weather.pressureDelta6h) : "—";
+  const trend = weather ? pressureTrend(weather.pressureDelta3h, weather.pressureDelta6h) : undefined;
+  const TrendIcon = trend?.startsWith("Falling") ? ArrowDownIcon : trend?.startsWith("Rising") ? ArrowUpIcon : MinusIcon;
+  const trendClass = trend?.startsWith("Falling") ? "is-falling" : trend?.startsWith("Rising") ? "is-rising" : trend ? "is-steady" : "is-missing";
   const conditionsAreLive = conditions.status === "live";
   const localPicture = useMemo(() => conditions.data ? [{
     id: 1001,
@@ -399,12 +419,52 @@ export default function Prototype() {
 
   const join = async () => {
     const normalizedEmail = email.trim();
-    if (!normalizedEmail.includes("@")) { setNotice("Enter a valid email"); return; }
-    saveWeeklyEmail(normalizedEmail); setEmail(""); setJoinOpen(false);
-    const result = await syncBaitLogicData(navigator.onLine, { email: emailCaptcha });
-    setReports(result.fieldChecks); setSyncMode(result.mode);
-    setEmailCaptcha(undefined);
-    setNotice(result.emailSynced ? "You’re on the weekly local list" : "Email saved on this device");
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i.test(normalizedEmail)) {
+      setJoinMessage("Enter a complete email address, such as name@example.com.");
+      return;
+    }
+
+    setJoining(true);
+    setJoinMessage("");
+    saveWeeklyEmail(normalizedEmail);
+    setWeeklySignup(readWeeklySignup());
+
+    if (!navigator.onLine || !backendConfigured) {
+      setJoining(false);
+      setEmail("");
+      setJoinOpen(false);
+      setNotice("Saved on this phone · reconnect and open Status to sync");
+      return;
+    }
+
+    try {
+      const result = await syncBaitLogicData(true, { email: emailCaptcha });
+      setReports(result.fieldChecks);
+      setSyncMode(result.mode);
+      setEmailCaptcha(undefined);
+      setWeeklySignup(readWeeklySignup());
+
+      if (!result.emailSynced) {
+        setJoinMessage("BaitLogic could not confirm the signup. It is saved on this phone; reconnect, verify, and try again.");
+        return;
+      }
+
+      setEmail("");
+      setJoinOpen(false);
+      const welcome = result.emailStatus.welcomeEmail;
+      setNotice(welcome === "sent" || welcome === "already_sent"
+        ? "Signup saved in BaitLogic · welcome email sent"
+        : welcome === "not_configured" || welcome === "queued"
+          ? "Signup saved in BaitLogic · email delivery setup is pending"
+          : welcome === "failed"
+            ? "Signup saved in BaitLogic · welcome email will retry"
+            : "Signup saved securely in BaitLogic");
+    } catch {
+      setEmailCaptcha(undefined);
+      setJoinMessage("BaitLogic could not confirm the signup. It is saved on this phone; reconnect, verify, and try again.");
+    } finally {
+      setJoining(false);
+    }
   };
 
   const syncPending = async () => {
@@ -454,7 +514,7 @@ export default function Prototype() {
     if ([95, 96, 99].includes(weather.code)) return "Thunderstorm conditions are present. Seek appropriate shelter and follow official warnings.";
     if (weather.apparentTemperatureF >= 100) return `Feels like ${Math.round(weather.apparentTemperatureF)}°F. Heat safety should lead the plan.`;
     if (weather.windMph >= 20 || weather.gustMph >= 30) return `${conditionName} with ${Math.round(weather.windMph)} mph wind and gusts near ${Math.round(weather.gustMph)} mph.`;
-    return `${conditionName}, ${trend.toLowerCase()} pressure, and ${Math.round(weather.windMph)} mph wind from the ${compassDirection(weather.windDirection)}.`;
+    return `${conditionName}, ${trend?.toLowerCase() || "unavailable"} pressure, and ${Math.round(weather.windMph)} mph wind from the ${compassDirection(weather.windDirection)}.`;
   })();
   const storedItemCount = reports.length + localPicture.length;
   const reporting = officialReporting[reportingState];
@@ -475,8 +535,31 @@ export default function Prototype() {
               <div className="hero-topline"><ConnectionPill online={online} mode={syncMode} communityCount={approvedReports.length} /><button className="conditions-status" onClick={() => void loadConditions()}>{conditionsStatus}</button></div>
               <div className="hero-copy"><p>{currentDateLabel}</p><h1>{conditions.data?.location?.locality || conditions.data?.location?.name?.split(",")[0] || "Your"} outdoor pulse</h1><span>Verified weather when online. Clearly dated saved conditions when offline.</span></div>
             </section>
-            <section className="conditions-grid" aria-label="Verified local weather conditions" aria-live="polite">
-              <div><span>NOW</span><strong>{weather ? `${Math.round(weather.temperatureF)}°` : "—"}</strong><small>{weather ? `${conditionName} · feels ${Math.round(weather.apparentTemperatureF)}°` : "Waiting for verified data"}</small></div><div><span>PRESSURE</span><strong>{weather ? trend : "—"}</strong><small>{weather ? `${weather.pressureInHg.toFixed(2)} inHg` : "Waiting for verified data"}</small></div><div><span>WIND</span><strong>{weather ? `${Math.round(weather.windMph)} mph` : "—"}</strong><small>{weather ? `${compassDirection(weather.windDirection)} · gusts ${Math.round(weather.gustMph)}` : "Waiting for verified data"}</small></div>
+            <section className={`barometer-card ${conditionsAreLive ? "is-live" : conditions.data ? "is-saved" : "needs-location"}`} aria-label="Verified local weather conditions" aria-live="polite">
+              <div className="barometer-spectrum" aria-hidden="true" />
+              <header className="barometer-header">
+                <div><span>BAITLOGIC BAROMETER</span><h2>{locationName}</h2><p>{conditionsAreLive ? `Live · updated ${updatedLabel(conditions.data?.updatedAt)}` : conditions.data ? `Saved offline · ${updatedLabel(conditions.data.updatedAt, true)}` : "Live location needed"}</p></div>
+                <button type="button" onClick={() => void loadConditions()} aria-label="Refresh live barometer"><ReloadIcon /> Refresh</button>
+              </header>
+              <div className="pressure-primary">
+                <div className="pressure-reading"><span>CURRENT PRESSURE</span><strong>{weather ? weather.pressureInHg.toFixed(2) : "—"} <small>inHg</small></strong></div>
+                <div className={`pressure-trend ${trendClass}`}><span className="trend-icon"><TrendIcon /></span><span><strong>{trend || "Location needed"}</strong><small>{trend ? pressureFieldRead(trend) : "Use your location to load a verified local pressure trend."}</small></span></div>
+              </div>
+              <div className="pressure-deltas">
+                <div><span>3 HOURS</span><strong>{weather ? `${pressureChange(weather.pressureDelta3h)} inHg` : "—"}</strong></div>
+                <div><span>6 HOURS</span><strong>{weather ? `${pressureChange(weather.pressureDelta6h)} inHg` : "—"}</strong></div>
+                <div><span>FIELD READ</span><strong>{trend || "Waiting"}</strong></div>
+              </div>
+              <details className="conditions-details">
+                <summary>Weather and wind details <ChevronRightIcon /></summary>
+                <div className="conditions-detail-grid">
+                  <div><span>TEMPERATURE</span><strong>{weather ? `${Math.round(weather.temperatureF)}°F` : "—"}</strong><small>{weather ? `${conditionName} · feels ${Math.round(weather.apparentTemperatureF)}°` : "Waiting for verified data"}</small></div>
+                  <div><span>WIND</span><strong>{weather ? `${Math.round(weather.windMph)} mph ${compassDirection(weather.windDirection)}` : "—"}</strong><small>{weather ? `Gusts ${Math.round(weather.gustMph)} mph` : "Waiting for verified data"}</small></div>
+                  <div><span>CLOUDS</span><strong>{weather ? `${Math.round(weather.cloudCover)}%` : "—"}</strong><small>Current cover</small></div>
+                  <div><span>PRECIPITATION</span><strong>{weather ? `${weather.precipitationIn.toFixed(2)} in` : "—"}</strong><small>Current observation</small></div>
+                </div>
+                <p>Pressure is context, not a promise. Pair the trend with wind, temperature, light, water conditions, and recent local observations.</p>
+              </details>
             </section>
             <section className="watch-card" aria-labelledby="watch-card-title">
               <div className="watch-heading"><span>SEE SOMETHING? SAY SOMETHING.</span><strong id="watch-card-title">Know what matters. Make a difference.</strong></div>
@@ -494,7 +577,7 @@ export default function Prototype() {
               <div className="section-heading"><div><p>AROUND {localityName.toUpperCase()}</p><h2>The verified picture</h2></div><button onClick={() => showTab("explore")}>Explore <ChevronRightIcon /></button></div>
               <div className="feed-list">{localPicture.map((item) => <article className="feed-card" key={item.id}><img src={item.image} alt="" /><div className="feed-body"><p className={`feed-eyebrow ${item.accent}`}>{item.eyebrow}</p><h3>{item.title}</h3><span>{item.detail}</span><div className="feed-actions"><button onClick={() => toggleSave(item.id)}>{saved.includes(item.id) ? <BookmarkFilledIcon /> : <BookmarkIcon />}{saved.includes(item.id) ? "Saved" : "Save"}</button><button onClick={() => void shareItem(item.title, item.detail)}><Share1Icon /> Share</button></div></div></article>)}{localPicture.length === 0 ? <div className="truth-empty"><ReloadIcon /><div><strong>No verified local conditions loaded.</strong><span>Use your location to replace blanks with current weather, pressure, and wind.</span></div><button onClick={() => void loadConditions()}>Use my location</button></div> : null}</div>
             </section>
-            <section className="weekly-card"><div className="weekly-icon"><PaperPlaneIcon /></div><div><span>THE WEEKLY LOCAL PICTURE</span><strong>Weather, water, wildlife, and one good way to help.</strong><small>Free. Useful. Never noisy.</small></div><button onClick={() => setJoinOpen(true)}>Join free</button></section>
+            <section className="weekly-card"><div className="weekly-icon"><PaperPlaneIcon /></div><div><span>THE WEEKLY LOCAL PICTURE</span><strong>Weather, water, wildlife, and one good way to help.</strong><small>{weeklySignup?.submitted ? "Signup saved securely in BaitLogic." : weeklySignup ? "Saved on this phone · waiting for verification." : "Free. Useful. Never noisy."}</small></div><button onClick={() => { setEmail(weeklySignup && !weeklySignup.submitted ? weeklySignup.email : ""); setJoinMessage(""); setJoinOpen(true); }}>{weeklySignup ? "Status" : "Join free"}</button></section>
             <section className="social-card" aria-label="Follow BaitLogic Outdoors">
               <div><span>FOLLOW THE FIELD</span><strong>Keep the local outdoor conversation going.</strong></div>
               <div className="social-links">
@@ -555,7 +638,7 @@ export default function Prototype() {
           <button className="submit-button" disabled={captchaEnabled && online && backendConfigured && !reportCaptcha} onClick={() => void submitReport()}>{online && backendConfigured ? "Submit Field Check" : online ? "Save on this device" : "Save offline"}<ChevronRightIcon /></button>
         </div>
       </AppSheet>
-      <AppSheet open={joinOpen} onOpenChange={(open) => { setJoinOpen(open); if (!open) setEmailCaptcha(undefined); }} title="Get the weekly local picture" description="One genuinely useful email. No paywall, no clutter." snap={captchaEnabled ? 0.66 : 0.52}><div className="sheet-form"><label htmlFor="weekly-email">EMAIL</label><input id="weekly-email" name="weekly-email" type="email" inputMode="email" autoComplete="email" autoCapitalize="none" spellCheck={false} value={email} onChange={(event) => setEmail(event.target.value)} placeholder="you@example.com" /><div className="trust-row"><CheckCircledIcon /> Unsubscribe anytime · exact locations never included.</div>{online && backendConfigured ? <TurnstileChallenge onToken={setEmailCaptcha} /> : null}<button className="submit-button" disabled={captchaEnabled && online && backendConfigured && !emailCaptcha} onClick={() => void join()}>Join free <ChevronRightIcon /></button></div></AppSheet>
+      <AppSheet open={joinOpen} onOpenChange={(open) => { if (!joining) setJoinOpen(open); if (!open) { setEmailCaptcha(undefined); setJoinMessage(""); } }} title="Get the weekly local picture" description="One genuinely useful email. No paywall, no clutter." snap={captchaEnabled ? 0.78 : 0.66}><div className="sheet-form weekly-sheet-form"><div className="signup-destination"><LockClosedIcon /><div><strong>Where your signup goes</strong><span>Online: your email and consent time are saved to BaitLogic’s private Supabase subscriber list. Offline: they stay on this phone until you reconnect and verify.</span></div></div>{weeklySignup ? <div className={`signup-status ${weeklySignup.submitted ? "is-synced" : "is-device"}`}><CheckCircledIcon /><span><strong>{weeklySignup.submitted ? "Saved in BaitLogic" : "Saved on this phone"}</strong><small>{weeklySignup.submitted ? "The private email system has your signup." : "Reconnect and verify to send it to the private subscriber list."}</small></span></div> : null}<label htmlFor="weekly-email">{weeklySignup?.submitted ? "USE A DIFFERENT EMAIL" : weeklySignup ? "EMAIL TO SYNC" : "EMAIL"}</label><input id="weekly-email" name="weekly-email" type="email" inputMode="email" autoComplete="email" autoCapitalize="none" spellCheck={false} value={email} onChange={(event) => { setEmail(event.target.value); setJoinMessage(""); }} placeholder="you@example.com" aria-describedby={joinMessage ? "weekly-email-message" : undefined} />{joinMessage ? <p id="weekly-email-message" className="form-message" role="alert">{joinMessage}</p> : null}<div className="trust-row"><CheckCircledIcon /> Unsubscribe anytime · exact locations never included.</div>{online && backendConfigured ? <TurnstileChallenge onToken={setEmailCaptcha} /> : null}<button className="submit-button" disabled={joining || (captchaEnabled && online && backendConfigured && !emailCaptcha)} onClick={() => void join()}>{joining ? "Saving securely…" : weeklySignup?.submitted ? "Save this email" : weeklySignup ? "Verify & sync" : "Join free"} {!joining ? <ChevronRightIcon /> : null}</button></div></AppSheet>
       <AppSheet open={syncOpen} onOpenChange={(open) => { setSyncOpen(open); if (!open) setSyncCaptcha(undefined); }} title="Sync saved Field Checks" description="One quick privacy-friendly check, then your offline notes can join the review queue." snap={0.46}><div className="sheet-form"><TurnstileChallenge onToken={setSyncCaptcha} /><button className="submit-button" disabled={!syncCaptcha} onClick={() => void syncPending()}>Verify & sync <ReloadIcon /></button></div></AppSheet>
       {notice && <div className="toast" role="status"><CheckCircledIcon /> {notice}</div>}
     </div>

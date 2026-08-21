@@ -46,11 +46,19 @@ test("keeps public backend writes behind the validated submission function", asy
 
 test("ships the weekly email sender with one-click unsubscribe", async () => {
   const sender = await readFile(new URL("../supabase/functions/send-baitlogic-weekly/index.ts", import.meta.url), "utf8");
+  const submitter = await readFile(new URL("../supabase/functions/submit-baitlogic-signal/index.ts", import.meta.url), "utf8");
   const unsubscribe = await readFile(new URL("../supabase/functions/unsubscribe-baitlogic-weekly/index.ts", import.meta.url), "utf8");
+  const deliveryMigration = await readFile(new URL("../supabase/migrations/20260821093332_track_weekly_email_delivery.sql", import.meta.url), "utf8");
 
   assert.match(sender, /RESEND_API_KEY/);
   assert.match(sender, /List-Unsubscribe-Post/);
   assert.match(sender, /Exact locations are never included/);
+  assert.match(sender, /last_delivery_attempt_at/);
+  assert.match(sender, /last_delivery_error/);
+  assert.match(submitter, /welcome_status/);
+  assert.match(submitter, /welcome_sent_at/);
+  assert.match(deliveryMigration, /welcome_status/);
+  assert.match(deliveryMigration, /last_delivery_attempt_at/);
   assert.match(unsubscribe, /status: "unsubscribed"/);
   assert.match(unsubscribe, /safeEqual/);
 });

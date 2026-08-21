@@ -84,19 +84,21 @@ Deno.serve(async (request) => {
     const consentAt = typeof body.consent_at === "string" ? body.consent_at : new Date().toISOString();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i.test(email) || email.length > 254) return json({ error: "invalid_email" }, 400);
 
-    const { error } = await supabase.from("weekly_signups").upsert({
+    const { data: signup, error } = await supabase.from("weekly_signups").upsert({
       email,
       source: "baitlogic_app",
       consent_at: consentAt,
       status: "subscribed",
       unsubscribed_at: null,
-    }, { onConflict: "email" });
+      updated_at: new Date().toISOString(),
+    }, { onConflict: "email" }).select("welcome_status").single();
     if (error) return json({ error: "could_not_save" }, 500);
 
     const resendKey = Deno.env.get("RESEND_API_KEY");
     const emailFrom = Deno.env.get("BAITLOGIC_EMAIL_FROM");
-    let welcome = "queued";
-    if (resendKey && emailFrom) {
+    let welcome = signup?.welcome_status === "sent" ? "already_sent" : "not_configured";
+    if (welcome !== "already_sent" && resendKey && emailFrom) {
+      const attemptedAt = new Date().toISOString();
       const response = await fetch("https://api.resend.com/emails", {
         method: "POST",
         headers: { authorization: `Bearer ${resendKey}`, "content-type": "application/json" },
@@ -107,7 +109,20 @@ Deno.serve(async (request) => {
           html: "<div style=\"font-family:Arial,sans-serif;max-width:560px;margin:auto;color:#061535\"><h1 style=\"color:#b78300\">You’re on the list.</h1><p>Each week, BaitLogic Outdoors will send one useful local picture covering weather, water, wildlife, trails, and one good way to help.</p><p>Exact community locations are never included.</p></div>",
         }),
       });
-      welcome = response.ok ? "sent" : "queued";
+      welcome = response.ok ? "sent" : "failed";
+      await supabase.from("weekly_signups").update({
+        welcome_status: welcome,
+        welcome_sent_at: response.ok ? attemptedAt : null,
+        last_delivery_attempt_at: attemptedAt,
+        last_delivery_error: response.ok ? null : `resend_http_${response.status}`,
+        updated_at: attemptedAt,
+      }).eq("email", email);
+    } else if (welcome === "not_configured") {
+      await supabase.from("weekly_signups").update({
+        welcome_status: "not_configured",
+        last_delivery_error: "email_provider_not_configured",
+        updated_at: new Date().toISOString(),
+      }).eq("email", email);
     }
     return json({ accepted: true, welcome }, 201);
   }

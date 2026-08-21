@@ -7,6 +7,7 @@
 - Preserve the approved Option 3 direction: premium editorial local outdoor intelligence, not a fishing-only app.
 - Use the supplied BaitLogic Outdoors compass-and-anchor logo and its deep navy, gold, and restrained spectrum as the brand source of truth.
 - Color direction approved on 2026-08-19: keep the current deep navy, gold, warm white, and controlled rainbow accents; do not recolor the approved app without a new explicit review.
+- Mobile readability direction approved on 2026-08-21: ordinary copy, controls, and form text must be comfortably readable on a phone. Avoid sub-12px body copy; use 16px text inputs to prevent mobile browser zoom, and preserve a clear editorial hierarchy rather than shrinking content to fit one screen.
 - The primary contribution CTA is “What did you notice?” and must reassure people: “No expertise needed. Exact spots stay private.”
 - Keep the product broad across weather, water, wildlife, trails, conservation, community, and saved/offline field intelligence.
 - Never deploy or publish without Amber's explicit review and approval.

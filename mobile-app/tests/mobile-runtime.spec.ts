@@ -32,6 +32,79 @@ test("weekly signup accepts and preserves native email typing", async ({ page })
   await expect(email).toHaveValue("angler@example.com");
 });
 
+test("weekly signup states exactly where it was saved and whether email delivery is active", async ({ page }) => {
+  await page.route("**/rest/v1/field_checks**", (route) => route.fulfill({
+    status: 200,
+    contentType: "application/json",
+    headers: { "content-range": "0-0/0" },
+    body: "[]",
+  }));
+  await page.route("**/auth/v1/signup**", (route) => route.fulfill({
+    status: 200,
+    contentType: "application/json",
+    body: JSON.stringify({
+      access_token: "test-access-token",
+      refresh_token: "test-refresh-token",
+      token_type: "bearer",
+      expires_in: 3600,
+      user: {
+        id: "00000000-0000-4000-8000-000000000001",
+        aud: "authenticated",
+        role: "authenticated",
+        email: "",
+        app_metadata: { provider: "anonymous", providers: ["anonymous"] },
+        user_metadata: {},
+        created_at: "2026-08-21T00:00:00.000Z",
+      },
+    }),
+  }));
+  await page.route("**/functions/v1/submit-baitlogic-signal", async (route) => {
+    const payload = route.request().postDataJSON() as { kind?: string; email?: string };
+    expect(payload.kind).toBe("weekly_signup");
+    expect(payload.email).toBe("reader@example.com");
+    await route.fulfill({
+      status: 201,
+      contentType: "application/json",
+      body: JSON.stringify({ accepted: true, welcome: "not_configured" }),
+    });
+  });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Join free", exact: true }).click();
+  const signup = page.getByRole("dialog", { name: "Get the weekly local picture" });
+  await expect(signup.getByText("Where your signup goes")).toBeVisible();
+  await signup.getByLabel("EMAIL", { exact: true }).fill("reader@example.com");
+  await signup.getByRole("button", { name: "Join free", exact: true }).click();
+
+  await expect(page.getByRole("status")).toContainText("Signup saved in BaitLogic · email delivery setup is pending");
+  const saved = await page.evaluate(() => JSON.parse(localStorage.getItem("baitlogic-weekly-email-v2") || "null"));
+  expect(saved).toMatchObject({ email: "reader@example.com", submitted: true, welcomeEmail: "not_configured" });
+});
+
+test("weekly signup remains queued on the phone while offline", async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "onLine", { configurable: true, get: () => false });
+  });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Join free", exact: true }).click();
+  const signup = page.getByRole("dialog", { name: "Get the weekly local picture" });
+  await signup.getByLabel("EMAIL", { exact: true }).fill("offline@example.com");
+  await signup.getByRole("button", { name: "Join free", exact: true }).click();
+
+  await expect(page.getByRole("status")).toContainText("Saved on this phone · reconnect and open Status to sync");
+  const saved = await page.evaluate(() => JSON.parse(localStorage.getItem("baitlogic-weekly-email-v2") || "null"));
+  expect(saved).toMatchObject({ email: "offline@example.com", submitted: false });
+});
+
+test("phone copy and form controls meet the enlarged readability floor", async ({ page }) => {
+  await page.goto("/");
+  const watchCopy = page.locator(".watch-steps li").first();
+  expect(Number.parseFloat(await watchCopy.evaluate((element) => getComputedStyle(element).fontSize))).toBeGreaterThanOrEqual(13);
+  await page.getByRole("button", { name: "Join free", exact: true }).click();
+  const email = page.getByLabel("EMAIL", { exact: true });
+  expect(Number.parseFloat(await email.evaluate((element) => getComputedStyle(element).fontSize))).toBeGreaterThanOrEqual(16);
+  expect(Number.parseFloat(await page.locator(".sheet-description").evaluate((element) => getComputedStyle(element).fontSize))).toBeGreaterThanOrEqual(14);
+});
+
 const verifiedConditions = {
   updatedAt: "2026-08-21T15:30:00.000Z",
   location: { name: "Highland, Illinois", locality: "Highland", region: "Illinois" },
@@ -75,9 +148,17 @@ test("home renders verified live conditions instead of sample values", async ({ 
 
   await expect(page.getByRole("button", { name: "Refresh current location and conditions" })).toContainText("Highland, Illinois");
   const conditions = page.getByLabel("Verified local weather conditions");
-  await expect(conditions).toContainText("71°");
+  await expect(conditions).toContainText("BAITLOGIC BAROMETER");
+  await expect(conditions).toContainText("Highland, Illinois");
   await expect(conditions).toContainText("29.83 inHg");
-  await expect(conditions).toContainText("11 mph");
+  await expect(conditions).toContainText("-0.04 inHg");
+  await expect(conditions).toContainText("-0.06 inHg");
+  await expect(conditions).toContainText("Falling");
+  await conditions.getByText("Weather and wind details").click();
+  await expect(conditions).toContainText("71°F");
+  await expect(conditions).toContainText("11 mph SW");
+  await expect(conditions).toContainText("54%");
+  await expect(conditions).toContainText("Pressure is context, not a promise.");
   await expect(page.getByText("Live conditions verified.")).toHaveCount(0);
   await expect(page.getByText("Sample conditions")).toHaveCount(0);
   await expect(page.getByText("Two doe moving along the east timber.")).toHaveCount(0);
@@ -92,7 +173,41 @@ test("offline mode clearly dates the last verified conditions", async ({ page })
 
   await expect(page.getByRole("button", { name: /Saved ·/ })).toBeVisible();
   await expect(page.getByLabel("Verified local weather conditions")).toContainText("29.83 inHg");
+  await expect(page.getByLabel("Verified local weather conditions")).toContainText("Saved offline");
   await expect(page.getByText("WEATHER · SAVED OFFLINE")).toBeVisible();
+});
+
+test("primary navigation, reporting, social, and official links are wired", async ({ page }) => {
+  await page.goto("/");
+
+  const expectedSocialLinks = [
+    "https://www.facebook.com/share/1C3i4dL3vk/",
+    "https://www.instagram.com/baitlogicadmin?igsh=MTVuOHV2dDljaTd3Yg==",
+  ];
+  const socialLinks = await page.locator(".social-links a").evaluateAll((links) => links.map((link) => link.getAttribute("href")));
+  expect(socialLinks).toEqual(expectedSocialLinks);
+
+  await page.getByRole("button", { name: "Explore", exact: true }).last().click();
+  await expect(page.getByRole("heading", { name: /Explore/ })).toBeVisible();
+  await page.getByRole("button", { name: "Community", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Useful beats impressive." })).toBeVisible();
+  await page.getByRole("button", { name: "Saved", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Saved for the next outing." })).toBeVisible();
+  await page.getByRole("button", { name: "Home", exact: true }).click();
+  await expect(page.getByLabel("Verified local weather conditions")).toBeVisible();
+
+  await page.getByRole("button", { name: "Open the official reporting guide" }).click();
+  const dialog = page.getByRole("dialog", { name: "See something? Say something." });
+  await expect(dialog.getByRole("link", { name: /Call Illinois DNR/ })).toHaveAttribute("href", "tel:+18772367529");
+  await expect(dialog.getByRole("link", { name: /Submit a pollution complaint/ })).toHaveAttribute("href", "https://epa.illinois.gov/pollution-complaint/submit-a-complaint.html");
+  await expect(dialog.getByRole("link", { name: /Wildlife reporting details/ })).toHaveAttribute("href", "https://dnr.illinois.gov/lawenforcement/target-poachers.html");
+  await dialog.getByRole("button", { name: "Missouri" }).click();
+  await expect(dialog.getByRole("link", { name: /Call Missouri Conservation/ })).toHaveAttribute("href", "tel:+18003921111");
+  await expect(dialog.getByRole("link", { name: /Report an environmental concern/ })).toHaveAttribute("href", "https://dnr.mo.gov/reporting/environmental-concern");
+  await expect(dialog.getByRole("link", { name: /Wildlife reporting details/ })).toHaveAttribute("href", "https://mdc.mo.gov/contact-engage/report-illegal-activity");
+
+  const allHrefs = await page.locator("a[href]").evaluateAll((links) => links.map((link) => link.getAttribute("href")));
+  expect(allHrefs.every((href) => Boolean(href) && (href?.startsWith("https://") || href?.startsWith("tel:")))).toBe(true);
 });
 
 test("location denial leaves honest blanks and a retry path", async ({ page }) => {

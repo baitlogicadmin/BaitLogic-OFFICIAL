@@ -41,7 +41,12 @@ create table if not exists public.weekly_signups (
   created_at timestamptz not null default now(),
   status text not null default 'subscribed' check (status in ('subscribed', 'unsubscribed')),
   last_sent_at timestamptz,
-  unsubscribed_at timestamptz
+  unsubscribed_at timestamptz,
+  welcome_status text not null default 'pending' check (welcome_status in ('pending', 'sent', 'failed', 'not_configured')),
+  welcome_sent_at timestamptz,
+  last_delivery_attempt_at timestamptz,
+  last_delivery_error text,
+  updated_at timestamptz not null default now()
 );
 
 alter table public.weekly_signups enable row level security;

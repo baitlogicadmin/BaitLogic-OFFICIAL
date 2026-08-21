@@ -13,6 +13,21 @@ export type FieldCheck = {
 
 export type SyncMode = "offline" | "device" | "syncing" | "synced";
 
+export type WelcomeEmailState = "sent" | "already_sent" | "not_configured" | "failed" | "queued" | "unknown";
+
+export type WeeklySignup = {
+  email: string;
+  consentAt: string;
+  submitted: boolean;
+  website?: string;
+  welcomeEmail?: WelcomeEmailState;
+};
+
+export type WeeklyEmailSyncResult = {
+  status: "none" | "failed" | "synced";
+  welcomeEmail: WelcomeEmailState;
+};
+
 type FieldCheckRow = {
   client_id: string;
   category: string;
@@ -124,13 +139,19 @@ export function saveWeeklyEmail(email: string, website = "") {
   );
 }
 
-async function syncWeeklyEmail(captchaToken?: string) {
-  const signup = readJson<{ email: string; consentAt: string; submitted: boolean; website?: string } | null>(WEEKLY_EMAIL_KEY, null);
-  const supabase = await getSupabase();
-  if (!signup || signup.submitted) return "none" as const;
-  if (!supabase) return "failed" as const;
+export function readWeeklySignup() {
+  return readJson<WeeklySignup | null>(WEEKLY_EMAIL_KEY, null);
+}
 
-  const { error } = await supabase.functions.invoke("submit-baitlogic-signal", {
+async function syncWeeklyEmail(captchaToken?: string): Promise<WeeklyEmailSyncResult> {
+  const signup = readWeeklySignup();
+  const supabase = await getSupabase();
+  if (!signup || signup.submitted) {
+    return { status: "none", welcomeEmail: signup?.welcomeEmail ?? "unknown" };
+  }
+  if (!supabase) return { status: "failed", welcomeEmail: "unknown" };
+
+  const { data, error } = await supabase.functions.invoke("submit-baitlogic-signal", {
     body: {
       kind: "weekly_signup",
       email: signup.email,
@@ -140,9 +161,16 @@ async function syncWeeklyEmail(captchaToken?: string) {
     },
   });
 
-  if (error) return "failed" as const;
-  localStorage.setItem(WEEKLY_EMAIL_KEY, JSON.stringify({ ...signup, submitted: true }));
-  return "synced" as const;
+  if (error) return { status: "failed", welcomeEmail: "unknown" };
+  const allowedWelcomeStates = new Set<WelcomeEmailState>(["sent", "already_sent", "not_configured", "failed", "queued", "unknown"]);
+  const responseWelcome = data && typeof data === "object" && "welcome" in data && typeof data.welcome === "string"
+    ? data.welcome
+    : "unknown";
+  const welcomeEmail: WelcomeEmailState = allowedWelcomeStates.has(responseWelcome as WelcomeEmailState)
+    ? responseWelcome as WelcomeEmailState
+    : "unknown";
+  localStorage.setItem(WEEKLY_EMAIL_KEY, JSON.stringify({ ...signup, submitted: true, welcomeEmail }));
+  return { status: "synced", welcomeEmail };
 }
 
 async function submitPendingFieldChecks(items: FieldCheck[], captchaToken?: string) {
@@ -205,7 +233,12 @@ export async function syncBaitLogicData(
 ) {
   const local = readFieldChecks();
   if (!online || !backendConfigured) {
-    return { fieldChecks: local, mode: online ? ("device" as const) : ("offline" as const), emailSynced: false };
+    return {
+      fieldChecks: local,
+      mode: online ? ("device" as const) : ("offline" as const),
+      emailSynced: false,
+      emailStatus: { status: "none" as const, welcomeEmail: "unknown" as const },
+    };
   }
 
   const [submission, remote, emailStatus] = await Promise.all([
@@ -224,7 +257,8 @@ export async function syncBaitLogicData(
   return {
     fieldChecks,
     mode: submission.ok && remote.ok ? ("synced" as const) : ("device" as const),
-    emailSynced: emailStatus === "synced",
+    emailSynced: emailStatus.status === "synced",
+    emailStatus,
   };
 }
 
