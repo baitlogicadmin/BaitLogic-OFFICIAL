@@ -35,3 +35,11 @@ jobs:
       - name: Run deployment readiness gate
         run: npm run check:readiness
         working-directory: mobile-app
+
+      - name: Install Chromium for interaction tests
+        run: npx playwright install --with-deps chromium
+        working-directory: mobile-app
+
+      - name: Run mobile interaction tests
+        run: npm run test:runtime
+        working-directory: mobile-app
