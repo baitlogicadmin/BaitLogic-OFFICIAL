@@ -22,6 +22,16 @@ test.beforeEach(async ({ page }) => {
   await page.goto("/tests/runtime-fixture.html");
 });
 
+test("weekly signup accepts and preserves native email typing", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Join free", exact: true }).click();
+
+  const email = page.getByLabel("EMAIL", { exact: true });
+  await email.pressSequentially("angler@example.com", { delay: 20 });
+
+  await expect(email).toHaveValue("angler@example.com");
+});
+
 test("horizontal intent stays in Carousel and cannot create parent momentum", async ({ page }) => {
   const carousel = page.locator(".fixture-carousel");
   const card = page.locator(".carousel-card").nth(1);
