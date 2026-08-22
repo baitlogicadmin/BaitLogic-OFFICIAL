@@ -1,11 +1,23 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { GeolocateControl, Map, Marker, NavigationControl, Popup, type GeoJSONSource } from "maplibre-gl";
-import "maplibre-gl/dist/maplibre-gl.css";
 import "./regional-explore.css";
 import { readFieldChecks } from "./data/baitlogicData";
 
 type Coordinates = { lat: number; lon: number };
+type MapLike = any;
+type MarkerLike = any;
+type PopupLike = any;
+type MapLibreApi = {
+  Map: new (options: Record<string, unknown>) => MapLike;
+  Marker: new (options?: Record<string, unknown>) => MarkerLike;
+  Popup: new (options?: Record<string, unknown>) => PopupLike;
+  NavigationControl: new (options?: Record<string, unknown>) => unknown;
+  GeolocateControl: new (options?: Record<string, unknown>) => unknown;
+};
+
+declare global {
+  interface Window { maplibregl?: MapLibreApi }
+}
 
 type UsgsFeature = {
   type: "Feature";
@@ -23,33 +35,19 @@ type UsgsFeature = {
   };
 };
 
-type UsgsCollection = {
-  type: "FeatureCollection";
-  features: UsgsFeature[];
-};
-
-type SearchResult = {
-  place_id: number;
-  display_name: string;
-  lat: string;
-  lon: string;
-  type?: string;
-};
-
+type UsgsCollection = { type: "FeatureCollection"; features: UsgsFeature[] };
+type SearchResult = { place_id: number; display_name: string; lat: string; lon: string; type?: string };
 type WeatherIntel = {
   updatedAt?: string;
   location?: { name?: string } | null;
-  weather?: {
-    temperatureF?: number;
-    pressureInHg?: number;
-    windMph?: number;
-    gustMph?: number;
-  };
+  weather?: { temperatureF?: number; pressureInHg?: number; windMph?: number; gustMph?: number };
 };
 
 const REGION_BOUNDS: [[number, number], [number, number]] = [[-95.9, 35.9], [-87.2, 42.7]];
 const USGS_CACHE_KEY = "baitlogic-usgs-il-mo-v1";
 const OPEN_FREE_MAP_STYLE = "https://tiles.openfreemap.org/styles/liberty";
+const MAPLIBRE_JS = "https://unpkg.com/maplibre-gl@6.5.0/dist/maplibre-gl.js";
+const MAPLIBRE_CSS = "https://unpkg.com/maplibre-gl@6.5.0/dist/maplibre-gl.css";
 const USGS_URL = "https://api.waterdata.usgs.gov/ogcapi/v0/collections/latest-continuous/items?f=json&bbox=-95.9,35.9,-87.2,42.7&parameter_code=00060&limit=500";
 
 const quickJumps = [
@@ -58,6 +56,36 @@ const quickJumps = [
   { label: "Mark Twain Lake", lon: -91.721, lat: 39.493, zoom: 10 },
   { label: "Lake of the Ozarks", lon: -92.638, lat: 38.126, zoom: 9 },
 ];
+
+let mapLibrePromise: Promise<MapLibreApi> | null = null;
+function loadMapLibre() {
+  if (window.maplibregl) return Promise.resolve(window.maplibregl);
+  if (mapLibrePromise) return mapLibrePromise;
+
+  mapLibrePromise = new Promise<MapLibreApi>((resolve, reject) => {
+    if (!document.querySelector(`link[href="${MAPLIBRE_CSS}"]`)) {
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = MAPLIBRE_CSS;
+      document.head.appendChild(link);
+    }
+
+    const existing = document.querySelector<HTMLScriptElement>(`script[src="${MAPLIBRE_JS}"]`);
+    const script = existing ?? document.createElement("script");
+    const finish = () => window.maplibregl ? resolve(window.maplibregl) : reject(new Error("MapLibre unavailable"));
+    script.addEventListener("load", finish, { once: true });
+    script.addEventListener("error", () => reject(new Error("MapLibre failed to load")), { once: true });
+    if (!existing) {
+      script.src = MAPLIBRE_JS;
+      script.async = true;
+      script.crossOrigin = "anonymous";
+      document.head.appendChild(script);
+    } else if (window.maplibregl) {
+      finish();
+    }
+  });
+  return mapLibrePromise;
+}
 
 function escapeHtml(value: unknown) {
   return String(value ?? "")
@@ -89,11 +117,12 @@ function formatObserved(iso?: string) {
 
 function RegionalExplorePanel() {
   const mapNode = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<Map | null>(null);
-  const locationMarker = useRef<Marker | null>(null);
-  const searchMarker = useRef<Marker | null>(null);
+  const mapRef = useRef<MapLike>(null);
+  const locationMarker = useRef<MarkerLike>(null);
+  const searchMarker = useRef<MarkerLike>(null);
   const handlersBound = useRef(false);
   const [mapReady, setMapReady] = useState(false);
+  const [mapStatus, setMapStatus] = useState("Loading interactive map…");
   const [gauges, setGauges] = useState<UsgsFeature[]>(() => readGaugeCache()?.features ?? []);
   const [gaugeMode, setGaugeMode] = useState<"live" | "saved" | "loading">(navigator.onLine ? "loading" : "saved");
   const [gaugeError, setGaugeError] = useState("");
@@ -108,11 +137,7 @@ function RegionalExplorePanel() {
 
   const gaugeGeoJson = useMemo(() => ({
     type: "FeatureCollection" as const,
-    features: gauges.map((feature) => ({
-      type: "Feature" as const,
-      geometry: feature.geometry,
-      properties: feature.properties,
-    })),
+    features: gauges.map((feature) => ({ type: "Feature" as const, geometry: feature.geometry, properties: feature.properties })),
   }), [gauges]);
 
   const loadGauges = useCallback(async () => {
@@ -170,11 +195,12 @@ function RegionalExplorePanel() {
         const next = { lat: position.coords.latitude, lon: position.coords.longitude };
         setCoords(next);
         void loadWeather(next);
-        if (mapRef.current) {
+        const api = window.maplibregl;
+        if (mapRef.current && api) {
           locationMarker.current?.remove();
-          locationMarker.current = new Marker({ color: "#087f8c" })
+          locationMarker.current = new api.Marker({ color: "#087f8c" })
             .setLngLat([next.lon, next.lat])
-            .setPopup(new Popup({ offset: 22 }).setText("Your current area"))
+            .setPopup(new api.Popup({ offset: 22 }).setText("Your current area"))
             .addTo(mapRef.current);
           mapRef.current.flyTo({ center: [next.lon, next.lat], zoom: 9.5, duration: 900 });
         }
@@ -214,11 +240,12 @@ function RegionalExplorePanel() {
   const chooseResult = (result: SearchResult) => {
     const lat = Number(result.lat);
     const lon = Number(result.lon);
-    if (!Number.isFinite(lat) || !Number.isFinite(lon) || !mapRef.current) return;
+    const api = window.maplibregl;
+    if (!Number.isFinite(lat) || !Number.isFinite(lon) || !mapRef.current || !api) return;
     searchMarker.current?.remove();
-    searchMarker.current = new Marker({ color: "#d89a00" })
+    searchMarker.current = new api.Marker({ color: "#d89a00" })
       .setLngLat([lon, lat])
-      .setPopup(new Popup({ offset: 22 }).setText(result.display_name.split(",").slice(0, 3).join(",")))
+      .setPopup(new api.Popup({ offset: 22 }).setText(result.display_name.split(",").slice(0, 3).join(",")))
       .addTo(mapRef.current);
     mapRef.current.flyTo({ center: [lon, lat], zoom: result.type === "city" || result.type === "town" ? 10 : 12, duration: 900 });
     setQuery(result.display_name.split(",")[0]);
@@ -230,22 +257,29 @@ function RegionalExplorePanel() {
 
   useEffect(() => {
     if (!mapNode.current || mapRef.current) return;
-    const map = new Map({
-      container: mapNode.current,
-      style: OPEN_FREE_MAP_STYLE,
-      bounds: REGION_BOUNDS,
-      fitBoundsOptions: { padding: 24 },
-      attributionControl: true,
-    });
-    map.addControl(new NavigationControl({ showCompass: false }), "top-right");
-    map.addControl(new GeolocateControl({ positionOptions: { enableHighAccuracy: false }, trackUserLocation: false, showUserLocation: true }), "top-right");
-    map.on("load", () => setMapReady(true));
-    mapRef.current = map;
+    let disposed = false;
+    void loadMapLibre().then((api) => {
+      if (disposed || !mapNode.current || mapRef.current) return;
+      const map = new api.Map({
+        container: mapNode.current,
+        style: OPEN_FREE_MAP_STYLE,
+        bounds: REGION_BOUNDS,
+        fitBoundsOptions: { padding: 24 },
+        attributionControl: true,
+      });
+      map.addControl(new api.NavigationControl({ showCompass: false }), "top-right");
+      map.addControl(new api.GeolocateControl({ positionOptions: { enableHighAccuracy: false }, trackUserLocation: false, showUserLocation: true }), "top-right");
+      map.on("load", () => { setMapReady(true); setMapStatus(""); });
+      map.on("error", () => setMapStatus("Map tiles are temporarily unavailable. Live data below can still refresh."));
+      mapRef.current = map;
+    }).catch(() => setMapStatus("Interactive map could not load. Check your connection and retry."));
+
     return () => {
+      disposed = true;
       handlersBound.current = false;
       searchMarker.current?.remove();
       locationMarker.current?.remove();
-      map.remove();
+      mapRef.current?.remove();
       mapRef.current = null;
     };
   }, []);
@@ -253,34 +287,24 @@ function RegionalExplorePanel() {
   useEffect(() => {
     if (!mapReady || !mapRef.current) return;
     const map = mapRef.current;
-    const existing = map.getSource("usgs-gauges") as GeoJSONSource | undefined;
+    const existing = map.getSource("usgs-gauges") as { setData: (data: unknown) => void } | undefined;
     if (existing) {
       existing.setData(gaugeGeoJson);
     } else {
       map.addSource("usgs-gauges", { type: "geojson", data: gaugeGeoJson });
-      map.addLayer({
-        id: "usgs-gauges-halo",
-        type: "circle",
-        source: "usgs-gauges",
-        paint: { "circle-radius": 8, "circle-color": "#ffffff", "circle-opacity": 0.88 },
-      });
-      map.addLayer({
-        id: "usgs-gauges",
-        type: "circle",
-        source: "usgs-gauges",
-        paint: { "circle-radius": 4.5, "circle-color": "#087f8c", "circle-stroke-width": 1.5, "circle-stroke-color": "#062452" },
-      });
+      map.addLayer({ id: "usgs-gauges-halo", type: "circle", source: "usgs-gauges", paint: { "circle-radius": 8, "circle-color": "#ffffff", "circle-opacity": 0.88 } });
+      map.addLayer({ id: "usgs-gauges", type: "circle", source: "usgs-gauges", paint: { "circle-radius": 4.5, "circle-color": "#087f8c", "circle-stroke-width": 1.5, "circle-stroke-color": "#062452" } });
     }
 
     if (!handlersBound.current) {
       handlersBound.current = true;
       map.on("mouseenter", "usgs-gauges", () => { map.getCanvas().style.cursor = "pointer"; });
       map.on("mouseleave", "usgs-gauges", () => { map.getCanvas().style.cursor = ""; });
-      map.on("click", "usgs-gauges", (event) => {
+      map.on("click", "usgs-gauges", (event: any) => {
         const feature = event.features?.[0];
-        if (!feature || feature.geometry.type !== "Point") return;
+        if (!feature || feature.geometry?.type !== "Point") return;
         const point = feature.geometry.coordinates as [number, number];
-        const props = feature.properties as Record<string, unknown>;
+        const props = (feature.properties ?? {}) as Record<string, unknown>;
         const site = String(props.monitoring_location_number || props.monitoring_location_id || "").replace("USGS-", "");
         const value = escapeHtml(props.value);
         const unit = escapeHtml(props.unit_of_measure || "ft³/s");
@@ -288,7 +312,9 @@ function RegionalExplorePanel() {
         const observed = escapeHtml(formatObserved(String(props.time || "")));
         const status = escapeHtml(props.approval_status || "Provisional");
         const siteLink = site ? `https://waterdata.usgs.gov/monitoring-location/${encodeURIComponent(site)}` : "https://waterdata.usgs.gov/";
-        new Popup({ offset: 10, maxWidth: "300px" })
+        const api = window.maplibregl;
+        if (!api) return;
+        new api.Popup({ offset: 10, maxWidth: "300px" })
           .setLngLat(point)
           .setHTML(`<div class="baitlogic-map-popup"><strong>${name}</strong><span>${value} ${unit} streamflow</span><small>${observed} · ${status}</small><a href="${siteLink}" target="_blank" rel="noreferrer">Open USGS station ↗</a></div>`)
           .addTo(map);
@@ -309,9 +335,7 @@ function RegionalExplorePanel() {
     };
   }, [loadGauges]);
 
-  useEffect(() => {
-    useMyLocation(false);
-  }, [useMyLocation]);
+  useEffect(() => { useMyLocation(false); }, [useMyLocation]);
 
   useEffect(() => {
     const refreshCount = () => setCommunityCount(readFieldChecks().filter((item) => item.syncState === "approved").length);
@@ -342,6 +366,7 @@ function RegionalExplorePanel() {
 
       <div className="regional-map-shell">
         <div ref={mapNode} className="regional-map" aria-label="Interactive Illinois and Missouri outdoor map" />
+        {mapStatus ? <div className="regional-map-status">{mapStatus}</div> : null}
         <div className="map-command-bar">
           <button type="button" onClick={() => useMyLocation(true)}>◎ My location</button>
           <button type="button" onClick={resetRegion}>↺ IL + MO</button>
