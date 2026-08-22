@@ -47,9 +47,7 @@ Required pre-merge check:
 
 - `BaitLogic Deployment Readiness / readiness`
 
-Security scan to require once GitHub has registered its first run:
-
-- `BaitLogic CodeQL / Analyze JavaScript and TypeScript`
+GitHub **CodeQL default setup is already enabled** for this repository. Do not add a second advanced CodeQL workflow; GitHub rejects simultaneous default + advanced configuration. If you choose to make CodeQL blocking in the ruleset, select the actual CodeQL status check name GitHub displays in the repository after its default-setup scan runs.
 
 **Do not require `BaitLogic Production Verification` before merge**; it is intentionally a post-merge live-production check.
 
@@ -237,7 +235,7 @@ Rules:
 - PWA upgrade migration test
 - Supabase public API/security probes
 - mobile Playwright interaction tests
-- CodeQL analysis
+- GitHub CodeQL default-setup analysis (managed by repository Code Security, not a duplicate workflow file)
 
 ### Every production merge
 
@@ -253,7 +251,7 @@ Rules:
 
 - Dependabot groups safe npm updates
 - GitHub Actions dependencies are reviewed monthly
-- CodeQL runs on schedule
+- GitHub-managed CodeQL/default Code Security scanning remains enabled
 - Supabase security/performance advisors should be checked after database migrations
 - Vercel runtime errors should be reviewed after releases and before declaring a production incident closed
 
