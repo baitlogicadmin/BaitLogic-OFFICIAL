@@ -32,6 +32,9 @@ jobs:
           cache: npm
           cache-dependency-path: mobile-app/package-lock.json
 
+      - name: Scan tracked files for committed credentials
+        run: node scripts/scan-secrets.mjs
+
       - name: Install locked dependencies
         run: npm ci
         working-directory: mobile-app
