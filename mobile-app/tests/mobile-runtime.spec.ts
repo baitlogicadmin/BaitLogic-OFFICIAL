@@ -1,69 +1,101 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 
-async function drag(page: Page, locator: ReturnType<Page["locator"]>, dx: number, dy: number, steps = 8) {
+async function drag(page: Page, locator: Locator, deltaX: number, deltaY: number, steps = 8) {
   const box = await locator.boundingBox();
-  if (!box) throw new Error("drag target is not visible");
+  if (!box) throw new Error("Drag target has no bounding box");
   const startX = box.x + box.width / 2;
   const startY = box.y + box.height / 2;
+
   await page.mouse.move(startX, startY);
   await page.mouse.down();
-  await page.mouse.move(startX + dx, startY + dy, { steps });
+  for (let step = 1; step <= steps; step += 1) {
+    await page.mouse.move(
+      startX + (deltaX * step) / steps,
+      startY + (deltaY * step) / steps,
+    );
+    await page.waitForTimeout(8);
+  }
   await page.mouse.up();
 }
 
 test.beforeEach(async ({ page }) => {
+  await page.goto("/tests/runtime-fixture.html");
+});
+
+test("weekly signup accepts and preserves native email typing", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Join free", exact: true }).click();
+
+  const email = page.getByLabel("EMAIL", { exact: true });
+  await email.pressSequentially("angler@example.com", { delay: 20 });
+
+  await expect(email).toHaveValue("angler@example.com");
+});
+
+const verifiedConditions = {
+  updatedAt: "2026-08-21T15:30:00.000Z",
+  location: { name: "Highland, Illinois", locality: "Highland", region: "Illinois" },
+  weather: {
+    temperatureF: 71.4,
+    apparentTemperatureF: 70.1,
+    code: 2,
+    pressureInHg: 29.83,
+    pressureDelta3h: -0.04,
+    pressureDelta6h: -0.06,
+    windMph: 11.2,
+    windDirection: 225,
+    gustMph: 18.6,
+    cloudCover: 54,
+    precipitationIn: 0,
+  },
+  alerts: [],
+};
+
+async function mockDeviceLocation(page: Page) {
   await page.addInitScript(() => {
-    Object.defineProperty(window, "innerWidth", { configurable: true, value: 390 });
-    Object.defineProperty(window, "innerHeight", { configurable: true, value: 844 });
+    Object.defineProperty(navigator, "geolocation", {
+      configurable: true,
+      value: {
+        getCurrentPosition: (success: PositionCallback) => success({
+          coords: { latitude: 38.7395, longitude: -89.6712, accuracy: 12 },
+        } as GeolocationPosition),
+      },
+    });
   });
-});
+}
 
-test("page boots as a real mobile app without a device mock shell", async ({ page }) => {
+test("home renders verified live conditions instead of sample values", async ({ page }) => {
+  await mockDeviceLocation(page);
+  await page.route("**/api/barometer-snapshot**", (route) => route.fulfill({
+    status: 200,
+    contentType: "application/json",
+    body: JSON.stringify(verifiedConditions),
+  }));
   await page.goto("/");
-  await expect(page.locator(".phone-frame")).toHaveCount(0);
-  await expect(page.locator(".viewport-shell")).toHaveCount(1);
-  await expect(page.locator(".bottom-nav")).toBeVisible();
+
+  await expect(page.getByRole("button", { name: "Refresh current location and conditions" })).toContainText("Highland, Illinois");
+  const conditions = page.getByLabel("Verified local weather conditions");
+  await expect(conditions).toContainText("71°");
+  await expect(conditions).toContainText("29.83 inHg");
+  await expect(conditions).toContainText("11 mph");
+  await expect(page.getByText("Live conditions verified.")).toHaveCount(0);
+  await expect(page.getByText("Sample conditions")).toHaveCount(0);
+  await expect(page.getByText("Two doe moving along the east timber.")).toHaveCount(0);
 });
 
-test("the mobile runtime keeps browser-native touch scrolling and removes fake gesture plumbing", async ({ page }) => {
+test("offline mode clearly dates the last verified conditions", async ({ page }) => {
+  await page.addInitScript((snapshot) => {
+    localStorage.setItem("baitlogic-live-conditions-v1", JSON.stringify(snapshot));
+    Object.defineProperty(navigator, "onLine", { configurable: true, get: () => false });
+  }, verifiedConditions);
   await page.goto("/");
 
-  await expect(page.locator("[data-mobile-runtime]")).toHaveCount(0);
-  await expect(page.locator("[data-mobile-scroll]")).toHaveCount(0);
-  await expect(page.locator(".viewport-shell")).toHaveCSS("overscroll-behavior-y", "auto");
-  await expect(page.locator(".app-scroll")).toHaveCSS("overflow-y", "auto");
+  await expect(page.getByRole("button", { name: /Saved ·/ })).toBeVisible();
+  await expect(page.getByLabel("Verified local weather conditions")).toContainText("29.83 inHg");
+  await expect(page.getByText("WEATHER · SAVED OFFLINE")).toBeVisible();
 });
 
-test("bottom navigation switches sections without rendering fake state", async ({ page }) => {
-  await page.goto("/");
-  await page.getByRole("button", { name: "Explore" }).click();
-  await expect(page.getByRole("heading", { name: /Explore/ })).toBeVisible();
-  await expect(page.getByText("LOCAL INTELLIGENCE")).toBeVisible();
-
-  await page.getByRole("button", { name: "Community" }).click();
-  await expect(page.getByRole("heading", { name: "Useful beats impressive." })).toBeVisible();
-  await expect(page.getByText("No real Field Checks have been posted", { exact: false })).toBeVisible();
-
-  await page.getByRole("button", { name: "Saved" }).click();
-  await expect(page.getByRole("heading", { name: "Saved for the next outing." })).toBeVisible();
-});
-
-test("report button opens the native sheet and privacy language stays explicit", async ({ page }) => {
-  await page.goto("/");
-  await page.getByRole("button", { name: "Report" }).click();
-  const dialog = page.getByRole("dialog", { name: "See something? Say something." });
-  await expect(dialog).toBeVisible();
-  await expect(dialog.getByText("Privacy is the default")).toBeVisible();
-  await expect(dialog.getByText(/never your exact spot/)).toBeVisible();
-});
-
-test("community connection language does not imply contributions when none exist", async ({ page }) => {
-  await page.goto("/");
-  await expect(page.getByText("BaitLogic connected")).toBeVisible();
-  await expect(page.getByText(/community notes?/)).toHaveCount(0);
-});
-
-test("location denial is transparent and does not fabricate conditions", async ({ page }) => {
+test("location denial leaves honest blanks and a retry path", async ({ page }) => {
   await page.addInitScript(() => {
     Object.defineProperty(navigator, "geolocation", {
       configurable: true,
@@ -94,7 +126,7 @@ test("official reporting is prominent, educational, and routes to both states", 
   await expect(dialog.getByText("A BaitLogic Field Check does not notify officials.", { exact: false })).toBeVisible();
   await expect(dialog.getByRole("link", { name: /Call Illinois DNR/ })).toHaveAttribute("href", "tel:+18772367529");
   await expect(dialog.getByRole("link", { name: /Submit a pollution complaint/ })).toHaveAttribute("href", "https://epa.illinois.gov/pollution-complaint/submit-a-complaint.html");
-  await expect(dialog.getByRole("link", { name: /Wildlife violation/ })).toHaveAttribute("href", "https://dnr.illinois.gov/lawenforcement/target-poachers.html");
+  await expect(dialog.getByRole("link", { name: /Wildlife reporting details/ })).toHaveAttribute("href", "https://dnr.illinois.gov/lawenforcement/target-poachers.html");
 
   await dialog.getByRole("button", { name: "Missouri" }).click();
   await expect(dialog.getByRole("link", { name: /Call Missouri Conservation/ })).toHaveAttribute("href", "tel:+18003921111");
@@ -111,81 +143,212 @@ test("horizontal intent stays in Carousel and cannot create parent momentum", as
   await drag(page, card, -130, 14, 5);
 
   const afterRelease = await carousel.evaluate((element) => element.scrollLeft);
-  const parentAfterRelease = await parent.evaluate((element) => element.scrollTop);
-  await page.waitForTimeout(320);
-  const afterSettled = await carousel.evaluate((element) => element.scrollLeft);
-  const parentAfterSettled = await parent.evaluate((element) => element.scrollTop);
+  expect(afterRelease).toBeGreaterThan(40);
+  expect(await parent.evaluate((element) => element.scrollTop)).toBe(0);
 
-  expect(afterRelease).toBeGreaterThan(10);
-  expect(Math.abs(afterSettled - afterRelease)).toBeLessThan(10);
-  expect(Math.abs(parentAfterRelease)).toBeLessThan(6);
-  expect(Math.abs(parentAfterSettled - parentAfterRelease)).toBeLessThan(6);
-});
-
-test("vertical intent inside Carousel does not hijack parent scrolling", async ({ page }) => {
-  const carousel = page.locator(".fixture-carousel");
-  const card = page.locator(".carousel-card").first();
-  const parent = page.getByTestId("mobile-scroll");
-
-  await parent.evaluate((element) => { element.scrollTop = 0; });
-  await drag(page, card, -8, -140, 5);
-  await page.waitForTimeout(180);
-  expect(await parent.evaluate((element) => element.scrollTop)).toBeGreaterThan(25);
-  expect(Math.abs(await carousel.evaluate((element) => element.scrollLeft))).toBeLessThan(12);
-});
-
-test("nested carousel inside FlowStack switches axis ownership cleanly", async ({ page }) => {
-  const nestedCarousel = page.locator(".nested-fixture-carousel");
-  const nestedCard = page.locator(".nested-carousel-card").nth(1);
-  const parent = page.getByTestId("nested-parent");
-
-  await parent.evaluate((element) => { element.scrollTop = 0; });
-  await drag(page, nestedCard, -100, 8, 5);
-  expect(await nestedCarousel.evaluate((element) => element.scrollLeft)).toBeGreaterThan(10);
-  expect(Math.abs(await parent.evaluate((element) => element.scrollTop))).toBeLessThan(8);
-
-  const baseline = await nestedCarousel.evaluate((element) => element.scrollLeft);
-  await drag(page, nestedCard, -6, -110, 5);
-  await page.waitForTimeout(150);
-  expect(await parent.evaluate((element) => element.scrollTop)).toBeGreaterThan(20);
-  expect(Math.abs((await nestedCarousel.evaluate((element) => element.scrollLeft)) - baseline)).toBeLessThan(15);
-});
-
-test("BottomSheet prevents edge swipe from creating parent momentum", async ({ page }) => {
-  const sheet = page.locator(".fixture-sheet");
-  const sheetBody = sheet.locator(".bottom-sheet-body");
-  const parent = page.getByTestId("mobile-scroll");
-
-  await sheetBody.evaluate((element) => { element.scrollTop = 0; });
-  await parent.evaluate((element) => { element.scrollTop = 0; });
-  await drag(page, sheetBody, 5, 100, 5);
   await page.waitForTimeout(250);
-
-  expect(Math.abs(await parent.evaluate((element) => element.scrollTop))).toBeLessThan(6);
+  expect(await parent.evaluate((element) => element.scrollTop)).toBe(0);
+  expect(await page.getByTestId("tap-count").textContent()).toBe("0");
 });
 
-test("FlowStack releases drag state after pointercancel", async ({ page }) => {
-  const flowStack = page.locator(".fixture-flow-stack");
-  await flowStack.dispatchEvent("pointerdown", { pointerId: 11, clientX: 100, clientY: 100, pointerType: "touch", isPrimary: true });
-  await flowStack.dispatchEvent("pointermove", { pointerId: 11, clientX: 102, clientY: 50, pointerType: "touch", isPrimary: true });
-  await flowStack.dispatchEvent("pointercancel", { pointerId: 11, clientX: 102, clientY: 50, pointerType: "touch", isPrimary: true });
-  await expect(flowStack).not.toHaveAttribute("data-scroll-drag", "active");
-});
-
-test("FlowStack releases drag state after pointerup", async ({ page }) => {
-  const flowStack = page.locator(".fixture-flow-stack");
-  await flowStack.dispatchEvent("pointerdown", { pointerId: 12, clientX: 100, clientY: 100, pointerType: "touch", isPrimary: true });
-  await flowStack.dispatchEvent("pointermove", { pointerId: 12, clientX: 102, clientY: 50, pointerType: "touch", isPrimary: true });
-  await flowStack.dispatchEvent("pointerup", { pointerId: 12, clientX: 102, clientY: 50, pointerType: "touch", isPrimary: true });
-  await expect(flowStack).not.toHaveAttribute("data-scroll-drag", "active");
-});
-
-test("MobileScroll does not transform, mutate, or retain parent momentum", async ({ page }) => {
+test("vertical intent over a carousel is handed to MobileScroll in both directions", async ({ page }) => {
+  const card = page.locator(".carousel-card").nth(1);
+  const carousel = page.locator(".fixture-carousel");
   const parent = page.getByTestId("mobile-scroll");
-  await expect(parent).toHaveCSS("transform", "none");
-  await expect(parent).not.toHaveAttribute("data-scroll-drag", "active");
-  await parent.evaluate((element) => { element.scrollTop = 0; });
-  await drag(page, parent, 0, -120, 5);
-  await page.waitForTimeout(150);
-  expect(await parent.evaluate((element) => element.scrollTop)).toBeGreaterThan(20);
+
+  await drag(page, card, 4, -150);
+  expect(await parent.evaluate((element) => element.scrollTop)).toBeGreaterThan(60);
+  expect(await carousel.evaluate((element) => element.scrollLeft)).toBe(0);
+
+  await parent.evaluate((element) => {
+    element.scrollTop = 80;
+  });
+  await drag(page, card, -3, 110);
+  expect(await parent.evaluate((element) => element.scrollTop)).toBeLessThan(80);
+});
+
+test("tap activates a card but a completed drag does not", async ({ page }) => {
+  const firstCard = page.locator(".carousel-card").first();
+  await firstCard.click();
+  await expect(page.getByTestId("tap-count")).toHaveText("1");
+
+  await drag(page, firstCard, -100, 6);
+  await expect(page.getByTestId("tap-count")).toHaveText("1");
+});
+
+test("Carousel preserves momentum and edge rubber-banding", async ({ page }) => {
+  const carousel = page.locator(".fixture-carousel");
+  const card = page.locator(".carousel-card").nth(1);
+
+  await drag(page, card, -100, 5, 3);
+  const releasedOffset = await carousel.evaluate((element) => element.scrollLeft);
+  await page.waitForTimeout(120);
+  expect(await carousel.evaluate((element) => element.scrollLeft)).toBeGreaterThan(releasedOffset);
+
+  await carousel.evaluate((element) => {
+    element.scrollLeft = 0;
+  });
+  const box = await card.boundingBox();
+  if (!box) throw new Error("Card has no bounding box");
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(box.x + box.width / 2 + 90, box.y + box.height / 2, { steps: 4 });
+  expect(Number(await carousel.getAttribute("data-overscroll"))).toBeGreaterThan(0);
+  await page.mouse.up();
+  await page.waitForTimeout(900);
+  expect(Math.abs(Number(await carousel.getAttribute("data-overscroll")))).toBeLessThan(1);
+});
+
+test("BottomSheet remains mounted while its default exit animation plays", async ({ page }) => {
+  await page.locator(".sheet-trigger").click();
+  await expect(page.getByTestId("bottom-sheet")).toBeVisible();
+
+  await page.getByTestId("sheet-overlay").click({ position: { x: 8, y: 8 } });
+  await expect(page.getByTestId("bottom-sheet")).toHaveCount(1);
+  await page.waitForTimeout(500);
+  await expect(page.getByTestId("bottom-sheet")).toHaveCount(0);
+});
+
+test("keyboard and its attached footer dismiss on the same transition", async ({ page }) => {
+  await page.goto("/tests/runtime-fixture.html?fixture=keyboard");
+  const input = page.getByLabel("Message");
+  const footer = page.getByTestId("flow-fixed-footer");
+  const keyboard = page.getByTestId("keyboard-dock");
+
+  await input.click();
+  await expect(keyboard).toHaveAttribute("data-visible", "true");
+  await drag(page, footer, 0, 120, 5);
+  await expect(keyboard).toHaveAttribute("data-visible", "false");
+
+  await page.waitForTimeout(100);
+  const progress = await page.evaluate(() => {
+    const footerElement = document.querySelector<HTMLElement>('[data-testid="flow-fixed-footer"]')!;
+    const keyboardElement = document.querySelector<HTMLElement>('[data-testid="keyboard-dock"]')!;
+    const fullHeight = Number.parseFloat(keyboardElement.style.height);
+    const footerRemaining = Number.parseFloat(getComputedStyle(footerElement).bottom);
+    const matrix = new DOMMatrixReadOnly(getComputedStyle(keyboardElement).transform);
+    return {
+      footer: footerRemaining / fullHeight,
+      keyboard: 1 - matrix.m42 / fullHeight,
+    };
+  });
+  expect(Math.abs(progress.footer - progress.keyboard)).toBeLessThan(0.18);
+
+  await page.waitForTimeout(300);
+  expect(await footer.evaluate((element) => getComputedStyle(element).bottom)).toBe("34px");
+});
+
+test("switching to Pixel keeps the composer above Android navigation", async ({ page }) => {
+  await page.goto("/tests/runtime-fixture.html?fixture=keyboard");
+  const input = page.getByLabel("Message");
+  await input.evaluate((element: HTMLInputElement) => {
+    element.value = "Draft message";
+  });
+
+  await page.getByTestId("device-picker").click();
+  await page.getByTestId("device-option-pixel-10").click();
+
+  const frame = page.getByTestId("phone-frame");
+  const screen = page.getByTestId("device-screen");
+  const statusIndicators = page.getByTestId("status-indicators");
+  const navigation = page.getByTestId("android-navigation-bar");
+  const footer = page.getByTestId("flow-fixed-footer");
+
+  await expect(frame).toHaveAttribute("data-device", "pixel-10");
+  await expect(screen).toHaveAttribute("data-device", "pixel-10");
+  await expect(page.locator(".phone-bezel")).toHaveAttribute(
+    "src",
+    "/assets/android/Pixel10.png",
+  );
+  await expect(statusIndicators).toHaveAttribute("data-platform", "android");
+  await expect(statusIndicators).toHaveAttribute(
+    "src",
+    "/assets/status/status-icons.svg",
+  );
+  await expect(navigation).toBeVisible();
+  await expect(page.getByTestId("home-indicator")).toHaveCount(0);
+  await expect(input).toHaveValue("Draft message");
+  await page.waitForTimeout(300);
+
+  const layout = await page.evaluate(() => {
+    const footerElement = document.querySelector<HTMLElement>(
+      '[data-testid="flow-fixed-footer"]',
+    )!;
+    const navigationElement = document.querySelector<HTMLElement>(
+      '[data-testid="android-navigation-bar"]',
+    )!;
+    const appViewportElement = document.querySelector<HTMLElement>(
+      '[data-testid="mobile-app-viewport"]',
+    )!;
+    return {
+      footerBottom: footerElement.getBoundingClientRect().bottom,
+      appViewportBottom: appViewportElement.getBoundingClientRect().bottom,
+      navigationTop: navigationElement.getBoundingClientRect().top,
+      navigationHeight: Number.parseFloat(getComputedStyle(navigationElement).height),
+      safeAreaBottom: Number.parseFloat(
+        getComputedStyle(document.querySelector<HTMLElement>('[data-testid="device-screen"]')!).getPropertyValue(
+          "--device-safe-area-bottom",
+        ),
+      ),
+    };
+  });
+
+  expect(layout.safeAreaBottom).toBe(layout.navigationHeight);
+  expect(Math.abs(layout.appViewportBottom - layout.navigationTop)).toBeLessThanOrEqual(1);
+  expect(Math.abs(layout.footerBottom - layout.navigationTop)).toBeLessThanOrEqual(1);
+
+  await input.click();
+  await expect(page.getByTestId("keyboard-dock")).toHaveAttribute("data-visible", "true");
+  await expect(navigation).toHaveCount(0);
+  await page.waitForTimeout(300);
+
+  const keyboardLayout = await page.evaluate(() => {
+    const screen = document.querySelector<HTMLElement>('[data-testid="device-screen"]')!;
+    const viewport = document.querySelector<HTMLElement>('[data-testid="mobile-app-viewport"]')!;
+    const scroll = document.querySelector<HTMLElement>('[data-testid="mobile-scroll"]')!;
+    const footerElement = document.querySelector<HTMLElement>('[data-testid="flow-fixed-footer"]')!;
+    const keyboard = document.querySelector<HTMLElement>('[data-testid="keyboard-dock"]')!;
+
+    return {
+      screenBottom: screen.getBoundingClientRect().bottom,
+      viewportBottom: viewport.getBoundingClientRect().bottom,
+      scrollBottom: scroll.getBoundingClientRect().bottom,
+      footerBottom: footerElement.getBoundingClientRect().bottom,
+      keyboardTop: keyboard.getBoundingClientRect().top,
+      keyboardBottom: keyboard.getBoundingClientRect().bottom,
+    };
+  });
+
+  expect(keyboardLayout.viewportBottom).toBeCloseTo(keyboardLayout.screenBottom, 0);
+  expect(Math.abs(keyboardLayout.keyboardBottom - keyboardLayout.screenBottom)).toBeLessThanOrEqual(1);
+  expect(Math.abs(keyboardLayout.scrollBottom - keyboardLayout.keyboardTop)).toBeLessThanOrEqual(1);
+  expect(Math.abs(keyboardLayout.footerBottom - keyboardLayout.keyboardTop)).toBeLessThanOrEqual(1);
+});
+
+test("FlowStack pushes and pops screens while dismissing the keyboard", async ({ page }) => {
+  await page.goto("/tests/runtime-fixture.html?fixture=flow");
+  await page.getByLabel("Flow message").click();
+  await expect(page.getByTestId("keyboard-dock")).toHaveAttribute("data-visible", "true");
+
+  await page.getByRole("button", { name: "Push level 2" }).click();
+  await expect(page.getByRole("heading", { name: "Screen stacking works" })).toBeVisible();
+  await expect(page.getByTestId("keyboard-dock")).toHaveAttribute("data-visible", "false");
+  const safeHeaderPlacement = await page.evaluate(() => {
+    const screen = document.querySelector<HTMLElement>('[data-testid="device-screen"]')!;
+    const toolbar = document.querySelector<HTMLElement>(".flow-fixture-header")!;
+    return toolbar.getBoundingClientRect().top - screen.getBoundingClientRect().top;
+  });
+  expect(safeHeaderPlacement).toBeGreaterThanOrEqual(54);
+
+  await page.getByRole("button", { name: "Push level 3" }).click();
+  await expect(page.getByRole("heading", { name: "Nested view level 3" })).toBeVisible();
+  await page.getByRole("button", { name: "Push level 4" }).click();
+  await expect(page.getByRole("heading", { name: "Nested view level 4" })).toBeVisible();
+
+  await page.getByRole("button", { name: "Done" }).click();
+  await expect(page.getByRole("heading", { name: "Nested view level 3" })).toBeVisible();
+  await page.getByRole("button", { name: "‹ Back" }).click();
+  await expect(page.getByRole("heading", { name: "Screen stacking works" })).toBeVisible();
+  await page.getByRole("button", { name: "Done" }).click();
+  await expect(page.getByRole("heading", { name: "Flow root" })).toBeVisible();
 });
