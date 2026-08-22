@@ -71,7 +71,7 @@ function readConditionsCache() {
 
 function compassDirection(degrees: number) {
   if (!Number.isFinite(degrees)) return "—";
-  const points = ["N", "NE", "E", "SE", "SW", "W", "NW"];
+  const points = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
   return points[Math.round((((degrees % 360) + 360) % 360) / 45) % 8];
 }
 
