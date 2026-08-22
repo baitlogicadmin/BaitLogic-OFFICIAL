@@ -27,9 +27,9 @@ async function loadReports(){
   feed.innerHTML='<div class="feed-item">Loading Field Checks…</div>';
   try{
     const d=await api("/api/reports"),rows=d.reports||[];
-    feed.innerHTML=(d._offline?'<div class="feed-item"><strong>Offline mode</strong><p>Showing the last Field Checks saved on this device.</p></div>':'')+
-      (rows.length?rows.slice(0,8).map(r=>`<article class="feed-item"><strong>${safe(r.category||"Field Check")} · ${safe(r.water||"Local area")}</strong><small>${safe(r.name||"Community member")} · ${r.created_at?new Date(r.created_at).toLocaleString():"recent"}</small><p>${safe(r.report)}</p></article>`).join(""):'<div class="feed-item">No Field Checks yet. Be the first person to add one.</div>');
-  }catch(e){feed.innerHTML=`<div class="feed-item">${navigator.onLine?`Field Checks unavailable: ${safe(e.message)}`:"Offline and no saved Field Checks are available yet."}</div>`}
+    feed.innerHTML=(d._offline?'<div class="feed-item"><strong>Offline mode</strong><p>Showing the last approved Field Checks saved on this device.</p></div>':'')+
+      (rows.length?rows.slice(0,8).map(r=>`<article class="feed-item"><strong>${safe(r.category||"Field Check")} · ${safe(r.water||"Local area")}</strong><small>${safe(r.name||"Community member")} · ${r.created_at?new Date(r.created_at).toLocaleString():"recent"}</small><p>${safe(r.report)}</p></article>`).join(""):'<div class="feed-item">No approved Field Checks are published here yet.</div>');
+  }catch(e){feed.innerHTML=`<div class="feed-item">${navigator.onLine?`Field Checks unavailable: ${safe(e.message)}`:"Offline and no saved approved Field Checks are available yet."}</div>`}
 }
 
 function cleanRegion(v){return String(v||"").replace(/^State of\s+/i,"").trim()}
@@ -80,15 +80,18 @@ function reportForm(){
     if(!payload.water)return msg("#reportMsg","Add the town, park, lake, trail or general area where you noticed it.");
     if(!payload.report)return msg("#reportMsg","Tell us what caught your attention.");
 
-    msg("#reportMsg",navigator.onLine?"Adding your Field Check…":"Saving your Field Check offline…");
+    msg("#reportMsg",navigator.onLine?"Submitting your Field Check…":"Saving your Field Check offline…");
     try{
       const d=await api("/api/reports",{method:"POST",body:JSON.stringify(payload)});
       f.reset();applyPrivacy();
       if(d.queued||d._offline==="queued"){
-        msg("#reportMsg","Saved on this device. It will join the local picture automatically when connection returns.",true);
+        msg("#reportMsg","Saved on this device. It will be submitted for review automatically when connection returns.",true);
+      }else if(d.moderation==="pending_review"){
+        track("field_check_submitted");
+        msg("#reportMsg","Submitted for review. It will appear in the local picture after approval.",true);
       }else{
         track("field_check_success");
-        msg("#reportMsg","Added to the local picture. Thanks for paying attention.",true);
+        msg("#reportMsg",d.message||"Field Check received.",true);
         loadReports();
       }
     }catch(err){msg("#reportMsg",err.message)}
