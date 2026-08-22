@@ -126,7 +126,7 @@ test("official reporting is prominent, educational, and routes to both states", 
   await expect(dialog.getByText("A BaitLogic Field Check does not notify officials.", { exact: false })).toBeVisible();
   await expect(dialog.getByRole("link", { name: /Call Illinois DNR/ })).toHaveAttribute("href", "tel:+18772367529");
   await expect(dialog.getByRole("link", { name: /Submit a pollution complaint/ })).toHaveAttribute("href", "https://epa.illinois.gov/pollution-complaint/submit-a-complaint.html");
-  await expect(dialog.getByRole("link", { name: /Wildlife reporting details/ })).toHaveAttribute("href", "https://dnr.illinois.gov/lawenforcement/target-poachers.html");
+  await expect(dialog.getByRole("link", { name: /Wildlife violation/ })).toHaveAttribute("href", "https://dnr.illinois.gov/lawenforcement/target-poachers.html");
 
   await dialog.getByRole("button", { name: "Missouri" }).click();
   await expect(dialog.getByRole("link", { name: /Call Missouri Conservation/ })).toHaveAttribute("href", "tel:+18003921111");

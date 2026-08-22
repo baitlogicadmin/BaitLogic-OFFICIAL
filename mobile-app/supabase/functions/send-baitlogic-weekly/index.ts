@@ -24,7 +24,7 @@ Deno.serve(async (request) => {
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   const resendKey = Deno.env.get("RESEND_API_KEY");
   const emailFrom = Deno.env.get("BAITLOGIC_EMAIL_FROM");
-  const publicSite = Deno.env.get("BAITLOGIC_PUBLIC_SITE") ?? "https://baitlogic-app-preview.baitlogic.chatgpt.site";
+  const publicSite = Deno.env.get("BAITLOGIC_PUBLIC_SITE") ?? "https://www.bait-logic.com";
   if (!supabaseUrl || !serviceKey || !resendKey || !emailFrom) return json({ error: "email_provider_not_configured" }, 503);
 
   if (request.headers.get("authorization") !== `Bearer ${serviceKey}`) return json({ error: "forbidden" }, 403);

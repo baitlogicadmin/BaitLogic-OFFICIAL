@@ -4,6 +4,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const repoRoot = path.resolve(root, "..");
 const checks = [];
 
 function addCheck(name, passed, notes, fix = "") {
@@ -59,6 +60,14 @@ function probe(name, url, expectedStatuses, init = {}) {
 loadEnvFile(path.join(root, ".env.local"));
 loadEnvFile(path.join(root, ".env"));
 
+const nodeMajor = Number(process.versions.node.split(".")[0]);
+addCheck(
+  "Pinned production Node runtime",
+  nodeMajor === 24,
+  `Running Node ${process.versions.node}; required major is 24.`,
+  nodeMajor === 24 ? "" : "Use Node 24 locally, in GitHub Actions, and in Vercel before releasing.",
+);
+
 process.env.VITE_SUPABASE_URL ||= process.env.SUPABASE_URL || "https://gibaaxzltpdizayvicgf.supabase.co";
 process.env.VITE_SUPABASE_PUBLISHABLE_KEY ||= process.env.SUPABASE_PUBLISHABLE_KEY || "sb_publishable_oUyldV6BybbdjH3GhVRzqw_uVLKl_xN";
 
@@ -75,6 +84,13 @@ run(
   ["--test", "tests/offline-foundation.test.mjs"],
   "tests/offline-foundation.test.mjs",
   "Repair the failing PWA, database-security, or email-delivery contract.",
+);
+run(
+  "Installed PWA upgrade migration test",
+  process.execPath,
+  ["--test", "tests/pwa-upgrade.test.mjs"],
+  "tests/pwa-upgrade.test.mjs",
+  "Fix service-worker cache migration/activation before releasing; installed users must move to the new release cleanly.",
 );
 
 const requiredFiles = [
@@ -94,6 +110,28 @@ addCheck(
   missingFiles.length === 0,
   missingFiles.length ? `Missing: ${missingFiles.join(", ")}` : "All required production, recovered feature, PWA, and Supabase files are present.",
   missingFiles.length ? "Restore the listed file(s) from the authoritative source before deployment." : "",
+);
+
+const forbiddenSecondaryHostFiles = [
+  path.join(root, ".openai", "hosting.json"),
+  path.join(root, "dist", ".openai", "hosting.json"),
+];
+const secondaryHostBindings = forbiddenSecondaryHostFiles.filter(existsSync);
+addCheck(
+  "Single production-host guard",
+  secondaryHostBindings.length === 0,
+  secondaryHostBindings.length
+    ? `Forbidden secondary-host binding found: ${secondaryHostBindings.map((file) => path.relative(repoRoot, file)).join(", ")}`
+    : "No secondary production-host binding is present; GitHub main → Vercel remains authoritative.",
+  secondaryHostBindings.length ? "Remove the secondary hosting binding before release." : "",
+);
+
+const releaseEndpoint = path.join(repoRoot, "api", "release.js");
+addCheck(
+  "Production provenance endpoint",
+  existsSync(releaseEndpoint),
+  existsSync(releaseEndpoint) ? "Safe Git/Vercel release provenance endpoint is present." : "api/release.js is missing.",
+  existsSync(releaseEndpoint) ? "" : "Restore api/release.js before release so live production can be matched to GitHub main.",
 );
 
 const requiredEnv = ["VITE_SUPABASE_URL", "VITE_SUPABASE_PUBLISHABLE_KEY", "VITE_TURNSTILE_SITE_KEY"];

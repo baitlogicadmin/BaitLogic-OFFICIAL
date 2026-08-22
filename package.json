@@ -4,11 +4,15 @@
   "private": true,
   "description": "BaitLogic Outdoors mobile-first community intelligence PWA",
   "main": "server.js",
+  "engines": {
+    "node": "24.x"
+  },
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
     "build": "npm --prefix mobile-app run check:readiness",
     "check:readiness": "npm --prefix mobile-app run check:readiness",
+    "verify:production": "node scripts/verify-production.mjs",
     "test:legacy-api": "node --test tests/server.test.js"
   },
   "dependencies": {
