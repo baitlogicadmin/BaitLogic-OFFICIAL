@@ -1,25 +1,17 @@
 #!/usr/bin/env node
-import { copyFileSync, cpSync, existsSync, mkdirSync } from "node:fs";
+import { copyFileSync, cpSync, existsSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const repoRoot = path.resolve(root, "..");
-const dist = path.join(root, "dist");
-const client = path.join(dist, "client");
+const client = path.join(root, "dist", "client");
 const index = path.join(client, "index.html");
-const worker = path.join(root, "worker", "index.js");
-const hosting = path.join(root, ".openai", "hosting.json");
 const legacyPublic = path.join(repoRoot, "public");
 
-for (const file of [index, worker, hosting, legacyPublic]) {
-  if (!existsSync(file)) throw new Error("Missing Sites build input: " + file);
+for (const file of [index, legacyPublic]) {
+  if (!existsSync(file)) throw new Error("Missing production build input: " + file);
 }
-
-mkdirSync(path.join(dist, "server"), { recursive: true });
-mkdirSync(path.join(dist, ".openai"), { recursive: true });
-copyFileSync(worker, path.join(dist, "server", "index.js"));
-copyFileSync(hosting, path.join(dist, ".openai", "hosting.json"));
 
 const featureFiles = [
   ["barometer.html", "barometer.html"],
@@ -47,4 +39,4 @@ const barometerAssets = path.join(legacyPublic, "barometer");
 if (!existsSync(barometerAssets)) throw new Error("Missing recovered Barometer assets: " + barometerAssets);
 cpSync(barometerAssets, path.join(client, "barometer"), { recursive: true, force: true });
 
-console.log("Prepared production build with React shell + recovered BaitLogic feature routes.");
+console.log("Prepared Vercel production build with React shell + recovered BaitLogic feature routes.");
