@@ -1,7 +1,7 @@
 "use strict";
 
-const CACHE_NAME="baitlogic-offline-v13";
-const DATA_CACHE="baitlogic-data-v13";
+const CACHE_NAME="baitlogic-offline-v14";
+const DATA_CACHE="baitlogic-data-v14";
 const QUEUE_DB="baitlogic-offline-queue-v1";
 const QUEUE_STORE="requests";
 
@@ -18,10 +18,17 @@ const APP_SHELL=[
   "/premium.css",
   "/launch.css",
   "/manifest.webmanifest",
-  "/barometer/styles.css?v=5",
-  "/barometer/premium-v4.css?v=7",
-  "/barometer/app.js?v=8",
+  "/barometer/base-v2.css?v=1",
+  "/barometer/components-v2.css?v=1",
+  "/barometer/details-v2.css?v=1",
+  "/barometer/water-v2.css?v=1",
+  "/barometer/mobile-v2.css?v=1",
+  "/barometer/mobile-details-v2.css?v=1",
+  "/barometer/app.js?v=9",
   "/barometer/water-evidence.js?v=1",
+  "/barometer/trend-ui.js?v=1",
+  "/barometer/connection-ui.js?v=1",
+  "/barometer/auto-refresh.js?v=1",
   "/barometer/manifest.webmanifest",
   "/barometer/icon.svg"
 ];
@@ -127,7 +134,10 @@ self.addEventListener("activate",event=>{
 });
 
 self.addEventListener("sync",event=>{if(event.tag==="baitlogic-sync")event.waitUntil(flushQueue())});
-self.addEventListener("message",event=>{if(event.data?.type==="BAITLOGIC_FLUSH_QUEUE")event.waitUntil?.(flushQueue())});
+self.addEventListener("message",event=>{
+  if(event.data?.type==="BAITLOGIC_FLUSH_QUEUE") event.waitUntil?.(flushQueue());
+  if(event.data?.type==="BAITLOGIC_ACTIVATE_NOW") self.skipWaiting();
+});
 
 self.addEventListener("fetch",event=>{
   const request=event.request;
@@ -159,7 +169,7 @@ self.addEventListener("fetch",event=>{
   }
 
   if(url.origin!==self.location.origin){
-    if(["api.open-meteo.com","air-quality-api.open-meteo.com","api.weather.gov","api.bigdatacloud.net","nominatim.openstreetmap.org"].includes(url.hostname))event.respondWith(networkFirst(request));
+    if(["api.open-meteo.com","air-quality-api.open-meteo.com","api.weather.gov","api.bigdatacloud.net","nominatim.openstreetmap.org"].includes(url.hostname)) event.respondWith(networkFirst(request));
     return;
   }
 
@@ -175,6 +185,11 @@ self.addEventListener("fetch",event=>{
         return(await cache.match(request))||(await cache.match(url.pathname))||(await cache.match("/"));
       }
     })());
+    return;
+  }
+
+  if(["script","style","worker"].includes(request.destination)){
+    event.respondWith(networkFirst(request,{cacheName:CACHE_NAME}));
     return;
   }
 
