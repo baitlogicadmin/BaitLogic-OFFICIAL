@@ -8,8 +8,17 @@ module.exports = async function handler(req, res) {
 
   try {
     if (req.method === "GET") {
-      const rows = await supabaseRequest("reports?select=id,category,name,water,report,gps,created_at&order=created_at.desc&limit=50");
-      return res.status(200).json({ reports: rows || [] });
+      const rows = await supabaseRequest("field_checks?select=client_id,category,note,place,created_at&moderation_status=eq.approved&order=created_at.desc&limit=50");
+      const reports = (rows || []).map(row => ({
+        id: row.client_id,
+        category: row.category,
+        name: "Community member",
+        water: row.place,
+        report: row.note,
+        gps: null,
+        created_at: row.created_at,
+      }));
+      return res.status(200).json({ reports, moderation: "approved_only" });
     }
 
     if (req.method === "POST") {
@@ -23,7 +32,11 @@ module.exports = async function handler(req, res) {
         method: "POST",
         body: JSON.stringify({ category, name, water, report, gps: gps || null, created_at: nowIso() }),
       });
-      return res.status(201).json({ message: "Field Check published.", report: rows?.[0] || null });
+      return res.status(202).json({
+        message: "Field Check submitted for review.",
+        moderation: "pending_review",
+        report: rows?.[0] || null,
+      });
     }
 
     return methodNotAllowed(res);
