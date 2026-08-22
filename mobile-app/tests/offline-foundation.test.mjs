@@ -17,7 +17,7 @@ test("ships the versioned app-shell service worker", async () => {
   assert.match(worker, /baitlogic-field-kit-v5/);
   assert.match(worker, /precacheAppShell/);
   assert.match(worker, /event\.request\.mode === "navigate"/);
-  assert.match(worker, /caches\.match\("\/"\)/);
+  assert.match(worker, /cache\.match\("\/"\)/);
   assert.match(worker, /\/api\/barometer-snapshot/);
   assert.match(worker, /\/api\/water-snapshot/);
   assert.match(worker, /X-BaitLogic-Source/);
