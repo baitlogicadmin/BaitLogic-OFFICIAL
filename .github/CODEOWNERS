@@ -1,0 +1,9 @@
+# BaitLogic repository ownership
+# Branch protection should require review from this owner before protected changes merge.
+* @baitlogicadmin
+
+# Conservation intelligence and data-governance changes require the canonical BaitLogic owner.
+/docs/ @baitlogicadmin
+/mobile-app/src/data/ @baitlogicadmin
+/mobile-app/supabase/ @baitlogicadmin
+/.github/ @baitlogicadmin
