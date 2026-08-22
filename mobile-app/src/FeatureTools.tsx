@@ -1,5 +1,6 @@
 import "./feature-tools.css";
 import RegionalExploreEnhancer from "./RegionalExploreEnhancer";
+import WaterWatch from "./WaterWatch";
 
 const tools = [
   { href: "/barometer.html", label: "Barometer" },
@@ -21,6 +22,7 @@ export default function FeatureTools() {
         </div>
       </nav>
       <RegionalExploreEnhancer />
+      <WaterWatch />
     </>
   );
 }

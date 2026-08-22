@@ -1,0 +1,264 @@
+.water-watch-launcher {
+  position: fixed;
+  right: 16px;
+  bottom: calc(86px + env(safe-area-inset-bottom, 0px));
+  z-index: 45;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 8px 12px 8px 9px;
+  border: 1px solid rgba(255,255,255,.6);
+  border-radius: 18px;
+  background: rgba(5, 34, 61, .94);
+  box-shadow: 0 14px 34px rgba(3, 26, 47, .28);
+  color: #fff;
+  text-align: left;
+  backdrop-filter: blur(12px);
+}
+
+.water-watch-launcher-mark {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 13px;
+  background: linear-gradient(145deg, #35d7d0, #1a9eb3);
+  color: #05223d;
+  font-size: 26px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.water-watch-launcher strong,
+.water-watch-launcher small {
+  display: block;
+}
+
+.water-watch-launcher strong { font-size: 13px; letter-spacing: .02em; }
+.water-watch-launcher small { margin-top: 2px; color: #cfeff1; font-size: 10px; }
+
+.water-watch-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: grid;
+  align-items: end;
+}
+
+.water-watch-overlay {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgba(1, 16, 32, .68);
+  backdrop-filter: blur(5px);
+}
+
+.water-watch-sheet {
+  position: relative;
+  z-index: 1;
+  width: min(760px, 100%);
+  max-height: 94dvh;
+  margin: 0 auto;
+  overflow: auto;
+  overscroll-behavior: contain;
+  border: 1px solid rgba(17, 101, 118, .25);
+  border-bottom: 0;
+  border-radius: 28px 28px 0 0;
+  background: #f4fbfb;
+  color: #082338;
+  box-shadow: 0 -24px 70px rgba(2, 25, 45, .34);
+}
+
+.water-watch-header {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 20px 18px 16px;
+  border-bottom: 1px solid rgba(12, 88, 105, .16);
+  background: rgba(244, 251, 251, .96);
+  backdrop-filter: blur(14px);
+}
+
+.water-watch-kicker,
+.water-watch-intro > span,
+.water-watch-reporting-copy > span,
+.water-watch-next > span {
+  display: block;
+  margin-bottom: 5px;
+  color: #0b7c8a;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .13em;
+}
+
+.water-watch-header h2,
+.water-watch-intro h3,
+.water-watch-card h3,
+.water-watch-reporting h3,
+.water-watch-next h3 { margin: 0; }
+
+.water-watch-header h2 { font-size: clamp(24px, 7vw, 34px); letter-spacing: -.035em; }
+.water-watch-header p { max-width: 540px; margin: 6px 0 0; color: #496579; font-size: 13px; line-height: 1.45; }
+
+.water-watch-close {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid #c8dde0;
+  border-radius: 14px;
+  background: #fff;
+  color: #17374d;
+}
+
+.water-watch-trustbar {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 12px 18px;
+  background: #073c55;
+  color: #fff;
+}
+
+.water-watch-trustbar svg { flex: 0 0 auto; margin-top: 2px; }
+.water-watch-trustbar strong,
+.water-watch-trustbar small { display: block; }
+.water-watch-trustbar strong { font-size: 12px; }
+.water-watch-trustbar small { margin-top: 3px; color: #c8eef0; font-size: 10px; line-height: 1.4; }
+
+.water-watch-content { padding: 18px 16px calc(28px + env(safe-area-inset-bottom, 0px)); }
+
+.water-watch-intro {
+  padding: 18px;
+  border: 1px solid #c9e6e6;
+  border-radius: 22px;
+  background: linear-gradient(145deg, #ffffff, #eaf9f8);
+}
+
+.water-watch-intro h3 { max-width: 620px; font-size: 22px; line-height: 1.08; letter-spacing: -.025em; }
+.water-watch-intro p { margin: 10px 0 0; color: #4a6474; font-size: 13px; line-height: 1.55; }
+
+.water-watch-grid { display: grid; gap: 12px; margin-top: 14px; }
+
+.water-watch-card {
+  padding: 16px;
+  border: 1px solid #cfe1e3;
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: 0 9px 26px rgba(6, 48, 68, .07);
+}
+
+.water-watch-card.is-current { border-left: 4px solid #12a8ad; }
+.water-watch-card.needs-recheck { border-left: 4px solid #b78300; background: #fffcf4; }
+
+.water-watch-card-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 9px;
+}
+
+.water-watch-bill { color: #315a6f; font-size: 11px; font-weight: 900; letter-spacing: .04em; }
+.water-watch-status {
+  padding: 5px 7px;
+  border-radius: 999px;
+  background: #e4f7f5;
+  color: #0b7079;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .07em;
+  white-space: nowrap;
+}
+
+.needs-recheck .water-watch-status { background: #fff0c6; color: #725400; }
+.water-watch-card h3 { font-size: 19px; letter-spacing: -.02em; }
+.water-watch-statusline { margin: 5px 0 13px; color: #527083; font-size: 12px; font-weight: 700; }
+
+.water-watch-card dl { display: grid; gap: 10px; margin: 0; }
+.water-watch-card dl > div { padding: 10px 11px; border-radius: 14px; background: #f3f8f8; }
+.water-watch-card dt { margin-bottom: 4px; color: #0f7c88; font-size: 9px; font-weight: 900; letter-spacing: .12em; }
+.water-watch-card dd { margin: 0; color: #29495e; font-size: 12px; line-height: 1.5; }
+
+.water-watch-card > a {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 12px;
+  color: #086e7c;
+  font-size: 11px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.water-watch-reporting,
+.water-watch-next {
+  margin-top: 14px;
+  padding: 18px;
+  border-radius: 22px;
+}
+
+.water-watch-reporting { background: #062f46; color: #fff; }
+.water-watch-reporting-copy > span { color: #67d8d5; }
+.water-watch-reporting h3 { font-size: 21px; line-height: 1.12; }
+.water-watch-reporting p { margin: 8px 0 0; color: #d3e8ec; font-size: 12px; line-height: 1.55; }
+
+.water-watch-actions { display: grid; gap: 8px; margin-top: 14px; }
+.water-watch-actions a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 54px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 15px;
+  background: rgba(255,255,255,.08);
+  color: #fff;
+  text-decoration: none;
+}
+
+.water-watch-actions a > svg:first-child { flex: 0 0 auto; }
+.water-watch-actions a > svg:last-child { margin-left: auto; }
+.water-watch-actions strong,
+.water-watch-actions small { display: block; }
+.water-watch-actions strong { font-size: 12px; }
+.water-watch-actions small { margin-top: 2px; color: #c8e4e9; font-size: 10px; }
+
+.water-watch-next {
+  border: 1px solid #e6d7a9;
+  background: linear-gradient(145deg, #fffdf7, #f7f2df);
+}
+
+.water-watch-next > span { color: #8a6500; }
+.water-watch-next h3 { font-size: 22px; }
+.water-watch-next p { margin: 8px 0 0; color: #586475; font-size: 12px; line-height: 1.55; }
+.water-watch-next-tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; }
+.water-watch-next-tags span { padding: 6px 8px; border-radius: 999px; background: #fff; color: #665012; font-size: 9px; font-weight: 800; }
+
+.water-watch-footnote {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  margin: 14px 4px 0;
+  color: #587083;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.water-watch-footnote svg { flex: 0 0 auto; margin-top: 1px; }
+
+@media (min-width: 700px) {
+  .water-watch-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .water-watch-sheet { margin-bottom: 16px; border-bottom: 1px solid rgba(17, 101, 118, .25); border-radius: 28px; }
+  .water-watch-layer { align-items: center; padding: 18px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .water-watch-launcher,
+  .water-watch-sheet { scroll-behavior: auto; }
+}
