@@ -19,9 +19,7 @@ function loadEnvFile(file) {
     if (separator < 1) continue;
     const key = line.slice(0, separator).trim();
     let value = line.slice(separator + 1).trim();
-    if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
-      value = value.slice(1, -1);
-    }
+    if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) value = value.slice(1, -1);
     if (!process.env[key]) process.env[key] = value;
   }
 }
@@ -41,20 +39,9 @@ function run(name, command, args, failureLocation, fix) {
 }
 
 function probe(name, url, expectedStatuses, init = {}) {
-  const args = [
-    "--silent",
-    "--show-error",
-    "--output",
-    "/dev/null",
-    "--write-out",
-    "%{http_code}",
-    "--max-time",
-    "12",
-  ];
+  const args = ["--silent", "--show-error", "--output", "/dev/null", "--write-out", "%{http_code}", "--max-time", "12"];
   if (init.method) args.push("--request", init.method);
-  for (const [header, value] of Object.entries(init.headers ?? {})) {
-    args.push("--header", `${header}: ${value}`);
-  }
+  for (const [header, value] of Object.entries(init.headers ?? {})) args.push("--header", `${header}: ${value}`);
   if (init.body) args.push("--data", init.body);
   args.push(url);
 
@@ -66,19 +53,12 @@ function probe(name, url, expectedStatuses, init = {}) {
   }
 
   const passed = expectedStatuses.includes(status);
-  addCheck(
-    name,
-    passed,
-    `HTTP ${status}; expected ${expectedStatuses.join(" or ")}.`,
-    passed ? "" : "Confirm the deployed Supabase function, JWT setting, CORS policy, and required secrets.",
-  );
+  addCheck(name, passed, `HTTP ${status}; expected ${expectedStatuses.join(" or ")}.`, passed ? "" : "Confirm the deployed Supabase function, CORS policy, and required secrets.");
 }
 
 loadEnvFile(path.join(root, ".env.local"));
 loadEnvFile(path.join(root, ".env"));
 
-// These are public browser configuration values. Keep the Turnstile site key
-// environment-specific because each widget is restricted to approved hosts.
 process.env.VITE_SUPABASE_URL ||= process.env.SUPABASE_URL || "https://gibaaxzltpdizayvicgf.supabase.co";
 process.env.VITE_SUPABASE_PUBLISHABLE_KEY ||= process.env.SUPABASE_PUBLISHABLE_KEY || "sb_publishable_oUyldV6BybbdjH3GhVRzqw_uVLKl_xN";
 
@@ -87,14 +67,7 @@ run(
   "npm",
   ["run", "build"],
   "package.json: scripts.build",
-  "Fix the first TypeScript, import, or Vite build error and rerun npm run check:readiness.",
-);
-run(
-  "Static worker and deployment package tests",
-  "npm",
-  ["run", "test:sites"],
-  "tests/sites-worker.test.mjs",
-  "Repair the worker/static package contract before deployment.",
+  "Fix the first TypeScript, import, Vite, or production packaging error and rerun npm run check:readiness.",
 );
 run(
   "PWA and backend foundation tests",
@@ -108,18 +81,18 @@ const requiredFiles = [
   "dist/client/index.html",
   "dist/client/sw.js",
   "dist/client/manifest.webmanifest",
-  "dist/server/index.js",
-  "dist/.openai/hosting.json",
-  ".openai/hosting.json",
+  "dist/client/barometer.html",
+  "dist/client/field-intel.html",
+  "dist/client/conservation-prairie.html",
   "supabase/functions/submit-baitlogic-signal/index.ts",
   "supabase/functions/send-baitlogic-weekly/index.ts",
   "supabase/functions/unsubscribe-baitlogic-weekly/index.ts",
 ];
 const missingFiles = requiredFiles.filter((file) => !existsSync(path.join(root, file)));
 addCheck(
-  "Deployment and backend file map",
+  "Vercel production and backend file map",
   missingFiles.length === 0,
-  missingFiles.length ? `Missing: ${missingFiles.join(", ")}` : "All required Sites, PWA, and Supabase function files are present.",
+  missingFiles.length ? `Missing: ${missingFiles.join(", ")}` : "All required production, recovered feature, PWA, and Supabase files are present.",
   missingFiles.length ? "Restore the listed file(s) from the authoritative source before deployment." : "",
 );
 
@@ -128,58 +101,33 @@ const missingEnv = requiredEnv.filter((key) => !process.env[key]?.trim());
 addCheck(
   "Front-end environment mapping",
   missingEnv.length === 0,
-  missingEnv.length ? `.env.local (missing key; compare .env.example:3)\nMissing keys: ${missingEnv.join(", ")}` : "Required public runtime keys are mapped; values were not printed.",
-  missingEnv.length ? "Add the missing key(s) to the preview/production environment and rerun the gate." : "",
+  missingEnv.length ? `.env.local (missing key; compare .env.example)\nMissing keys: ${missingEnv.join(", ")}` : "Required public runtime keys are mapped; values were not printed.",
+  missingEnv.length ? "Add the missing key(s) to Vercel preview/production and rerun the gate." : "",
 );
 
 const productionTarget = (process.env.BAITLOGIC_PRODUCTION_TARGET ?? "vercel").trim().toLowerCase();
-const validTarget = productionTarget === "sites" || productionTarget === "vercel";
 addCheck(
-  "Approved production target mapping",
-  validTarget,
-  validTarget
-    ? `Target is explicitly mapped to ${productionTarget}.`
-    : ".env.local (invalid key; compare .env.example:4)\nBAITLOGIC_PRODUCTION_TARGET must be vercel.",
-  validTarget ? "" : "Choose the reviewed production host before deployment; do not infer it from a preview URL.",
+  "Authoritative production target",
+  productionTarget === "vercel",
+  productionTarget === "vercel" ? "GitHub main → Vercel is the only approved production target." : `Invalid production target: ${productionTarget}.`,
+  productionTarget === "vercel" ? "" : "Set BAITLOGIC_PRODUCTION_TARGET=vercel; do not deploy BaitLogic production through a second host.",
 );
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL?.replace(/\/$/, "");
 const publishableKey = process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 if (supabaseUrl && publishableKey) {
   const authHeaders = { apikey: publishableKey, authorization: `Bearer ${publishableKey}` };
-  probe(
-    "Database/Data API read",
-    `${supabaseUrl}/rest/v1/field_checks?select=client_id&limit=1`,
-    [200],
-    { headers: authHeaders },
-  );
+  probe("Database/Data API read", `${supabaseUrl}/rest/v1/field_checks?select=client_id&limit=1`, [200], { headers: authHeaders });
   probe(
     "Submission API bot-protection guard",
     `${supabaseUrl}/functions/v1/submit-baitlogic-signal`,
     [403],
-    {
-      method: "POST",
-      headers: { ...authHeaders, "content-type": "application/json" },
-      body: JSON.stringify({ kind: "readiness_missing_captcha" }),
-    },
+    { method: "POST", headers: { ...authHeaders, "content-type": "application/json" }, body: JSON.stringify({ kind: "readiness_missing_captcha" }) },
   );
-  probe(
-    "Weekly sender authorization guard",
-    `${supabaseUrl}/functions/v1/send-baitlogic-weekly`,
-    [401, 403],
-  );
-  probe(
-    "Unsubscribe endpoint validation",
-    `${supabaseUrl}/functions/v1/unsubscribe-baitlogic-weekly`,
-    [400],
-  );
+  probe("Weekly sender authorization guard", `${supabaseUrl}/functions/v1/send-baitlogic-weekly`, [401, 403]);
+  probe("Unsubscribe endpoint validation", `${supabaseUrl}/functions/v1/unsubscribe-baitlogic-weekly`, [400]);
 } else {
-  for (const name of [
-    "Database/Data API read",
-    "Submission API validation",
-    "Weekly sender authorization guard",
-    "Unsubscribe endpoint validation",
-  ]) {
+  for (const name of ["Database/Data API read", "Submission API bot-protection guard", "Weekly sender authorization guard", "Unsubscribe endpoint validation"]) {
     addCheck(name, false, "Live probe skipped because Supabase public environment keys are missing.", "Map the public Supabase URL and publishable key.");
   }
 }
@@ -194,6 +142,6 @@ for (const check of checks) {
   if (check.fix) console.log(`      Fix: ${check.fix}`);
 }
 console.log(`\nResult: ${failed === 0 ? "PASS" : "FAIL"} — ${passed}/${checks.length} checks passed.`);
-console.log("External release gates remain documented in DEPLOYMENT_READINESS.md.");
+console.log("Production source: GitHub main → Vercel.");
 
 if (failed > 0) process.exitCode = 1;
