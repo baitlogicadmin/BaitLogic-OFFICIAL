@@ -1,0 +1,68 @@
+name: Prepare BaitLogic Rollback
+
+on:
+  workflow_dispatch:
+    inputs:
+      bad_commit:
+        description: "Git commit SHA to revert (normally the bad squash/merge commit on main)"
+        required: true
+        type: string
+      reason:
+        description: "Short reason for the rollback"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  prepare-rollback:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Check out authoritative main history
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Configure Git identity
+        run: |
+          git config user.name "BaitLogic Release Safety"
+          git config user.email "baitlogicadmin@users.noreply.github.com"
+
+      - name: Validate rollback commit is on main
+        env:
+          BAD_COMMIT: ${{ inputs.bad_commit }}
+        run: |
+          git fetch origin main
+          git cat-file -e "${BAD_COMMIT}^{commit}"
+          git merge-base --is-ancestor "$BAD_COMMIT" origin/main
+
+      - name: Create revert branch and commit
+        id: revert
+        env:
+          BAD_COMMIT: ${{ inputs.bad_commit }}
+        run: |
+          SHORT_SHA="${BAD_COMMIT:0:12}"
+          BRANCH="rollback/${GITHUB_RUN_ID}-${SHORT_SHA}"
+          git checkout -b "$BRANCH" origin/main
+          git revert --no-edit "$BAD_COMMIT"
+          git push origin "$BRANCH"
+          echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
+          echo "short_sha=$SHORT_SHA" >> "$GITHUB_OUTPUT"
+
+      - name: Open rollback pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: ${{ steps.revert.outputs.branch }}
+          SHORT_SHA: ${{ steps.revert.outputs.short_sha }}
+          BAD_COMMIT: ${{ inputs.bad_commit }}
+          REASON: ${{ inputs.reason }}
+        run: |
+          gh pr create \
+            --base main \
+            --head "$BRANCH" \
+            --title "Rollback: revert ${SHORT_SHA}" \
+            --body "## Production rollback\n\n**Reverting:** \`${BAD_COMMIT}\`\n\n**Reason:** ${REASON}\n\nThis rollback uses normal Git history. It must pass BaitLogic Deployment Readiness before merge; after merge, Production Verification must confirm the live domain is running the new main SHA.\n\nDo not use a second deployment source."
