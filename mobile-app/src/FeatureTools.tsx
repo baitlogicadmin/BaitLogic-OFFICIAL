@@ -1,4 +1,5 @@
 import "./feature-tools.css";
+import RegionalExploreEnhancer from "./RegionalExploreEnhancer";
 
 const tools = [
   { href: "/barometer.html", label: "Barometer" },
@@ -10,13 +11,16 @@ const tools = [
 
 export default function FeatureTools() {
   return (
-    <nav className="feature-tools" aria-label="BaitLogic field tools">
-      <span className="feature-tools-label">TOOLS</span>
-      <div className="feature-tools-scroll">
-        {tools.map((tool) => (
-          <a key={tool.href} href={tool.href}>{tool.label}</a>
-        ))}
-      </div>
-    </nav>
+    <>
+      <nav className="feature-tools" aria-label="BaitLogic field tools">
+        <span className="feature-tools-label">TOOLS</span>
+        <div className="feature-tools-scroll">
+          {tools.map((tool) => (
+            <a key={tool.href} href={tool.href}>{tool.label}</a>
+          ))}
+        </div>
+      </nav>
+      <RegionalExploreEnhancer />
+    </>
   );
 }
