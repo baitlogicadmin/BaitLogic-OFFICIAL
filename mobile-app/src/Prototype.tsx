@@ -71,7 +71,7 @@ function readConditionsCache() {
 
 function compassDirection(degrees: number) {
   if (!Number.isFinite(degrees)) return "—";
-  const points = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
+  const points = ["N", "NE", "E", "SE", "SW", "W", "NW"];
   return points[Math.round((((degrees % 360) + 360) % 360) / 45) % 8];
 }
 
@@ -396,7 +396,6 @@ export default function Prototype() {
     setReportCaptcha(undefined);
     setNotice(result.mode === "synced" ? "Submitted · awaiting community review" : navigator.onLine ? "Saved on this device" : "Saved offline · ready to sync");
   };
-
   const join = async () => {
     const normalizedEmail = email.trim();
     if (!normalizedEmail.includes("@")) { setNotice("Enter a valid email"); return; }
@@ -527,11 +526,11 @@ export default function Prototype() {
               {(["Illinois", "Missouri"] as const).map((state) => <button type="button" className={reportingState === state ? "selected" : ""} aria-pressed={reportingState === state} onClick={() => setSelectedReportingState(state)} key={state}>{state}</button>)}
             </div>
             <div className="official-actions">
-              <a href={reporting.wildlifePhoneHref}><EyeOpenIcon /><span><strong>Wildlife violation</strong><small>Call {reporting.wildlifeAgency} · {reporting.wildlifePhone}</small></span></a>
+              <a href={reporting.wildlifeUrl} target="_blank" rel="noreferrer"><EyeOpenIcon /><span><strong>Wildlife violation</strong><small>{reporting.wildlifeAgency} · Open official reporting page</small></span><ExternalLinkIcon /></a>
               <a href={reporting.environmentUrl} target="_blank" rel="noreferrer"><GlobeIcon /><span><strong>Environmental concern</strong><small>{reporting.environmentAgency} · {reporting.environmentLabel}</small></span><ExternalLinkIcon /></a>
             </div>
             <div className="official-support-links">
-              <a href={reporting.wildlifeUrl} target="_blank" rel="noreferrer">Wildlife reporting details <ExternalLinkIcon /></a>
+              <a href={reporting.wildlifePhoneHref}>Call {reporting.wildlifeAgency} · {reporting.wildlifePhone}</a>
               <a href={reporting.emergencyHref}>{reporting.emergencyLabel}</a>
             </div>
           </section>
