@@ -1,5 +1,11 @@
 import Prototype from "./Prototype";
+import FeatureTools from "./FeatureTools";
 
 export default function App() {
-  return <Prototype />;
+  return (
+    <>
+      <FeatureTools />
+      <Prototype />
+    </>
+  );
 }
