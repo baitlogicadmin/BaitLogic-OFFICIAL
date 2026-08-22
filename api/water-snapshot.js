@@ -9,8 +9,9 @@ module.exports = async function handler(req, res) {
   if (req.method !== "GET") return res.status(405).json({ error: "Method not allowed." });
 
   try {
-    const lat = Number(req.query.lat);
-    const lon = Number(req.query.lon);
+    const requestUrl = new URL(req.url || "/api/water-snapshot", "https://www.bait-logic.com");
+    const lat = Number(requestUrl.searchParams.get("lat"));
+    const lon = Number(requestUrl.searchParams.get("lon"));
     if (!Number.isFinite(lat) || !Number.isFinite(lon) || lat < -90 || lat > 90 || lon < -180 || lon > 180) {
       return res.status(400).json({ error: "Valid latitude and longitude are required." });
     }
