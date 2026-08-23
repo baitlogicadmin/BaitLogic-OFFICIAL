@@ -8,8 +8,8 @@ const visualConditions = {
     apparentTemperatureF: 62,
     code: 0,
     pressureInHg: 30.16,
-    pressureDelta3h: 0.08,
-    pressureDelta6h: 0.12,
+    pressureDelta3h: 0.03,
+    pressureDelta6h: 0.05,
     windMph: 5,
     windDirection: 315,
     gustMph: 9,
@@ -40,5 +40,6 @@ test("render approved BaitLogic home candidate", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("button", { name: "Refresh current location and conditions" })).toContainText("Highland, Illinois");
   await expect(page.getByLabel("Verified local weather conditions")).toContainText("30.16 inHg");
-  await page.screenshot({ path: "test-results/ui-home.png", fullPage: true });
+  await page.locator(".native-scroll").evaluate((element) => { element.scrollTop = 0; });
+  await page.screenshot({ path: "test-results/ui-home.png", fullPage: false });
 });
