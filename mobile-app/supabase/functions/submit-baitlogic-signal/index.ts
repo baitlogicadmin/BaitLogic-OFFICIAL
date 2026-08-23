@@ -7,7 +7,18 @@ const CORS = {
   "access-control-allow-origin": "*",
 };
 
-const categories = new Set(["Water", "Wildlife", "Trail", "Weather", "Conservation"]);
+const categories = new Set([
+  "Water",
+  "Wildlife",
+  "Habitat",
+  "Access",
+  "Fishing",
+  "Something Cool",
+  "Something Strange",
+  "Trail",
+  "Weather",
+  "Conservation",
+]);
 
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -59,7 +70,6 @@ Deno.serve(async (request) => {
     return json({ error: "invalid_json" }, 400);
   }
 
-  // Hidden-field bot trap: accept silently so automated fillers do not retry.
   if (typeof body.website === "string" && body.website.trim()) return json({ accepted: true });
   if (!await verifyTurnstile(request, body.captcha_token)) return json({ error: "captcha_required" }, 403);
 
@@ -120,8 +130,17 @@ Deno.serve(async (request) => {
     const category = typeof item.category === "string" ? item.category : "";
     const note = typeof item.note === "string" ? item.note.trim() : "";
     const place = typeof item.place === "string" ? item.place.trim() : "";
+    const displayName = typeof item.display_name === "string" ? item.display_name.trim().slice(0, 60) : "Community member";
     if (!clientId || clientId.length > 120 || !categories.has(category) || note.length < 2 || note.length > 500 || place.length < 2 || place.length > 120) return [];
-    return [{ client_id: clientId, category, note, place, location_precision: "area_only", moderation_status: "pending" }];
+    return [{
+      client_id: clientId,
+      category,
+      note,
+      place,
+      display_name: displayName || "Community member",
+      location_precision: "area_only",
+      moderation_status: "pending",
+    }];
   });
   if (!rows.length || rows.length !== items.length) return json({ error: "invalid_field_check" }, 400);
 
