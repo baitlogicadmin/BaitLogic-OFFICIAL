@@ -2,7 +2,7 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.112.3";
 
 const CORS = {
-  "access-control-allow-headers": "authorization, x-client-info, apikey, content-type",
+  "access-control-allow-headers": "authorization, x-client-info, apikey, content-type, x-baitlogic-web-bridge",
   "access-control-allow-methods": "POST, OPTIONS",
   "access-control-allow-origin": "*",
 };
@@ -70,19 +70,19 @@ Deno.serve(async (request) => {
     return json({ error: "invalid_json" }, 400);
   }
 
-  const kind = body.kind === "weekly_signup" ? "weekly_signup" : body.kind === "field_checks" ? "field_checks" : null;
-  if (!kind) return json({ error: "invalid_kind" }, 400);
-
   // Hidden-field bot trap: accept silently so automated fillers do not retry.
   if (typeof body.website === "string" && body.website.trim()) return json({ accepted: true });
 
-  // Weekly email signups require Turnstile when configured. Field Checks keep backward
-  // compatibility with older/offline BaitLogic clients and are protected by the rate limit below.
-  if (kind === "weekly_signup") {
-    if (!await verifyTurnstile(request, body.captcha_token)) return json({ error: "captcha_required" }, 403);
-  } else if (typeof body.captcha_token === "string" && body.captcha_token.trim()) {
-    if (!await verifyTurnstile(request, body.captcha_token)) return json({ error: "captcha_invalid" }, 403);
+  // The legacy/public web form posts through BaitLogic's own /api/reports bridge.
+  // Direct browser/client submissions still require Turnstile when configured.
+  const trustedWebBridge = body.kind === "field_checks"
+    && request.headers.get("x-baitlogic-web-bridge") === "legacy-public-form";
+  if (!trustedWebBridge && !await verifyTurnstile(request, body.captcha_token)) {
+    return json({ error: "captcha_required" }, 403);
   }
+
+  const kind = body.kind === "weekly_signup" ? "weekly_signup" : body.kind === "field_checks" ? "field_checks" : null;
+  if (!kind) return json({ error: "invalid_kind" }, 400);
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
