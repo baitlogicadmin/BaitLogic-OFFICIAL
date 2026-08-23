@@ -24,6 +24,7 @@ async function submitFieldCheck(item) {
     headers: {
       apikey: SUPABASE_KEY,
       "Content-Type": "application/json",
+      "x-baitlogic-web-bridge": "legacy-public-form",
     },
     body: JSON.stringify({ kind: "field_checks", items: [item] }),
   });
