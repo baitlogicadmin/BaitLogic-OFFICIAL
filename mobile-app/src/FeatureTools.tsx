@@ -1,5 +1,4 @@
 import "./feature-tools.css";
-import "./readability.css";
 import RegionalExploreEnhancer from "./RegionalExploreEnhancer";
 
 const tools = [
