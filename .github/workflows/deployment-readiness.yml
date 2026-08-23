@@ -43,3 +43,11 @@ jobs:
       - name: Run mobile interaction tests
         run: npm run test:runtime
         working-directory: mobile-app
+
+      - name: Upload rendered UI candidate
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: baitlogic-ui-candidate
+          path: mobile-app/test-results/ui-home.png
+          if-no-files-found: ignore
