@@ -25,6 +25,10 @@ function publicPhotoUrl(path) {
   return `${SUPABASE_URL}/storage/v1/object/public/${PHOTO_BUCKET}/${encodedPath}`;
 }
 
+function validClientId(value) {
+  return /^web-[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(String(value || ""));
+}
+
 async function submitFieldCheck(item) {
   const response = await fetch(`${SUPABASE_URL}/functions/v1/submit-baitlogic-signal`, {
     method: "POST",
@@ -71,12 +75,13 @@ module.exports = async function handler(req, res) {
       const water = toText(req.body?.water, 120);
       const report = toText(req.body?.report, 500);
       const photoData = typeof req.body?.photo_data === "string" ? req.body.photo_data : "";
+      const requestedClientId = toText(req.body?.client_id, 120);
 
       if (!FIELD_CATEGORIES.has(category)) return res.status(400).json({ error: "Choose a valid Field Check category." });
       if (!water || !report) return res.status(400).json({ error: "Area and observation are required." });
       if (photoData.length > 2_050_000) return res.status(413).json({ error: "Photo is too large. Choose a smaller image and try again." });
 
-      const clientId = `web-${randomUUID()}`;
+      const clientId = validClientId(requestedClientId) ? requestedClientId : `web-${randomUUID()}`;
       const result = await submitFieldCheck({
         client_id: clientId,
         category,
