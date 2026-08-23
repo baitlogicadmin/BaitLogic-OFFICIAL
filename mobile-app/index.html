@@ -9,6 +9,12 @@
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="apple-touch-icon" href="/assets/app-icon-192.png" />
     <title>BaitLogic Outdoors</title>
+    <script>
+      // Recovered BaitLogic feature pages still link to these original root anchors.
+      // Route them to their live destinations instead of landing on a dead hash.
+      if (location.hash === "#reports") location.replace("/field-intel.html#field-check");
+      if (location.hash === "#conservation") location.replace("/field-intel.html#conservation");
+    </script>
   </head>
   <body>
     <div id="root"></div>
