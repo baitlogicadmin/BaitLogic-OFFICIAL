@@ -7,14 +7,15 @@ test("ships an installable BaitLogic web app manifest", async () => {
 
   assert.equal(manifest.name, "BaitLogic Outdoors");
   assert.equal(manifest.display, "standalone");
-  assert.equal(manifest.theme_color, "#061535");
+  assert.equal(manifest.theme_color, "#031421");
+  assert.equal(manifest.background_color, "#010911");
   assert.deepEqual(manifest.icons.map((icon) => icon.sizes), ["192x192", "512x512"]);
 });
 
 test("ships the versioned app-shell service worker", async () => {
   const worker = await readFile(new URL("../dist/client/sw.js", import.meta.url), "utf8");
 
-  assert.match(worker, /baitlogic-field-kit-v5/);
+  assert.match(worker, /baitlogic-field-kit-v6/);
   assert.match(worker, /precacheAppShell/);
   assert.match(worker, /event\.request\.mode === "navigate"/);
   assert.match(worker, /cache\.match\("\/"\)/);
