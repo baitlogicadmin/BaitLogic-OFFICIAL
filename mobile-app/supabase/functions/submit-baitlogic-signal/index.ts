@@ -70,15 +70,23 @@ Deno.serve(async (request) => {
     return json({ error: "invalid_json" }, 400);
   }
 
+  const kind = body.kind === "weekly_signup" ? "weekly_signup" : body.kind === "field_checks" ? "field_checks" : null;
+  if (!kind) return json({ error: "invalid_kind" }, 400);
+
+  // Hidden-field bot trap: accept silently so automated fillers do not retry.
   if (typeof body.website === "string" && body.website.trim()) return json({ accepted: true });
-  if (!await verifyTurnstile(request, body.captcha_token)) return json({ error: "captcha_required" }, 403);
+
+  // Weekly email signups require Turnstile when configured. Field Checks keep backward
+  // compatibility with older/offline BaitLogic clients and are protected by the rate limit below.
+  if (kind === "weekly_signup") {
+    if (!await verifyTurnstile(request, body.captcha_token)) return json({ error: "captcha_required" }, 403);
+  } else if (typeof body.captcha_token === "string" && body.captcha_token.trim()) {
+    if (!await verifyTurnstile(request, body.captcha_token)) return json({ error: "captcha_invalid" }, 403);
+  }
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   if (!supabaseUrl || !serviceKey) return json({ error: "service_unavailable" }, 503);
-
-  const kind = body.kind === "weekly_signup" ? "weekly_signup" : body.kind === "field_checks" ? "field_checks" : null;
-  if (!kind) return json({ error: "invalid_kind" }, 400);
 
   const fingerprint = await sha256(`${serviceKey.slice(-32)}|${clientIp(request)}|${request.headers.get("user-agent") ?? ""}`);
   const supabase = createClient(supabaseUrl, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
