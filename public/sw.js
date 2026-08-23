@@ -1,7 +1,7 @@
 "use strict";
 
-const CACHE_NAME="baitlogic-offline-v17";
-const DATA_CACHE="baitlogic-data-v17";
+const CACHE_NAME="baitlogic-offline-v18";
+const DATA_CACHE="baitlogic-data-v18";
 const QUEUE_DB="baitlogic-offline-queue-v1";
 const QUEUE_STORE="requests";
 
