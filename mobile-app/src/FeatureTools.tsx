@@ -12,6 +12,7 @@ const tools = [
 export default function FeatureTools() {
   return (
     <>
+      <link rel="stylesheet" href="/approved-visual.css" />
       <nav className="feature-tools" aria-label="BaitLogic quick tools">
         <div className="feature-tools-scroll">
           {tools.map((tool) => {
