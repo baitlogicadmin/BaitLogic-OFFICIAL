@@ -308,8 +308,8 @@ Rollback the app and database separately. Never assume a frontend rollback rever
 
 ### Code-aligned changes inspected on 2026-08-24
 
-- Current `main` inspected through `01454b92fdfbce20aa1aaa2c198d7978c1652713`.
-- Field Check photo code, offline photo retry work, signup confirmation/admin tracking, contact/mobile-overlap correction, and the barometer location-loading fix are present in repository history.
+- Current `main` inspected through `16003538bb2766de5fbfea4c2985cd2b9def4577`.
+- Field Check photo code, offline photo retry work, signup confirmation/admin tracking, contact/mobile-overlap correction, the barometer location-loading fix, and the four-column mobile quick-tools overflow fix are present in repository history.
 - Presence in `main` is evidence of implementation/merge only. Live production verification was not independently completed as part of this documentation update.
 - The lower-level `mobile-app/AGENTS.md` protects a simulated device-frame runtime, while the higher-level Source of Truth deprecates simulated phone/device frames in production. Do not silently resolve this during unrelated work; follow the hierarchy and use a founder-reviewed preview for any runtime correction.
 - Product analytics/PostHog is not validated as an active production dependency; do not infer users, adoption, or retention.
