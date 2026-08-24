@@ -44,13 +44,13 @@ The root Express server and `public/` directory are legacy. They remain for hist
 | Production build | VERIFIED on 2026-08-21: Vercel READY and readiness script PASS 10/10 |
 | Supabase backend | ACTIVE_HEALTHY on 2026-08-21 |
 | Field Check submission | IMPLEMENTED through `submit-baitlogic-signal`, Turnstile, rate limits, moderation, and area-only location precision |
-| Field Check photos | IMPLEMENTED IN CODE for JPEG/PNG/WebP up to 1.5 MB in the `nature-checks` bucket; live storage-policy and physical-device verification still required |
+| Field Check photos | IMPLEMENTED END-TO-END IN CODE: active camera/gallery UI, validation/compression, IndexedDB offline queue, retry-aware upload, private `nature-checks` storage, and moderation; automated/live physical-device verification still required |
 | Approved community notes | IMPLEMENTED through the `field_checks` approved feed |
 | Weekly signup | IMPLEMENTED through the same protected Edge Function; the subscriber record is saved before email attempts |
 | Welcome/admin email delivery | BLOCKED / NOT VERIFIED on 2026-08-24: founder reported `email_not_configured`; verify active function deployment and Supabase email secrets |
 | Weekly email/unsubscribe | Code exists; one authorized live send and one-click unsubscribe test remain human release gates |
 | Barometer mobile location fix | IMPLEMENTED/MERGED at `a8885f2`; live mobile production verification still required |
-| Main conditions cards | Clearly labeled **Sample conditions** in the current UI; do not describe them as live local intelligence yet |
+| Main conditions cards | Active code requests current location-based weather, labels successful responses live, labels stored responses saved/offline, and shows honest blanks on failure; physical-device production verification remains required |
 | Native Android/iOS store apps | NOT BUILT |
 | Real-device offline verification | REQUIRED before claiming full Android/iPhone offline support |
 
@@ -308,10 +308,10 @@ Rollback the app and database separately. Never assume a frontend rollback rever
 
 ### Code-aligned changes inspected on 2026-08-24
 
-- Current `main` inspected through `16003538bb2766de5fbfea4c2985cd2b9def4577`.
+- Baseline canonical `main` inspected through `9601af2977acaf5d4674d29fa414a44c4e60d630`; the correction branch reconciles documentation, runtime instructions, root commands, and the active photo flow.
 - Field Check photo code, offline photo retry work, signup confirmation/admin tracking, contact/mobile-overlap correction, the barometer location-loading fix, and the four-column mobile quick-tools overflow fix are present in repository history.
 - Presence in `main` is evidence of implementation/merge only. Live production verification was not independently completed as part of this documentation update.
-- The lower-level `mobile-app/AGENTS.md` protects a simulated device-frame runtime, while the higher-level Source of Truth deprecates simulated phone/device frames in production. Do not silently resolve this during unrelated work; follow the hierarchy and use a founder-reviewed preview for any runtime correction.
+- The simulated-device-frame instruction conflict is resolved: production is the responsive full-viewport PWA; phone-frame components are fixtures/history only.
 - Product analytics/PostHog is not validated as an active production dependency; do not infer users, adoption, or retention.
 
 
@@ -329,7 +329,7 @@ Not yet honestly verified:
 - A complete iPhone physical-device online/offline/relaunch test
 - A real welcome email and admin notification after resolving the 2026-08-24 `email_not_configured` result
 - An authorized weekly send and one-click unsubscribe loop
-- Live local conditions in the main cards; the UI currently labels them as samples
+- A physical-device production test of live location-based conditions, cached/offline labeling, refresh timing, and failure behavior
 - Native App Store and Play Store packages
 - Zero runtime errors outside the host plan's available log-retention window
 
