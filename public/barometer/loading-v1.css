@@ -1,0 +1,38 @@
+.connection-pill {
+  font: inherit;
+  font-size: .72rem;
+  font-weight: 900;
+  letter-spacing: .12em;
+  cursor: pointer;
+}
+
+.connection-pill[data-mode="error"] {
+  border-color: rgba(255, 103, 76, .5);
+  background: rgba(72, 24, 20, .58);
+  color: #ff8b75;
+}
+
+.connection-pill[data-mode="saved"] {
+  border-color: rgba(244, 181, 29, .55);
+  background: rgba(87, 61, 5, .42);
+  color: #f4c84c;
+}
+
+@media (max-width: 720px) {
+  .connection-pill {
+    font-size: 11px;
+    letter-spacing: .08em;
+  }
+
+  .connection-pill[data-mode="error"] {
+    border-color: #e8a292 !important;
+    background: #fff1ed !important;
+    color: #a53a27 !important;
+  }
+
+  .connection-pill[data-mode="saved"] {
+    border-color: #e5c96e !important;
+    background: #fff8df !important;
+    color: #73520a !important;
+  }
+}
