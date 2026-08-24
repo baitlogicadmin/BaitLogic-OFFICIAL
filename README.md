@@ -8,7 +8,9 @@ Our mission is to help people make smarter decisions outdoors, strengthen local 
 
 Built by the community. Powered by shared knowledge. Preserved for generations to come.
 
-BaitLogic — Beyond the Bite. Powered by People and Purpose.
+BaitLogic — Beyond the Bite. Protect What Matters.
+
+Powered by People and Purpose.
 
 ## Owner operations
 
