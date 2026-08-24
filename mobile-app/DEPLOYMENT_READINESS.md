@@ -1,6 +1,6 @@
 # BaitLogic Deployment Readiness Gate
 
-This is the required release gate for the BaitLogic app. It checks the real stack: Vite/React PWA, ChatGPT Sites static worker, Supabase database, and Supabase Edge Functions.
+This is the required release gate for the BaitLogic app. It checks the real stack: the Vite/React PWA deployed to Vercel, compatibility packaging used only for previews/tests, the Supabase database, and Supabase Edge Functions.
 
 ## Run the automated gate
 
@@ -15,7 +15,7 @@ The command never prints environment-variable values and never deploys or change
 | Gate | PASS means |
 |---|---|
 | Front-end build | TypeScript and Vite production build finish without errors |
-| Worker/package | Static assets, app-route fallback, and Sites packaging tests pass |
+| Build/package | Static assets, app-route fallback, Vercel output, and compatibility packaging tests pass |
 | Offline foundation | Installable manifest, service worker, secured public writes, and unsubscribe contract pass |
 | Environment | Supabase URL, publishable key, and Turnstile site key are mapped |
 | Database | A live read against `field_checks` returns HTTP 200 |
