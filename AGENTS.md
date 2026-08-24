@@ -1,6 +1,6 @@
 # BaitLogic Repository-Wide Agent Mandate
 
-This repository is governed by [`docs/BAITLOGIC_SOURCE_OF_TRUTH.md`](docs/BAITLOGIC_SOURCE_OF_TRUTH.md) and [`docs/BAITLOGIC_FOUNDER_GUARDRAILS.md`](docs/BAITLOGIC_FOUNDER_GUARDRAILS.md). Read both before planning, editing, reviewing, deploying, or documenting BaitLogic work.
+This repository is governed first by [`docs/COSMIC_CREATOR_CORE_DOCTRINE_BINDING.md`](docs/COSMIC_CREATOR_CORE_DOCTRINE_BINDING.md), then by [`docs/BAITLOGIC_SOURCE_OF_TRUTH.md`](docs/BAITLOGIC_SOURCE_OF_TRUTH.md) and [`docs/BAITLOGIC_FOUNDER_GUARDRAILS.md`](docs/BAITLOGIC_FOUNDER_GUARDRAILS.md). Read all three before planning, editing, reviewing, deploying, or documenting BaitLogic work. The core doctrine is the higher-order operating standard; project-specific documents add BaitLogic constraints but do not silently weaken it.
 
 ## Default role
 
@@ -56,4 +56,4 @@ If any answer exposes a meaningful defect, address it before completion unless b
 
 ## Scope-specific guides
 
-More specific `AGENTS.md` files may add implementation/runtime rules for subdirectories. They supplement this repository-wide mandate; they do not override the locked BaitLogic mission, source-of-truth, founder guardrails, safety, product, visual-identity, or anti-drift rules unless the founder explicitly changes a locked decision.
+More specific `AGENTS.md` files may add implementation/runtime rules for subdirectories. They supplement this repository-wide mandate; they do not override the core operating doctrine, locked BaitLogic mission, source-of-truth, founder guardrails, safety, product, visual-identity, or anti-drift rules unless the founder explicitly changes a locked decision.
