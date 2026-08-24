@@ -32,6 +32,23 @@ test("weekly signup accepts and preserves native email typing", async ({ page })
   await expect(email).toHaveValue("angler@example.com");
 });
 
+test("Field Check offers an optional validated photo with a removable preview", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Open the official reporting guide" }).click();
+
+  const photoInput = page.getByLabel("Add an optional Field Check photo");
+  await photoInput.setInputFiles({
+    name: "highland-water.png",
+    mimeType: "image/png",
+    buffer: Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Wl2nH0AAAAASUVORK5CYII=", "base64"),
+  });
+
+  await expect(page.getByRole("img", { name: "Field Check photo preview" })).toBeVisible();
+  await expect(page.getByText("highland-water.png")).toBeVisible();
+  await page.getByRole("button", { name: "Remove Field Check photo" }).click();
+  await expect(page.getByRole("img", { name: "Field Check photo preview" })).toHaveCount(0);
+});
+
 const verifiedConditions = {
   updatedAt: "2026-08-21T15:30:00.000Z",
   location: { name: "Highland, Illinois", locality: "Highland", region: "Illinois" },
