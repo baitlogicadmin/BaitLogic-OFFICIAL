@@ -1,10 +1,39 @@
 # BaitLogic — Source of Truth
 
-Last verified: 2026-08-21 (UTC)
+Last code-aligned review: 2026-08-24 (UTC)
+
+Last full production-readiness verification recorded here: 2026-08-21 (UTC)
 
 This file is the authoritative handoff for humans and AI collaborators. When project facts conflict with older notes, screenshots, chats, ZIPs, branches, or deprecated infrastructure, this file and current `main` take precedence unless the founder explicitly changes a locked decision.
 
 Operational detail lives in the root [`BAITLOGIC_INDEPENDENCE_PACK.md`](../BAITLOGIC_INDEPENDENCE_PACK.md).
+
+## Current code-aligned snapshot — 2026-08-24
+
+This snapshot is based on current `main` through commit `16003538bb2766de5fbfea4c2985cd2b9def4577` and the repository files named below. It does not convert merged code into production verification.
+
+- Field Check photo support is **IMPLEMENTED in code**. The submission function accepts JPEG, PNG, and WebP images up to 1.5 MB, uploads them to the `nature-checks` bucket, stores only area-level place information, and leaves new reports pending moderation. Physical-device and live storage-policy verification remain required.
+- Signup welcome-email and admin-notification tracking are **IMPLEMENTED in code**. `submit-baitlogic-signal` saves the subscriber first, attempts both messages, and records success timestamps/provider IDs or errors in `weekly_signups`. Admin notifications target `baitlogicadmin@gmail.com`.
+- **Founder-reported production blocker, 2026-08-24:** both signup email paths recorded `email_not_configured`. That exact branch of the current function runs when the active Supabase Edge Function runtime is missing `RESEND_API_KEY` or `BAITLOGIC_EMAIL_FROM`. Email delivery remains **BLOCKED / NOT VERIFIED** until the active function deployment and secret mapping are checked and one real consented signup receives its welcome email and admin notification.
+- The mobile barometer location-loading fix was merged at `a8885f222c95343022cf00cfbaca8d1af85dfeab`. Treat it as **IMPLEMENTED/MERGED**, not production-verified, until a live mobile location test succeeds.
+- Contact/mobile-overlap and signup-delivery tracking fixes were merged on 2026-08-24. Their presence on `main` is not enough to claim the live user outcome.
+- The four mobile quick tools were changed to a four-column no-overflow layout on small screens at `16003538bb2766de5fbfea4c2985cd2b9def4577`. Treat it as **IMPLEMENTED/MERGED** until the exact live mobile layout is verified.
+- PostHog or another product-analytics platform is not a validated production dependency. Do not claim active users, adoption, retention, or behavioral results without real evidence.
+
+### Active code map
+
+- Product UI: `mobile-app/src/Prototype.tsx` and `mobile-app/src/prototype.css`
+- Feature surfaces: `mobile-app/src/FeatureTools.tsx`, `mobile-app/src/RegionalExploreEnhancer.tsx`, and their CSS files
+- Product data/config: `mobile-app/src/data/baitlogicData.ts`
+- Runtime composition: `mobile-app/src/App.tsx`, `mobile-app/src/main.tsx`, and `mobile-app/src/mobile/`
+- Offline/PWA: `mobile-app/public/manifest.webmanifest` and `mobile-app/public/sw.js`
+- Public submissions, Field Check photos, signup welcome/admin email: `mobile-app/supabase/functions/submit-baitlogic-signal/index.ts`
+- Weekly email and unsubscribe: `mobile-app/supabase/functions/send-baitlogic-weekly/index.ts` and `unsubscribe-baitlogic-weekly/index.ts`
+- Database changes: `mobile-app/supabase/migrations/`
+- Verification: `mobile-app/scripts/deployment-readiness.mjs`, `mobile-app/tests/`, and `.github/workflows/deployment-readiness.yml`
+- Vercel production mapping: root `vercel.json`
+
+The lower-level `mobile-app/AGENTS.md` currently contains a protected simulated-device-frame/runtime contract, while this higher-level Source of Truth deprecates simulated phone/device frames in the production UI. Future runtime or visual work must surface this conflict and follow the document hierarchy; do not silently redesign or silently preserve a conflicting production behavior.
 
 ## North Star
 
@@ -66,6 +95,8 @@ Never call a feature verified or deployed based only on code or a successful bui
 - Protected Field Check and weekly-signup submissions through `submit-baitlogic-signal`
 - Cloudflare Turnstile verification and database-backed rate limits
 - Approved-only community Field Check feed
+- Field Check photo pipeline in code: JPEG/PNG/WebP up to 1.5 MB, private storage path, area-only place precision, pending moderation
+- Signup welcome/admin delivery-attempt tracking in code, including provider IDs, timestamps, and error fields
 - Weekly sender and unsubscribe Edge Function foundations
 - Facebook and Instagram CTAs
 - GitHub pull-request readiness workflow
@@ -73,7 +104,7 @@ Never call a feature verified or deployed based only on code or a successful bui
 ### Requires continuing verification / hardening
 
 - Android and iPhone physical-device tests: online, offline, relaunch, typing, install, and reconnect synchronization
-- One real consented welcome email, authorized weekly send, and one-click unsubscribe loop
+- Resolve the founder-reported `email_not_configured` result by verifying the active Supabase Edge Function deployment plus `RESEND_API_KEY` and `BAITLOGIC_EMAIL_FROM`; then complete one real consented welcome email, admin notification, authorized weekly send, and one-click unsubscribe loop
 - Supabase performance-advisor maintenance backlog
 - Each new public table must have deliberate grants and RLS; never expose private data to make a frontend request work
 - Current condition cards are labeled sample conditions; do not market them as live intelligence until connected and verified
@@ -107,8 +138,9 @@ Never call a feature verified or deployed based only on code or a successful bui
 - Woman-owned identity is core.
 - BaitLogic serves fishing plus the broader outdoor community.
 - Free knowledge, local intelligence, conservation, community sharing, and stewardship are foundational.
-- Brand direction: bright teal/aqua, clean water-inspired blues, coral accents, strong contrast, premium but approachable.
-- Avoid dark forest-green dominance and generic fishing-page styling.
+- Current approved product direction: deep navy, premium gold, warm white, and controlled spectrum/rainbow accents, with strong contrast, outdoor richness, and premium readability. Teal/aqua and coral may remain supporting accents where they fit; do not recolor the approved app without explicit review.
+- Approved logo direction: ornate/fancy gold ring and anchor with no compass star or starburst behind the anchor; do not restore the rejected neon-blue swoosh.
+- Avoid dark forest-green dominance, oppressive darkness, flat generic minimalism, and generic fishing-page styling.
 - Use authentic outdoor imagery; women anglers should be represented prominently.
 - Do not default to male-only angler imagery.
 
@@ -125,6 +157,8 @@ Never call a feature verified or deployed based only on code or a successful bui
 3. Conversion — an owned, consented email audience
 
 Use Hub-and-Spoke production: one strong core topic should become short video, social/community content, email, website content, and supporting graphics/data where useful.
+
+Current baseline cadence: 3 short-form videos per week for attraction, 2 community/report posts per week for retention, and 1 consented value email per week for conversion. Adjust only from real capacity and performance evidence.
 
 ## Execution and quality rules — locked
 
@@ -227,3 +261,7 @@ The founder should not need to repeatedly restate that the AI collaborator is re
 When an imperative project fact changes, update this file and the Independence Pack in the same workstream. Do not create competing memory documents.
 
 Record what changed, why, status, affected system/location, and exact date. The goal is one living source of truth.
+
+## Change log
+
+- **2026-08-24 — AI/code context alignment:** recorded Field Check photo implementation, signup welcome/admin delivery tracking, the founder-reported `email_not_configured` blocker, the merged barometer location-loading fix, the active code map, current visual-direction reconciliation, funnel cadence, and the lower-level simulated-device-runtime conflict. Status is documentation aligned on a branch/PR until merged; no UI, secrets, backend, or production deployment changed.

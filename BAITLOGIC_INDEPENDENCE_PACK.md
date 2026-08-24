@@ -1,10 +1,26 @@
 # BaitLogic Independence Pack
 
-Last verified: 2026-08-21 (UTC)
+Last code-aligned review: 2026-08-24 (UTC)
+
+Last full production-readiness verification recorded here: 2026-08-21 (UTC)
 
 This is the owner-first operating manual for BaitLogic. Its purpose is simple: the founder must be able to recover, test, hand off, and deploy the product without paying for a particular AI, developer, or project-management add-on.
 
 This document is public-safe. It names secret variables but never contains secret values.
+
+## Owner alert — email delivery blocker recorded 2026-08-24
+
+The current signup code saves the subscriber, then attempts a welcome email and an admin notification to `baitlogicadmin@gmail.com`. The founder reported that both delivery fields recorded `email_not_configured` in production.
+
+In the current `submit-baitlogic-signal` code, that exact value is written only when the active Edge Function runtime does not have both `RESEND_API_KEY` and `BAITLOGIC_EMAIL_FROM`. The smallest safe verification path is:
+
+1. In Supabase project `gibaaxzltpdizayvicgf`, confirm both secret names exist for Edge Functions without exposing their values.
+2. Confirm `submit-baitlogic-signal` is deployed from the current repository version.
+3. Confirm the Resend sender in `BAITLOGIC_EMAIL_FROM` is verified and allowed to send to the intended addresses.
+4. Submit one real, consented test signup.
+5. Confirm the subscriber receives the welcome email, `baitlogicadmin@gmail.com` receives the admin notification, and `weekly_signups` records sent timestamps/provider IDs with cleared errors.
+
+Until all five succeed, email delivery is **BLOCKED / NOT VERIFIED**. Do not change browser security, RLS, or public database access to fix this server-side configuration problem.
 
 ## The five facts that prevent most mistakes
 
@@ -27,10 +43,13 @@ The root Express server and `public/` directory are legacy. They remain for hist
 | Offline Field Checks | IMPLEMENTED: unsent checks persist on the device and retry when connected |
 | Production build | VERIFIED on 2026-08-21: Vercel READY and readiness script PASS 10/10 |
 | Supabase backend | ACTIVE_HEALTHY on 2026-08-21 |
-| Field Check submission | IMPLEMENTED through `submit-baitlogic-signal`, Turnstile, rate limits, and moderation |
+| Field Check submission | IMPLEMENTED through `submit-baitlogic-signal`, Turnstile, rate limits, moderation, and area-only location precision |
+| Field Check photos | IMPLEMENTED IN CODE for JPEG/PNG/WebP up to 1.5 MB in the `nature-checks` bucket; live storage-policy and physical-device verification still required |
 | Approved community notes | IMPLEMENTED through the `field_checks` approved feed |
-| Weekly signup | IMPLEMENTED through the same protected Edge Function |
-| Welcome/weekly email delivery | Code exists; a real consented delivery and unsubscribe test remains a human release gate |
+| Weekly signup | IMPLEMENTED through the same protected Edge Function; the subscriber record is saved before email attempts |
+| Welcome/admin email delivery | BLOCKED / NOT VERIFIED on 2026-08-24: founder reported `email_not_configured`; verify active function deployment and Supabase email secrets |
+| Weekly email/unsubscribe | Code exists; one authorized live send and one-click unsubscribe test remain human release gates |
+| Barometer mobile location fix | IMPLEMENTED/MERGED at `a8885f2`; live mobile production verification still required |
 | Main conditions cards | Clearly labeled **Sample conditions** in the current UI; do not describe them as live local intelligence yet |
 | Native Android/iOS store apps | NOT BUILT |
 | Real-device offline verification | REQUIRED before claiming full Android/iPhone offline support |
@@ -68,6 +87,7 @@ Vercel build -> Vite/React PWA -> bait-logic.com
 | `vercel.json` | Vercel install/build/output configuration | ACTIVE |
 | `.github/workflows/deployment-readiness.yml` | Pull-request readiness check | ACTIVE |
 | `.github/workflows/create-release-zip.yml` | Owner-downloadable release ZIP workflow | ACTIVE |
+| `.github/copilot-instructions.md` | Thin GitHub AI adapter pointing to the authoritative doctrine, source of truth, guardrails, code map, and release rules | ACTIVE after the AI-context PR is merged |
 | `server.js`, root `public/`, root `.env.example` | Earlier Express/static system | LEGACY—do not revive by assumption |
 
 ## Account and ownership map
@@ -286,7 +306,16 @@ Rollback the app and database separately. Never assume a frontend rollback rever
 
 ## Current proof and open risks
 
-Verified on 2026-08-21:
+### Code-aligned changes inspected on 2026-08-24
+
+- Current `main` inspected through `16003538bb2766de5fbfea4c2985cd2b9def4577`.
+- Field Check photo code, offline photo retry work, signup confirmation/admin tracking, contact/mobile-overlap correction, the barometer location-loading fix, and the four-column mobile quick-tools overflow fix are present in repository history.
+- Presence in `main` is evidence of implementation/merge only. Live production verification was not independently completed as part of this documentation update.
+- The lower-level `mobile-app/AGENTS.md` protects a simulated device-frame runtime, while the higher-level Source of Truth deprecates simulated phone/device frames in production. Do not silently resolve this during unrelated work; follow the hierarchy and use a founder-reviewed preview for any runtime correction.
+- Product analytics/PostHog is not validated as an active production dependency; do not infer users, adoption, or retention.
+
+
+Last fully verified on 2026-08-21:
 
 - Vercel production deployment is READY at commit `2b80a6731f86b7196d0f12d36ea3336c39548584`.
 - Vercel build log reports PASS 10/10 for the automated readiness gate.
@@ -298,7 +327,8 @@ Not yet honestly verified:
 
 - A complete Android physical-device online/offline/relaunch test
 - A complete iPhone physical-device online/offline/relaunch test
-- A real welcome email, authorized weekly send, and one-click unsubscribe loop
+- A real welcome email and admin notification after resolving the 2026-08-24 `email_not_configured` result
+- An authorized weekly send and one-click unsubscribe loop
 - Live local conditions in the main cards; the UI currently labels them as samples
 - Native App Store and Play Store packages
 - Zero runtime errors outside the host plan's available log-retention window
