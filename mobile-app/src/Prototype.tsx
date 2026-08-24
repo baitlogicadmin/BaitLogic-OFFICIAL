@@ -1,6 +1,6 @@
 import { type PropsWithChildren, useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import {
-  BellIcon, BookmarkFilledIcon, BookmarkIcon, CheckCircledIcon, ChevronRightIcon,
+  BellIcon, BookmarkFilledIcon, BookmarkIcon, CameraIcon, CheckCircledIcon, ChevronRightIcon,
   Cross2Icon, Crosshair2Icon, ExternalLinkIcon, EyeOpenIcon, GlobeIcon, HeartIcon, HomeIcon, LockClosedIcon,
   MagnifyingGlassIcon, PaperPlaneIcon, PersonIcon, PlusIcon, ReloadIcon, Share1Icon,
 } from "@radix-ui/react-icons";
@@ -38,6 +38,43 @@ type ConditionsState = {
 };
 
 const CONDITIONS_CACHE_KEY = "baitlogic-live-conditions-v1";
+const FIELD_PHOTO_MAX_BYTES = 1_500_000;
+const FIELD_PHOTO_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
+
+function blobToDataUrl(blob: Blob) {
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = () => reject(reader.error ?? new Error("Photo could not be read."));
+    reader.readAsDataURL(blob);
+  });
+}
+
+async function prepareFieldPhoto(file: File) {
+  if (!FIELD_PHOTO_TYPES.has(file.type)) throw new Error("Use a JPEG, PNG, or WebP photo.");
+  if (file.size <= FIELD_PHOTO_MAX_BYTES) return blobToDataUrl(file);
+  if (!("createImageBitmap" in globalThis)) throw new Error("This photo is too large. Choose one under 1.5 MB.");
+
+  const bitmap = await createImageBitmap(file);
+  const maxDimension = 1600;
+  const scale = Math.min(1, maxDimension / Math.max(bitmap.width, bitmap.height));
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+  canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+  const context = canvas.getContext("2d");
+  if (!context) {
+    bitmap.close();
+    throw new Error("Photo processing is unavailable.");
+  }
+  context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+  bitmap.close();
+
+  for (const quality of [0.82, 0.68, 0.54, 0.42]) {
+    const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/jpeg", quality));
+    if (blob && blob.size <= FIELD_PHOTO_MAX_BYTES) return blobToDataUrl(blob);
+  }
+  throw new Error("This photo is still too large after compression. Choose a smaller image.");
+}
 const weatherLabels: Record<number, string> = {
   0: "Clear sky", 1: "Mainly clear", 2: "Partly cloudy", 3: "Overcast", 45: "Fog", 48: "Rime fog",
   51: "Light drizzle", 53: "Drizzle", 55: "Heavy drizzle", 61: "Light rain", 63: "Rain", 65: "Heavy rain",
@@ -257,6 +294,9 @@ export default function Prototype() {
   const [syncMode, setSyncMode] = useState<SyncMode>(navigator.onLine ? "device" : "offline");
   const [category, setCategory] = useState("Water");
   const [note, setNote] = useState("");
+  const [photoData, setPhotoData] = useState<string>();
+  const [photoName, setPhotoName] = useState("");
+  const [photoBusy, setPhotoBusy] = useState(false);
   const [email, setEmail] = useState("");
   const [search, setSearch] = useState("");
   const [selectedReportingState, setSelectedReportingState] = useState<ReportingState>();
@@ -386,9 +426,38 @@ export default function Prototype() {
     });
   };
 
+  const choosePhoto = async (file?: File) => {
+    if (!file) return;
+    setPhotoBusy(true);
+    try {
+      const prepared = await prepareFieldPhoto(file);
+      setPhotoData(prepared);
+      setPhotoName(file.name);
+      setNotice(file.size > FIELD_PHOTO_MAX_BYTES ? "Photo compressed and ready" : "Photo ready");
+    } catch (error) {
+      setPhotoData(undefined);
+      setPhotoName("");
+      setNotice(error instanceof Error ? error.message : "Photo could not be prepared.");
+    } finally {
+      setPhotoBusy(false);
+    }
+  };
+
   const submitReport = async () => {
     if (!note.trim()) { setNotice("Add one quick observation first"); return; }
-    setReports(addFieldCheck(category, note, localityName === "your area" ? "Area not shared" : `${localityName} area`)); setNote("");
+    try {
+      const next = await addFieldCheck(
+        category,
+        note,
+        localityName === "your area" ? "Area not shared" : `${localityName} area`,
+        photoData,
+      );
+      setReports(next);
+    } catch {
+      setNotice("This device could not safely store the photo. Try again without it.");
+      return;
+    }
+    setNote(""); setPhotoData(undefined); setPhotoName("");
     setReportOpen(false); setTab("community");
     setNotice(online && backendConfigured ? "Submitting Field Check" : "Saved on this device");
     const result = await syncBaitLogicData(navigator.onLine, { field: reportCaptcha });
@@ -505,7 +574,7 @@ export default function Prototype() {
 
           {tab === "explore" && <section className="tab-view"><div className="view-kicker"><GlobeIcon /> LOCAL INTELLIGENCE</div><h1>Explore {localityName}</h1><p className="view-lead">Live weather plus actual community Field Checks—without filling empty categories with made-up reports.</p><div className="search-shell"><MagnifyingGlassIcon /><input aria-label="Search places, species, or reports" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search places, species, or reports" />{search ? <button aria-label="Clear search" onClick={() => setSearch("")}><Cross2Icon /></button> : null}</div><div className="topic-grid">{visibleTopics.map(([name, detail]) => <button key={name} onClick={() => setNotice(`${name} view selected`)}><strong>{name}</strong><span>{detail}</span><ChevronRightIcon /></button>)}</div>{visibleTopics.length === 0 ? <p className="empty-state">No local topics match that search yet.</p> : null}<div className="map-card"><Crosshair2Icon /><div><strong>{localityName === "your area" ? "Current area" : `${localityName} area`}</strong><span>Precise community locations stay private.</span></div></div></section>}
 
-          {tab === "community" && <section className="tab-view"><div className="view-kicker"><PersonIcon /> COMMUNITY FIELD NOTES</div><h1>Useful beats impressive.</h1><p className="view-lead">Only actual submitted or locally saved observations appear here.</p><button className="compact-cta" onClick={() => setReportOpen(true)}><PlusIcon /> What did you notice?</button><div className="report-list">{reports.map((report) => <article key={report.id}><div className={`avatar ${report.syncState === "approved" ? "verified" : ""}`}>BL</div><div><span>{report.category} · {relativeTime(report.createdAt)}</span><strong>{report.note}</strong><small>{report.syncState === "approved" ? <CheckCircledIcon /> : <LockClosedIcon />} {report.syncState === "approved" ? "Community approved" : report.syncState === "submitted" ? "Awaiting review" : "Saved on this device"} · {report.place}</small></div></article>)}{reports.length === 0 ? <p className="empty-state">No real Field Checks have been posted for this device or community yet.</p> : null}</div></section>}
+          {tab === "community" && <section className="tab-view"><div className="view-kicker"><PersonIcon /> COMMUNITY FIELD NOTES</div><h1>Useful beats impressive.</h1><p className="view-lead">Only actual submitted or locally saved observations appear here.</p><button className="compact-cta" onClick={() => setReportOpen(true)}><PlusIcon /> What did you notice?</button><div className="report-list">{reports.map((report) => <article key={report.id}><div className={`avatar ${report.syncState === "approved" ? "verified" : ""}`}>BL</div><div><span>{report.category} · {relativeTime(report.createdAt)}</span><strong>{report.note}</strong><small>{report.syncState === "approved" ? <CheckCircledIcon /> : <LockClosedIcon />} {report.syncState === "approved" ? "Community approved" : report.syncState === "submitted" ? "Awaiting review" : "Saved on this device"} · {report.place}{report.hasPhoto ? " · Photo attached" : ""}</small></div></article>)}{reports.length === 0 ? <p className="empty-state">No real Field Checks have been posted for this device or community yet.</p> : null}</div></section>}
 
           {tab === "saved" && <section className="tab-view"><div className="view-kicker"><BookmarkIcon /> YOUR FIELD KIT</div><h1>Saved for the next outing.</h1><p className="view-lead">Your actual reports and last verified conditions remain available when service drops.</p><div className="offline-panel"><ReloadIcon /><div><strong>{online ? syncMode === "synced" ? "Device copy is synced with BaitLogic" : "Offline copy is current" : "You’re viewing the offline copy"}</strong><span>{storedItemCount} verified or user-created {storedItemCount === 1 ? "item" : "items"} stored on this device</span></div><CheckCircledIcon /></div>{captchaEnabled && online && reports.some((report) => report.syncState === "pending") ? <button className="sync-button" onClick={() => setSyncOpen(true)}><ReloadIcon /> Verify & sync saved Field Checks</button> : null}<div className="feed-list saved-list">{localPicture.filter((item) => saved.includes(item.id)).map((item) => <article className="feed-card" key={item.id}><img src={item.image} alt="" /><div className="feed-body"><p className={`feed-eyebrow ${item.accent}`}>{item.eyebrow}</p><h3>{item.title}</h3><span>{item.detail}</span><div className="feed-actions"><button onClick={() => toggleSave(item.id)}><BookmarkFilledIcon /> Saved</button></div></div></article>)}</div></section>}
           <div className="scroll-spacer" />
@@ -549,6 +618,22 @@ export default function Prototype() {
           <div className="category-row">{["Water", "Wildlife", "Trail", "Weather", "Conservation"].map((item) => <button type="button" className={category === item ? "selected" : ""} onClick={() => setCategory(item)} key={item}>{item}</button>)}</div>
           <label htmlFor="observation">WHAT DID YOU NOTICE?</label>
           <textarea id="observation" value={note} onChange={(event) => setNote(event.target.value)} placeholder="Example: Clear water near the bank; more bird movement than yesterday…" />
+          <div className="field-photo-control">
+            <label className="photo-picker" htmlFor="field-photo">
+              <CameraIcon />
+              <span><strong>{photoBusy ? "Preparing photo…" : photoData ? "Change photo" : "Add a photo"}</strong><small>Optional · JPEG, PNG, or WebP · automatically reduced to 1.5 MB</small></span>
+              <input
+                id="field-photo"
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                capture="environment"
+                aria-label="Add an optional Field Check photo"
+                disabled={photoBusy}
+                onChange={(event) => void choosePhoto(event.target.files?.[0])}
+              />
+            </label>
+            {photoData ? <div className="photo-preview"><img src={photoData} alt="Field Check photo preview" /><div><strong>{photoName || "Field photo"}</strong><small>Stored privately until submission and moderation.</small></div><button type="button" aria-label="Remove Field Check photo" onClick={() => { setPhotoData(undefined); setPhotoName(""); }}><Cross2Icon /></button></div> : null}
+          </div>
           <div className="privacy-card"><LockClosedIcon /><div><strong>Privacy is the default</strong><span>We show only the general {localityName === "your area" ? "area" : `${localityName} area`}, never your exact spot.</span></div></div>
           {online && backendConfigured ? <TurnstileChallenge onToken={setReportCaptcha} /> : null}
           <button className="submit-button" disabled={captchaEnabled && online && backendConfigured && !reportCaptcha} onClick={() => void submitReport()}>{online && backendConfigured ? "Submit Field Check" : online ? "Save on this device" : "Save offline"}<ChevronRightIcon /></button>
