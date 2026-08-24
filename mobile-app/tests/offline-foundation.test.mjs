@@ -14,7 +14,7 @@ test("ships an installable BaitLogic web app manifest", async () => {
 test("ships the versioned app-shell service worker", async () => {
   const worker = await readFile(new URL("../dist/client/sw.js", import.meta.url), "utf8");
 
-  assert.match(worker, /baitlogic-field-kit-v7/);
+  assert.match(worker, /baitlogic-field-kit-v8/);
   assert.match(worker, /precacheAppShell/);
   assert.match(worker, /event\.request\.mode === "navigate"/);
   assert.match(worker, /cache\.match\("\/"\)/);
