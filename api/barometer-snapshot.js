@@ -92,10 +92,10 @@ module.exports = async function handler(req, res) {
     const bigDataUrl = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${encodeURIComponent(lat)}&longitude=${encodeURIComponent(lon)}&localityLanguage=en`;
 
     const [weatherResult, alertsResult, nominatimResult, bigDataResult] = await Promise.allSettled([
-      fetchJson(weatherUrl.toString(), { headers: { "User-Agent": "BaitLogic/1.0 baitlogic@outlook.com" } }, 6500),
-      fetchJson(alertsUrl, { headers: { "User-Agent": "BaitLogic/1.0 (baitlogic@outlook.com)", "Accept": "application/geo+json" } }, 1500),
-      fetchJson(nominatimUrl, { headers: { "User-Agent": "BaitLogic/1.0 (baitlogic@outlook.com)", "Accept-Language": "en" } }, 2500),
-      fetchJson(bigDataUrl, { headers: { "User-Agent": "BaitLogic/1.0 baitlogic@outlook.com" } }, 2200)
+      fetchJson(weatherUrl.toString(), { headers: { "User-Agent": "BaitLogic/1.0 baitlogicadmin@gmail.com" } }, 6500),
+      fetchJson(alertsUrl, { headers: { "User-Agent": "BaitLogic/1.0 (baitlogicadmin@gmail.com)", "Accept": "application/geo+json" } }, 1500),
+      fetchJson(nominatimUrl, { headers: { "User-Agent": "BaitLogic/1.0 (baitlogicadmin@gmail.com)", "Accept-Language": "en" } }, 2500),
+      fetchJson(bigDataUrl, { headers: { "User-Agent": "BaitLogic/1.0 baitlogicadmin@gmail.com" } }, 2200)
     ]);
 
     if (weatherResult.status !== "fulfilled") {

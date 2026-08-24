@@ -14,7 +14,7 @@ test("ships an installable BaitLogic web app manifest", async () => {
 test("ships the versioned app-shell service worker", async () => {
   const worker = await readFile(new URL("../dist/client/sw.js", import.meta.url), "utf8");
 
-  assert.match(worker, /baitlogic-field-kit-v5/);
+  assert.match(worker, /baitlogic-field-kit-v6/);
   assert.match(worker, /precacheAppShell/);
   assert.match(worker, /event\.request\.mode === "navigate"/);
   assert.match(worker, /cache\.match\("\/"\)/);
@@ -22,6 +22,19 @@ test("ships the versioned app-shell service worker", async () => {
   assert.match(worker, /\/api\/water-snapshot/);
   assert.match(worker, /X-BaitLogic-Source/);
   assert.match(worker, /offline-cache/);
+});
+
+test("ships the correct public BaitLogic contact address", async () => {
+  const fieldIntel = await readFile(new URL("../../public/index.html", import.meta.url), "utf8");
+  const outdoor = await readFile(new URL("../../public/outdoor.html", import.meta.url), "utf8");
+  const siteCss = await readFile(new URL("../../public/site.css", import.meta.url), "utf8");
+
+  for (const page of [fieldIntel, outdoor]) {
+    assert.match(page, /mailto:baitlogicadmin@gmail\.com/);
+    assert.doesNotMatch(page, /baitlogic@outlook\.com/);
+  }
+  assert.match(siteCss, /scroll-padding-top:92px/);
+  assert.match(siteCss, /\.section\[id\]\{scroll-margin-top:92px\}/);
 });
 
 test("keeps public backend writes behind the validated submission function", async () => {

@@ -18,7 +18,7 @@ module.exports = async function handler(req, res) {
     const delta = 0.35;
     const bbox = [lon - delta, lat - delta, lon + delta, lat + delta].map(value => value.toFixed(5)).join(",");
     const url = `https://waterservices.usgs.gov/nwis/iv/?format=json&bBox=${bbox}&parameterCd=00060,00065,00010&siteStatus=active`;
-    const response = await fetch(url, { headers: { "User-Agent": "BaitLogic/1.0 (baitlogic@outlook.com)" } });
+    const response = await fetch(url, { headers: { "User-Agent": "BaitLogic/1.0 (baitlogicadmin@gmail.com)" } });
     if (!response.ok) throw new Error(`USGS request failed (${response.status})`);
 
     const data = await response.json();

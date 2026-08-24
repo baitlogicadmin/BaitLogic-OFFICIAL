@@ -14,7 +14,7 @@ const APP_SHELL=[
   "/conservation-prairie.html",
   "/approved-visual.css",
   "/site.css?v=1",
-  "/site.css?v=2",
+  "/site.css?v=3",
   "/site.css?v=3",
   "/field-check.css?v=1",
   "/site.js?v=3",
