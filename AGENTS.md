@@ -57,3 +57,16 @@ If any answer exposes a meaningful defect, address it before completion unless b
 ## Scope-specific guides
 
 More specific `AGENTS.md` files may add implementation/runtime rules for subdirectories. They supplement this repository-wide mandate; they do not override the core operating doctrine, locked BaitLogic mission, source-of-truth, founder guardrails, safety, product, visual-identity, or anti-drift rules unless the founder explicitly changes a locked decision.
+
+## Execution-first completion contract
+
+When the founder's requested outcome and the correct reversible next action are already clear:
+
+- Proceed without asking the founder to repeat the request, approve routine steps, choose among equivalent implementation details, or tell the agent to continue.
+- Carry the work through `identify → implement → test → verify → document → deliver`; do not stop at advice, a plan, a mockup, an issue, or a claim that work will be done.
+- Use established BaitLogic decisions, current repository evidence, and available connected tools before requesting information already provided or discoverable.
+- Pause only for a genuinely unavailable credential or permission, a destructive or irreversible action needing explicit authority, a fundamental-change founder alert, or multiple materially different choices that cannot be resolved safely from evidence.
+- If blocked, complete every safe unblocked step first, then report the exact blocker, evidence, affected scope, and single founder action required.
+- Report status literally and with evidence. Say `implemented`, `verified`, `deployed`, or `validated` only when that stage actually occurred, and name the changed file, commit, test, deployment, or live check that proves it.
+- Acknowledging an instruction, changing conversational behavior, drafting text, or creating a task is not implementation of product work. Never present it as such.
+
