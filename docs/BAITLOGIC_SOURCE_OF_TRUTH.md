@@ -10,13 +10,14 @@ Operational detail lives in the root [`BAITLOGIC_INDEPENDENCE_PACK.md`](../BAITL
 
 ## Current code-aligned snapshot — 2026-08-24
 
-This snapshot is based on current `main` through commit `01454b92fdfbce20aa1aaa2c198d7978c1652713` and the repository files named below. It does not convert merged code into production verification.
+This snapshot is based on current `main` through commit `16003538bb2766de5fbfea4c2985cd2b9def4577` and the repository files named below. It does not convert merged code into production verification.
 
 - Field Check photo support is **IMPLEMENTED in code**. The submission function accepts JPEG, PNG, and WebP images up to 1.5 MB, uploads them to the `nature-checks` bucket, stores only area-level place information, and leaves new reports pending moderation. Physical-device and live storage-policy verification remain required.
 - Signup welcome-email and admin-notification tracking are **IMPLEMENTED in code**. `submit-baitlogic-signal` saves the subscriber first, attempts both messages, and records success timestamps/provider IDs or errors in `weekly_signups`. Admin notifications target `baitlogicadmin@gmail.com`.
 - **Founder-reported production blocker, 2026-08-24:** both signup email paths recorded `email_not_configured`. That exact branch of the current function runs when the active Supabase Edge Function runtime is missing `RESEND_API_KEY` or `BAITLOGIC_EMAIL_FROM`. Email delivery remains **BLOCKED / NOT VERIFIED** until the active function deployment and secret mapping are checked and one real consented signup receives its welcome email and admin notification.
 - The mobile barometer location-loading fix was merged at `a8885f222c95343022cf00cfbaca8d1af85dfeab`. Treat it as **IMPLEMENTED/MERGED**, not production-verified, until a live mobile location test succeeds.
 - Contact/mobile-overlap and signup-delivery tracking fixes were merged on 2026-08-24. Their presence on `main` is not enough to claim the live user outcome.
+- The four mobile quick tools were changed to a four-column no-overflow layout on small screens at `16003538bb2766de5fbfea4c2985cd2b9def4577`. Treat it as **IMPLEMENTED/MERGED** until the exact live mobile layout is verified.
 - PostHog or another product-analytics platform is not a validated production dependency. Do not claim active users, adoption, retention, or behavioral results without real evidence.
 
 ### Active code map
