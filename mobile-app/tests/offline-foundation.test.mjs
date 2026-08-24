@@ -14,7 +14,7 @@ test("ships an installable BaitLogic web app manifest", async () => {
 test("ships the versioned app-shell service worker", async () => {
   const worker = await readFile(new URL("../dist/client/sw.js", import.meta.url), "utf8");
 
-  assert.match(worker, /baitlogic-field-kit-v6/);
+  assert.match(worker, /baitlogic-field-kit-v7/);
   assert.match(worker, /precacheAppShell/);
   assert.match(worker, /event\.request\.mode === "navigate"/);
   assert.match(worker, /cache\.match\("\/"\)/);
@@ -22,6 +22,21 @@ test("ships the versioned app-shell service worker", async () => {
   assert.match(worker, /\/api\/water-snapshot/);
   assert.match(worker, /X-BaitLogic-Source/);
   assert.match(worker, /offline-cache/);
+});
+
+test("barometer location loading has a bounded Android-friendly fallback", async () => {
+  const app = await readFile(new URL("../../public/barometer/app.js", import.meta.url), "utf8");
+  const page = await readFile(new URL("../../public/barometer.html", import.meta.url), "utf8");
+
+  assert.match(app, /enableHighAccuracy:false/);
+  assert.match(app, /maximumAge:300000/);
+  assert.match(app, /setTimeout\(\(\)=>\{/);
+  assert.match(app, /Location took too long/);
+  assert.match(app, /Location permission is blocked/);
+  assert.match(app, /baitlogic-barometer-last-v1/);
+  assert.match(app, /Saved verified conditions are shown/);
+  assert.match(page, /barometer\/app\.js\?v=11/);
+  assert.match(page, /barometer\/connection-ui\.js\?v=3/);
 });
 
 test("ships the correct public BaitLogic contact address", async () => {
