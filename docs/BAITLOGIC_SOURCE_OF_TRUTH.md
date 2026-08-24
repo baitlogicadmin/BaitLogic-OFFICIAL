@@ -10,9 +10,9 @@ Operational detail lives in the root [`BAITLOGIC_INDEPENDENCE_PACK.md`](../BAITL
 
 ## Current code-aligned snapshot — 2026-08-24
 
-This snapshot is based on current `main` through commit `16003538bb2766de5fbfea4c2985cd2b9def4577` and the repository files named below. It does not convert merged code into production verification.
+This snapshot was reconciled against canonical `main` at `9601af2977acaf5d4674d29fa414a44c4e60d630` and the correction branch that resolves the conflicts listed below. Merged code still does not equal production verification.
 
-- Field Check photo support is **IMPLEMENTED in code**. The submission function accepts JPEG, PNG, and WebP images up to 1.5 MB, uploads them to the `nature-checks` bucket, stores only area-level place information, and leaves new reports pending moderation. Physical-device and live storage-policy verification remain required.
+- Field Check photo support is **IMPLEMENTED end-to-end in code**: the active PWA provides an optional accessible camera/gallery control, validates and compresses JPEG/PNG/WebP images to 1.5 MB, queues offline photo data in IndexedDB, submits it through `submit-baitlogic-signal`, retries failed uploads, uploads successful files to the private `nature-checks` bucket, stores only area-level place information, and leaves reports pending moderation. Automated and physical-device/live storage-policy verification remain required before production claims.
 - Signup welcome-email and admin-notification tracking are **IMPLEMENTED in code**. `submit-baitlogic-signal` saves the subscriber first, attempts both messages, and records success timestamps/provider IDs or errors in `weekly_signups`. Admin notifications target `baitlogicadmin@gmail.com`.
 - **Founder-reported production blocker, 2026-08-24:** both signup email paths recorded `email_not_configured`. That exact branch of the current function runs when the active Supabase Edge Function runtime is missing `RESEND_API_KEY` or `BAITLOGIC_EMAIL_FROM`. Email delivery remains **BLOCKED / NOT VERIFIED** until the active function deployment and secret mapping are checked and one real consented signup receives its welcome email and admin notification.
 - The mobile barometer location-loading fix was merged at `a8885f222c95343022cf00cfbaca8d1af85dfeab`. Treat it as **IMPLEMENTED/MERGED**, not production-verified, until a live mobile location test succeeds.
@@ -33,7 +33,7 @@ This snapshot is based on current `main` through commit `16003538bb2766de5fbfea4
 - Verification: `mobile-app/scripts/deployment-readiness.mjs`, `mobile-app/tests/`, and `.github/workflows/deployment-readiness.yml`
 - Vercel production mapping: root `vercel.json`
 
-The lower-level `mobile-app/AGENTS.md` currently contains a protected simulated-device-frame/runtime contract, while this higher-level Source of Truth deprecates simulated phone/device frames in the production UI. Future runtime or visual work must surface this conflict and follow the document hierarchy; do not silently redesign or silently preserve a conflicting production behavior.
+The lower-level `mobile-app/AGENTS.md` has been reconciled with this Source of Truth: production is a responsive full-viewport PWA. Simulated device frames remain limited to isolated fixtures/history and must not be restored to the production UI.
 
 ## North Star
 
@@ -107,12 +107,12 @@ Never call a feature verified or deployed based only on code or a successful bui
 - Resolve the founder-reported `email_not_configured` result by verifying the active Supabase Edge Function deployment plus `RESEND_API_KEY` and `BAITLOGIC_EMAIL_FROM`; then complete one real consented welcome email, admin notification, authorized weekly send, and one-click unsubscribe loop
 - Supabase performance-advisor maintenance backlog
 - Each new public table must have deliberate grants and RLS; never expose private data to make a frontend request work
-- Current condition cards are labeled sample conditions; do not market them as live intelligence until connected and verified
+- Main condition cards request current location-based weather through `/api/barometer-snapshot`, label successful responses live, label stored responses saved/offline, and leave honest blanks on failure. Do not claim the live production dependency chain is verified without a real device check
 - Runtime monitoring is limited by the current Vercel log-retention plan
 
 ### Planned / incomplete strategic modules
 
-- Live localized conditions replacing sample cards
+- Expand verified local intelligence beyond weather into water, closures, access, and bathymetry while preserving source/freshness labels
 - Complete conservation reporting center with official agency routing
 - Species library
 - Bathymetry/depth intelligence
