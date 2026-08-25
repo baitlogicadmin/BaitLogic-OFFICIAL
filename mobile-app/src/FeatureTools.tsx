@@ -9,9 +9,17 @@ const tools = [
   { href: "#protect", label: "Protect", icon: LockClosedIcon, action: "protect" },
 ] as const;
 
-function runInAppAction(action: string) {
-  if (action === "barometer") return;
-  window.dispatchEvent(new CustomEvent("baitlogic:navigate", { detail: { action } }));
+function activateInAppTool(action: string) {
+  if (action === "field-check" || action === "protect") {
+    document.querySelector<HTMLButtonElement>(".report-tab")?.click();
+    return;
+  }
+  if (action === "water-intel") {
+    const exploreButton = Array.from(document.querySelectorAll<HTMLButtonElement>(".bottom-nav button"))
+      .find((button) => button.textContent?.trim().toLowerCase().includes("explore"));
+    exploreButton?.click();
+    requestAnimationFrame(() => document.querySelector("#regional-explore-host")?.scrollIntoView({ behavior: "smooth", block: "start" }));
+  }
 }
 
 export default function FeatureTools() {
@@ -29,7 +37,7 @@ export default function FeatureTools() {
                   if (tool.action === "barometer") return;
                   event.preventDefault();
                   history.replaceState(null, "", tool.href);
-                  runInAppAction(tool.action);
+                  activateInAppTool(tool.action);
                 }}
               >
                 <Icon aria-hidden="true" />
