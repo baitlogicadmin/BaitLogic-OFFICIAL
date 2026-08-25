@@ -44,6 +44,10 @@ jobs:
         run: npm run test:runtime
         working-directory: mobile-app
 
+      - name: Run built release-surface tests
+        run: npx playwright test --config=playwright.release.config.ts
+        working-directory: mobile-app
+
       - name: Upload rendered UI candidate
         if: always()
         uses: actions/upload-artifact@v4
