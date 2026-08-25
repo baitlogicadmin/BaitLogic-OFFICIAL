@@ -5,7 +5,7 @@ import test from "node:test";
 test("ships an installable BaitLogic web app manifest", async () => {
   const manifest = JSON.parse(await readFile(new URL("../dist/client/manifest.webmanifest", import.meta.url), "utf8"));
 
-  assert.equal(manifest.name, "BaitLogic Outdoors");
+  assert.equal(manifest.name, "BaitLogic — Local Outdoor Intelligence");
   assert.equal(manifest.display, "standalone");
   assert.equal(manifest.theme_color, "#061535");
   assert.deepEqual(manifest.icons.map((icon) => icon.sizes), ["192x192", "512x512"]);
