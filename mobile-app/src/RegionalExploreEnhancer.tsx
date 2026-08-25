@@ -409,6 +409,7 @@ export default function RegionalExploreEnhancer() {
   const [host, setHost] = useState<HTMLElement | null>(null);
 
   useEffect(() => {
+    const leadCopy = "Live regional map, verified public data, and real community Field Checks across both states—not just your current town.";
     const mount = () => {
       const views = Array.from(document.querySelectorAll<HTMLElement>(".tab-view"));
       const exploreView = views.find((view) => view.querySelector(".view-kicker")?.textContent?.includes("LOCAL INTELLIGENCE"));
@@ -421,7 +422,7 @@ export default function RegionalExploreEnhancer() {
       const heading = exploreView.querySelector("h1");
       const lead = exploreView.querySelector<HTMLElement>(".view-lead");
       if (heading && heading.textContent !== "Explore Illinois + Missouri") heading.textContent = "Explore Illinois + Missouri";
-      if (lead) lead.textContent = "Live regional map, verified public data, and real community Field Checks across both states—not just your current town.";
+      if (lead && lead.textContent !== leadCopy) lead.textContent = leadCopy;
 
       let target = exploreView.querySelector<HTMLElement>("#regional-explore-host");
       if (!target) {
