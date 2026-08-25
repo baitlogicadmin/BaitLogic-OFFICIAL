@@ -21,9 +21,11 @@
   grid-template-columns:repeat(4,minmax(0,1fr));
   gap:8px;
 }
-.feature-tools a{
+.feature-tools :is(a,button){
+  width:100%;
   min-width:0;
   min-height:66px;
+  margin:0;
   padding:7px 5px;
   display:flex;
   flex-direction:column;
@@ -40,12 +42,13 @@
   text-align:center;
   text-decoration:none;
   white-space:normal;
+  appearance:none;
 }
-.feature-tools a svg{width:23px;height:23px;flex:0 0 auto;color:#6fded9}
-.feature-tools a:nth-child(2){border-color:rgba(242,138,51,.30);background:linear-gradient(155deg,rgba(72,34,14,.96),rgba(34,20,13,.98))}.feature-tools a:nth-child(2) svg{color:#f2a15d}
-.feature-tools a:nth-child(3){border-color:rgba(61,191,225,.28);background:linear-gradient(155deg,rgba(5,41,65,.97),rgba(4,24,39,.98))}.feature-tools a:nth-child(3) svg{color:#71d9ed}
-.feature-tools a:nth-child(4){border-color:rgba(97,206,137,.28);background:linear-gradient(155deg,rgba(12,55,34,.96),rgba(5,29,19,.98))}.feature-tools a:nth-child(4) svg{color:#8cdfa8}
-.feature-tools a:hover,.feature-tools a:focus-visible{outline:none;transform:translateY(-1px);border-color:rgba(121,231,223,.72);box-shadow:0 0 0 2px rgba(16,199,194,.10),0 10px 22px rgba(0,0,0,.28)}
+.feature-tools :is(a,button) svg{width:23px;height:23px;flex:0 0 auto;color:#6fded9}
+.feature-tools-scroll>:nth-child(2){border-color:rgba(242,138,51,.30);background:linear-gradient(155deg,rgba(72,34,14,.96),rgba(34,20,13,.98))}.feature-tools-scroll>:nth-child(2) svg{color:#f2a15d}
+.feature-tools-scroll>:nth-child(3){border-color:rgba(61,191,225,.28);background:linear-gradient(155deg,rgba(5,41,65,.97),rgba(4,24,39,.98))}.feature-tools-scroll>:nth-child(3) svg{color:#71d9ed}
+.feature-tools-scroll>:nth-child(4){border-color:rgba(97,206,137,.28);background:linear-gradient(155deg,rgba(12,55,34,.96),rgba(5,29,19,.98))}.feature-tools-scroll>:nth-child(4) svg{color:#8cdfa8}
+.feature-tools :is(a,button):hover,.feature-tools :is(a,button):focus-visible{outline:none;transform:translateY(-1px);border-color:rgba(121,231,223,.72);box-shadow:0 0 0 2px rgba(16,199,194,.10),0 10px 22px rgba(0,0,0,.28)}
 
 /* The fixed header + quick-tool rail consume 224px. Keep the home content below them and
    make the approved image-led hero non-collapsible even when other bundled rules change. */
@@ -88,12 +91,12 @@
 @media(max-width:350px){
   .feature-tools{padding-inline:8px}
   .feature-tools-scroll{gap:5px}
-  .feature-tools a{min-height:64px;padding-inline:2px;font-size:9px}
-  .feature-tools a svg{width:21px;height:21px}
+  .feature-tools :is(a,button){min-height:64px;padding-inline:2px;font-size:9px}
+  .feature-tools :is(a,button) svg{width:21px;height:21px}
 }
 @media(min-width:760px){
   .feature-tools{justify-content:center;padding-left:max(22px,calc((100vw - 760px)/2));padding-right:max(22px,calc((100vw - 760px)/2))}
   .feature-tools-scroll{max-width:760px;gap:10px}
-  .feature-tools a{font-size:12px}
+  .feature-tools :is(a,button){font-size:12px}
   .hero-card{height:410px!important;min-height:410px!important;flex-basis:410px!important}
 }
