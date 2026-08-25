@@ -5,9 +5,9 @@ import RegionalExploreEnhancer from "./RegionalExploreEnhancer";
 
 const tools = [
   { href: "/barometer.html", label: "Barometer", icon: Crosshair2Icon, action: "barometer" },
-  { href: "#field-check", label: "Field Check", icon: EyeOpenIcon, action: "field-check" },
-  { href: "#water-intel", label: "Water Intel", icon: GlobeIcon, action: "water-intel" },
-  { href: "#protect", label: "Protect", icon: LockClosedIcon, action: "protect" },
+  { label: "Field Check", icon: EyeOpenIcon, action: "field-check" },
+  { label: "Water Intel", icon: GlobeIcon, action: "water-intel" },
+  { label: "Protect", icon: LockClosedIcon, action: "protect" },
 ] as const;
 
 const LOCATION_ERROR_EVENT = "baitlogic:location-error";
@@ -98,19 +98,19 @@ export default function FeatureTools() {
         <div className="feature-tools-scroll">
           {tools.map((tool) => {
             const Icon = tool.icon;
+            if (tool.action === "barometer") {
+              return (
+                <a key={tool.action} href={tool.href}>
+                  <Icon aria-hidden="true" />
+                  <span>{tool.label}</span>
+                </a>
+              );
+            }
             return (
-              <a
-                key={tool.href}
-                href={tool.href}
-                onClick={(event) => {
-                  if (tool.action === "barometer") return;
-                  event.preventDefault();
-                  activateInAppTool(tool.action);
-                }}
-              >
+              <button key={tool.action} type="button" onClick={() => activateInAppTool(tool.action)}>
                 <Icon aria-hidden="true" />
                 <span>{tool.label}</span>
-              </a>
+              </button>
             );
           })}
         </div>
