@@ -43,19 +43,19 @@ test("quick tools keep core experiences inside the unified app", async ({ page }
 
   const quickTools = page.getByRole("navigation", { name: "BaitLogic quick tools" });
   await expect(quickTools.getByRole("link", { name: "Barometer", exact: true })).toHaveAttribute("href", "/barometer.html");
-  await expect(quickTools.getByRole("link", { name: "Field Check", exact: true })).toHaveAttribute("href", "#field-check");
-  await expect(quickTools.getByRole("link", { name: "Water Intel", exact: true })).toHaveAttribute("href", "#water-intel");
-  await expect(quickTools.getByRole("link", { name: "Protect", exact: true })).toHaveAttribute("href", "#protect");
+  await expect(quickTools.getByRole("button", { name: "Field Check", exact: true })).toBeVisible();
+  await expect(quickTools.getByRole("button", { name: "Water Intel", exact: true })).toBeVisible();
+  await expect(quickTools.getByRole("button", { name: "Protect", exact: true })).toBeVisible();
 
-  await quickTools.getByRole("link", { name: "Field Check", exact: true }).click();
+  await quickTools.getByRole("button", { name: "Field Check", exact: true }).click();
   await expect(page.getByRole("dialog", { name: "See something? Say something." })).toBeVisible();
   await page.getByRole("button", { name: "Close See something? Say something." }).click();
 
-  await quickTools.getByRole("link", { name: "Water Intel", exact: true }).click();
+  await quickTools.getByRole("button", { name: "Water Intel", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Explore Illinois + Missouri" })).toBeVisible();
   await expect(page.locator("#regional-explore-host")).toBeVisible();
 
-  await quickTools.getByRole("link", { name: "Protect", exact: true }).click();
+  await quickTools.getByRole("button", { name: "Protect", exact: true }).click();
   const protectDialog = page.getByRole("dialog", { name: "See something? Say something." });
   await expect(protectDialog).toBeVisible();
   await expect(protectDialog.getByText("OFFICIAL REPORTING", { exact: true })).toBeVisible();
@@ -74,7 +74,7 @@ test("primary candidate no longer links core tools to recovered legacy pages", a
 
 test("official reporting destinations remain exact and state-specific", async ({ page }) => {
   await prepareHome(page);
-  await page.getByRole("navigation", { name: "BaitLogic quick tools" }).getByRole("link", { name: "Protect", exact: true }).click();
+  await page.getByRole("navigation", { name: "BaitLogic quick tools" }).getByRole("button", { name: "Protect", exact: true }).click();
 
   const dialog = page.getByRole("dialog", { name: "See something? Say something." });
   await expect(dialog.getByRole("link", { name: /Wildlife violation/ })).toHaveAttribute("href", "https://dnr.illinois.gov/lawenforcement/target-poachers.html");
