@@ -47,6 +47,44 @@
 .feature-tools a:nth-child(4){border-color:rgba(97,206,137,.28);background:linear-gradient(155deg,rgba(12,55,34,.96),rgba(5,29,19,.98))}.feature-tools a:nth-child(4) svg{color:#8cdfa8}
 .feature-tools a:hover,.feature-tools a:focus-visible{outline:none;transform:translateY(-1px);border-color:rgba(121,231,223,.72);box-shadow:0 0 0 2px rgba(16,199,194,.10),0 10px 22px rgba(0,0,0,.28)}
 
+/* The fixed header + quick-tool rail consume 224px. Keep the home content below them and
+   make the approved image-led hero non-collapsible even when other bundled rules change. */
+.screen-content{padding-top:236px!important}
+.hero-card{height:360px!important;min-height:360px!important;flex:0 0 360px!important}
+
+.watch-safety-note{
+  margin:7px 0 0!important;
+  color:#92ddd6!important;
+  font-size:10px!important;
+  line-height:1.35!important;
+  font-weight:600!important;
+}
+
+.location-recovery-banner{
+  position:fixed;
+  z-index:44;
+  top:232px;
+  left:12px;
+  right:12px;
+  max-width:736px;
+  margin:0 auto;
+  padding:10px 12px;
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  border:1px solid rgba(242,138,51,.48);
+  border-radius:12px;
+  color:#fff;
+  background:rgba(57,29,15,.96);
+  box-shadow:0 10px 24px rgba(0,0,0,.34);
+  font:500 12px/1.35 Roboto,system-ui,sans-serif;
+}
+.location-recovery-banner strong{color:#ffc07e;font-size:13px}
+.location-recovery-banner span{color:#f4e7dc}
+
+@media(max-width:390px){
+  .hero-card{height:342px!important;min-height:342px!important;flex-basis:342px!important}
+}
 @media(max-width:350px){
   .feature-tools{padding-inline:8px}
   .feature-tools-scroll{gap:5px}
@@ -57,4 +95,5 @@
   .feature-tools{justify-content:center;padding-left:max(22px,calc((100vw - 760px)/2));padding-right:max(22px,calc((100vw - 760px)/2))}
   .feature-tools-scroll{max-width:760px;gap:10px}
   .feature-tools a{font-size:12px}
+  .hero-card{height:410px!important;min-height:410px!important;flex-basis:410px!important}
 }
