@@ -1,7 +1,7 @@
 {
-  "name": "BaitLogic Outdoors",
+  "name": "BaitLogic — Local Outdoor Intelligence",
   "short_name": "BaitLogic",
-  "description": "Local field intelligence for weather, water, wildlife, trails, and conservation.",
+  "description": "Fishing intelligence, community knowledge, water and environmental context, and conservation action in one local outdoor system.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
