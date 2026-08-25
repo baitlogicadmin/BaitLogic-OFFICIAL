@@ -104,7 +104,7 @@ test("location denial leaves honest blanks and a retry path", async ({ page }) =
   });
   await page.goto("/");
 
-  await expect(page.getByText("Location permission is off.", { exact: false })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Refresh current location and conditions" })).toContainText("Use current location");
   await expect(page.getByLabel("Verified local weather conditions")).not.toContainText("82°");
   await expect(page.getByRole("button", { name: "Use my location" })).toBeVisible();
 });
@@ -119,10 +119,10 @@ test("official reporting is prominent, educational, and routes to both states", 
   await page.goto("/");
 
   await expect(page.getByText("SEE SOMETHING? SAY SOMETHING.", { exact: true })).toBeVisible();
-  await expect(page.getByText("Document safely", { exact: false })).toBeVisible();
-  await page.getByRole("button", { name: "Open the official reporting guide" }).click();
+  await page.getByRole("button", { name: /CREATE FIELD CHECK/ }).click();
 
   const dialog = page.getByRole("dialog", { name: "See something? Say something." });
+  await expect(dialog.getByText("WHAT TO LOOK FOR", { exact: true })).toBeVisible();
   await expect(dialog.getByText("A BaitLogic Field Check does not notify officials.", { exact: false })).toBeVisible();
   await expect(dialog.getByRole("link", { name: /Call Illinois DNR/ })).toHaveAttribute("href", "tel:+18772367529");
   await expect(dialog.getByRole("link", { name: /Submit a pollution complaint/ })).toHaveAttribute("href", "https://epa.illinois.gov/pollution-complaint/submit-a-complaint.html");
