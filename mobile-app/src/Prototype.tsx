@@ -181,11 +181,6 @@ const officialReporting = {
     emergencyHref: "tel:+15736342436",
   },
 } as const;
-const currentDateLabel = new Intl.DateTimeFormat("en-US", {
-  weekday: "long",
-  month: "long",
-  day: "numeric",
-}).format(new Date()).replace(",", " ·");
 
 function TurnstileChallenge({ onToken }: { onToken: (token?: string) => void }) {
   const container = useRef<HTMLDivElement>(null);
@@ -446,15 +441,6 @@ export default function Prototype() {
         : conditions.status === "loading"
           ? "Loading live conditions"
           : "Location needed";
-  const signalText = (() => {
-    const alert = conditions.data?.alerts?.[0];
-    if (alert) return `Active NWS ${alert.event || "weather alert"}. Check the official warning before heading out.`;
-    if (!weather) return conditions.message || "Allow location to load current weather, pressure, and wind.";
-    if ([95, 96, 99].includes(weather.code)) return "Thunderstorm conditions are present. Seek appropriate shelter and follow official warnings.";
-    if (weather.apparentTemperatureF >= 100) return `Feels like ${Math.round(weather.apparentTemperatureF)}°F. Heat safety should lead the plan.`;
-    if (weather.windMph >= 20 || weather.gustMph >= 30) return `${conditionName} with ${Math.round(weather.windMph)} mph wind and gusts near ${Math.round(weather.gustMph)} mph.`;
-    return `${conditionName}, ${trend.toLowerCase()} pressure, and ${Math.round(weather.windMph)} mph wind from the ${compassDirection(weather.windDirection)}.`;
-  })();
   const storedItemCount = reports.length + localPicture.length;
   const reporting = officialReporting[reportingState];
 
@@ -462,7 +448,11 @@ export default function Prototype() {
     <div className="app-shell">
       <header className="app-header">
         <MiniLogo />
-        <div className="location-block"><span className="location-label">BAITLOGIC OUTDOORS</span><button className="location-button" onClick={() => void loadConditions()} aria-label="Refresh current location and conditions">{conditions.data?.location?.name || "Use current location"} <ChevronRightIcon /></button></div>
+        <div className="location-block">
+          <span className="location-label">BAITLOGIC OUTDOORS</span>
+          <button className="location-button" onClick={() => void loadConditions()} aria-label="Refresh current location and conditions">{conditions.data?.location?.name || "Use current location"} <ChevronRightIcon /></button>
+          <ConnectionPill online={online} mode={syncMode} communityCount={approvedReports.length} />
+        </div>
         <button className="icon-button" aria-label="Notifications" onClick={() => setNotice("You’re all caught up")}><BellIcon /></button>
       </header>
 
@@ -470,25 +460,37 @@ export default function Prototype() {
         <main className="screen-content" data-testid="baitlogic-home" aria-label="BaitLogic Outdoors local field intelligence">
           {tab === "home" && <>
             <section className="hero-card">
-              <img src="/assets/hero-observer.png" alt="Outdoor observer beside a southern Illinois lake" /><div className="hero-shade" />
-              <div className="hero-topline"><ConnectionPill online={online} mode={syncMode} communityCount={approvedReports.length} /><button className="conditions-status" onClick={() => void loadConditions()}>{conditionsStatus}</button></div>
-              <div className="hero-copy"><p>{currentDateLabel}</p><h1>{conditions.data?.location?.locality || conditions.data?.location?.name?.split(",")[0] || "Your"} outdoor pulse</h1><span>Verified weather when online. Clearly dated saved conditions when offline.</span></div>
+              <img src="/assets/hero-observer.png" alt="Outdoor observer beside a southern Illinois lake" />
+              <div className="hero-shade" />
+              <div className="hero-topline"><button className="conditions-status" onClick={() => void loadConditions()}>{conditionsStatus}</button></div>
+              <div className="hero-copy">
+                <h1><span className="hero-place">{conditions.data?.location?.locality || conditions.data?.location?.name?.split(",")[0] || "Your area"}</span><span className="hero-pulse">outdoor pulse</span></h1>
+                <p>Verified weather when online.<br />Clearly dated saved conditions when offline.</p>
+              </div>
+              <section className="conditions-grid" aria-label="Verified local weather conditions" aria-live="polite">
+                <div><span>NOW</span><strong>{weather ? `${Math.round(weather.temperatureF)}°F` : "—"}</strong><small>{weather ? `${conditionName}\nFeels like ${Math.round(weather.apparentTemperatureF)}°` : "Waiting for verified data"}</small></div>
+                <div><span>PRESSURE</span><strong>{weather ? trend : "—"}</strong><small>{weather ? `${weather.pressureInHg.toFixed(2)} inHg` : "Waiting for verified data"}</small></div>
+                <div><span>WIND</span><strong>{weather ? `${Math.round(weather.windMph)} mph` : "—"}</strong><small>{weather ? `${compassDirection(weather.windDirection)} · gusts ${Math.round(weather.gustMph)}` : "Waiting for verified data"}</small></div>
+              </section>
             </section>
-            <section className="conditions-grid" aria-label="Verified local weather conditions" aria-live="polite">
-              <div><span>NOW</span><strong>{weather ? `${Math.round(weather.temperatureF)}°` : "—"}</strong><small>{weather ? `${conditionName} · feels ${Math.round(weather.apparentTemperatureF)}°` : "Waiting for verified data"}</small></div><div><span>PRESSURE</span><strong>{weather ? trend : "—"}</strong><small>{weather ? `${weather.pressureInHg.toFixed(2)} inHg` : "Waiting for verified data"}</small></div><div><span>WIND</span><strong>{weather ? `${Math.round(weather.windMph)} mph` : "—"}</strong><small>{weather ? `${compassDirection(weather.windDirection)} · gusts ${Math.round(weather.gustMph)}` : "Waiting for verified data"}</small></div>
-            </section>
+
             <section className="watch-card" aria-labelledby="watch-card-title">
-              <div className="watch-heading"><span>SEE SOMETHING? SAY SOMETHING.</span><strong id="watch-card-title">Know what matters. Make a difference.</strong></div>
-              <ol className="watch-steps">
-                <li><b>1</b><span><strong>Notice</strong> poaching, dumping, fish kills, illegal hunting, or unusual discharge.</span></li>
-                <li><b>2</b><span><strong>Document safely</strong> what, when, and the general location. Never confront anyone.</span></li>
-                <li><b>3</b><span><strong>Report directly</strong> to the correct Illinois or Missouri agency.</span></li>
-              </ol>
-              <button onClick={() => setReportOpen(true)}>Open the official reporting guide <ChevronRightIcon /></button>
+              <div className="watch-copy">
+                <span>SEE SOMETHING? SAY SOMETHING.</span>
+                <strong id="watch-card-title">Know what matters.</strong>
+                <em>Make a difference.</em>
+                <p>See dumping, fish kills, poaching, illegal hunting, or habitat damage? Get the official reporting route, then share a general-area Field Check.</p>
+              </div>
+              <button className="watch-cta" onClick={() => setReportOpen(true)}><PlusIcon /> CREATE FIELD CHECK</button>
+              <p className="watch-privacy"><LockClosedIcon /> No expertise needed.<br />Exact spots stay private.</p>
             </section>
-            <section className={`notice-card ${conditions.status === "error" ? "needs-location" : ""}`}><div className="notice-icon"><EyeOpenIcon /></div><div><span>{conditionsAreLive ? "THE LIVE SIGNAL" : conditions.data ? "SAVED CONDITIONS" : "LIVE CONDITIONS NEEDED"}</span><strong>{signalText}</strong>{conditions.message && conditions.status !== "live" && conditions.data ? <small>{conditions.message}</small> : null}</div></section>
-            <button className="primary-cta" onClick={() => setReportOpen(true)}><span className="cta-icon"><PlusIcon /></span><span><strong>What did you notice?</strong><small>Report to officials or add a community Field Check</small></span><ChevronRightIcon /></button>
-            <p className="privacy-line"><LockClosedIcon /> No expertise needed. Exact spots stay private.</p>
+
+            <a className="spotlight-card" href="/conservation-prairie.html">
+              <img src="/assets/habitat-restoration.png" alt="Illinois prairie habitat and pollinator" />
+              <div className="spotlight-copy"><span>TODAY’S SPOTLIGHT</span><strong>Protect Illinois Prairie</strong><p>Less than 1% of Illinois’ original prairie remains. Learn how to help bring it back.</p></div>
+              <span className="spotlight-action">LEARN &amp; TAKE ACTION <ChevronRightIcon /></span>
+            </a>
+
             <section className="section-block">
               <div className="section-heading"><div><p>AROUND {localityName.toUpperCase()}</p><h2>The verified picture</h2></div><button onClick={() => showTab("explore")}>Explore <ChevronRightIcon /></button></div>
               <div className="feed-list">{localPicture.map((item) => <article className="feed-card" key={item.id}><img src={item.image} alt="" /><div className="feed-body"><p className={`feed-eyebrow ${item.accent}`}>{item.eyebrow}</p><h3>{item.title}</h3><span>{item.detail}</span><div className="feed-actions"><button onClick={() => toggleSave(item.id)}>{saved.includes(item.id) ? <BookmarkFilledIcon /> : <BookmarkIcon />}{saved.includes(item.id) ? "Saved" : "Save"}</button><button onClick={() => void shareItem(item.title, item.detail)}><Share1Icon /> Share</button></div></div></article>)}{localPicture.length === 0 ? <div className="truth-empty"><ReloadIcon /><div><strong>No verified local conditions loaded.</strong><span>Use your location to replace blanks with current weather, pressure, and wind.</span></div><button onClick={() => void loadConditions()}>Use my location</button></div> : null}</div>
