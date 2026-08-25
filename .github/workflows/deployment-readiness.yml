@@ -45,6 +45,7 @@ jobs:
         working-directory: mobile-app
 
       - name: Run built release-surface tests
+        if: always()
         run: npx playwright test --config=playwright.release.config.ts
         working-directory: mobile-app
 
