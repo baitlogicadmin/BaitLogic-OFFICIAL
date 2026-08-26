@@ -1,6 +1,7 @@
 import { Crosshair2Icon, EyeOpenIcon, GlobeIcon, LockClosedIcon } from "@radix-ui/react-icons";
 import "./feature-tools.css";
 import RegionalExploreEnhancer from "./RegionalExploreEnhancer";
+import WaterWatch from "./WaterWatch";
 
 // Keep the primary product hierarchy visible everywhere:
 // Fishing Intelligence → Community Knowledge → Water & Environment → Conservation Action.
@@ -24,6 +25,7 @@ export default function FeatureTools() {
         </div>
       </nav>
       <RegionalExploreEnhancer />
+      <WaterWatch />
     </>
   );
 }
