@@ -78,6 +78,9 @@ test("built Barometer loads live conditions, visible water evidence, and refresh
   await expect(page.locator("#primaryDecision")).not.toHaveText("CHECKING");
   await expect(page.locator("#waterEvidenceState")).toHaveText("LIVE");
   await expect(page.locator("#waterStation")).toContainText("Kaskaskia River");
+
+  const waterPanel = page.locator("details.intel-panel").filter({ hasText: "WATER" });
+  await waterPanel.locator("summary").click();
   await expect(page.locator("#waterTemp")).toBeVisible();
 
   const waterStyles = await page.locator(".water-evidence-grid article").first().evaluate((article) => {
