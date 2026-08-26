@@ -44,5 +44,5 @@ test("render established BaitLogic home candidate", async ({ page }) => {
   await expect(page.locator(".hero-place")).toHaveText("Highland");
   await expect(page.locator(".hero-pulse")).toHaveText("outdoor pulse");
   await page.locator(".native-scroll").evaluate((element) => { element.scrollTop = 0; });
-  await page.screenshot({ path: "test-results/ui-home.png", fullPage: false });
+  await page.screenshot({ path: "review-artifacts/ui-home.png", fullPage: false });
 });
