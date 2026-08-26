@@ -44,7 +44,8 @@ async function sha256(value: string) {
 
 async function verifyTurnstile(request: Request, token: unknown) {
   const secret = Deno.env.get("TURNSTILE_SECRET_KEY");
-  if (!secret) return true;
+  // Public submission must fail closed if bot protection is not configured.
+  if (!secret) return false;
   if (typeof token !== "string" || token.length < 10) return false;
 
   const form = new FormData();

@@ -8,6 +8,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: baitlogic-readiness-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   readiness:
     runs-on: ubuntu-latest
@@ -21,12 +25,15 @@ jobs:
       - name: Check out source
         uses: actions/checkout@v4
 
-      - name: Use Node.js 22
+      - name: Use production Node.js 24
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           cache: npm
           cache-dependency-path: mobile-app/package-lock.json
+
+      - name: Scan tracked files for committed credentials
+        run: node scripts/scan-secrets.mjs
 
       - name: Install locked dependencies
         run: npm ci
