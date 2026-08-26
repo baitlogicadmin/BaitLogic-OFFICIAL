@@ -219,7 +219,7 @@ function RegionalExplorePanel() {
     }
     const map = mapRef.current;
     if (!map) return;
-    if (map.getZoom() < 9.5) {
+    if (map.getZoom() < 10.5) {
       setTrailStatus("Zoom into a town, park, or lake before loading trails so the route data stays useful.");
       return;
     }

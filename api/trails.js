@@ -1,9 +1,10 @@
 "use strict";
 
 const OVERPASS_URL = "https://overpass-api.de/api/interpreter";
+const OSM_MAP_URL = "https://api.openstreetmap.org/api/0.6/map";
 const REGION = { south: 35.9, west: -95.9, north: 42.7, east: -87.2 };
-const MAX_SPAN = 1.2;
-const MAX_AREA = 0.8;
+const MAX_SPAN = 0.5;
+const MAX_AREA = 0.08;
 const MAX_FEATURES = 900;
 
 function parseBbox(value) {
@@ -98,6 +99,52 @@ function toTrailhead(element) {
   };
 }
 
+function decodeXml(value) {
+  return String(value || "")
+    .replaceAll("&quot;", '"')
+    .replaceAll("&apos;", "'")
+    .replaceAll("&lt;", "<")
+    .replaceAll("&gt;", ">")
+    .replaceAll("&amp;", "&");
+}
+
+function xmlAttributes(source) {
+  const attributes = {};
+  for (const match of source.matchAll(/\b([a-zA-Z_:][\w:.-]*)="([^"]*)"/g)) attributes[match[1]] = decodeXml(match[2]);
+  return attributes;
+}
+
+function xmlTags(source) {
+  const tags = {};
+  for (const match of source.matchAll(/<tag\b([^>]*?)\/?\s*>/g)) {
+    const attributes = xmlAttributes(match[1]);
+    if (attributes.k) tags[attributes.k] = attributes.v || "";
+  }
+  return tags;
+}
+
+function parseOsmXml(xml) {
+  const coordinates = new Map();
+  const trailheadNodes = [];
+  for (const match of xml.matchAll(/<node\b([^>]*?)(?:\/>|>([\s\S]*?)<\/node>)/g)) {
+    const attributes = xmlAttributes(match[1]);
+    const node = { type: "node", id: Number(attributes.id), lat: Number(attributes.lat), lon: Number(attributes.lon), tags: xmlTags(match[2] || "") };
+    if (!Number.isFinite(node.id) || !Number.isFinite(node.lat) || !Number.isFinite(node.lon)) continue;
+    coordinates.set(String(node.id), { lat: node.lat, lon: node.lon });
+    if (node.tags.information === "trailhead" || (node.tags.amenity === "parking" && /^(yes|designated)$/.test(node.tags.hiking || ""))) trailheadNodes.push(node);
+  }
+  const ways = [];
+  for (const match of xml.matchAll(/<way\b([^>]*)>([\s\S]*?)<\/way>/g)) {
+    const attributes = xmlAttributes(match[1]);
+    const body = match[2];
+    const tags = xmlTags(body);
+    if (!/^(path|footway|bridleway|track)$/.test(tags.highway || "") || ["private", "no"].includes(tags.access || "")) continue;
+    const geometry = [...body.matchAll(/<nd\b[^>]*ref="([^"]+)"[^>]*\/?\s*>/g)].map((item) => coordinates.get(item[1])).filter(Boolean);
+    ways.push({ type: "way", id: Number(attributes.id), geometry, tags });
+  }
+  return { ways, nodes: trailheadNodes };
+}
+
 module.exports = async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
@@ -114,25 +161,48 @@ module.exports = async function handler(req, res) {
     });
   }
 
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 22_000);
   const overpassBbox = `${bbox.south},${bbox.west},${bbox.north},${bbox.east}`;
   const query = `[out:json][timeout:18];(way["highway"~"^(path|footway|bridleway|track)$"]["access"!="private"]["access"!="no"](${overpassBbox});node["information"="trailhead"](${overpassBbox});node["amenity"="parking"]["hiking"~"^(yes|designated)$"](${overpassBbox}););out tags geom;`;
 
   try {
-    const response = await fetch(OVERPASS_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
-        "User-Agent": "BaitLogic/1.0 (baitlogicadmin@gmail.com)",
-      },
-      body: new URLSearchParams({ data: query }),
-      signal: controller.signal,
-    });
-    if (!response.ok) throw new Error(`Overpass request failed (${response.status})`);
-    const payload = await response.json();
-    const ways = (payload.elements || []).filter((element) => element.type === "way");
-    const nodes = (payload.elements || []).filter((element) => element.type === "node");
+    let ways;
+    let nodes;
+    let provider = "OpenStreetMap Overpass API";
+    const overpassController = new AbortController();
+    const overpassTimeout = setTimeout(() => overpassController.abort(), 7_000);
+    try {
+      const response = await fetch(OVERPASS_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+          "User-Agent": "BaitLogic/1.0 (baitlogicadmin@gmail.com)",
+        },
+        body: new URLSearchParams({ data: query }),
+        signal: overpassController.signal,
+      });
+      if (!response.ok) throw new Error(`Overpass request failed (${response.status})`);
+      const payload = await response.json();
+      ways = (payload.elements || []).filter((element) => element.type === "way");
+      nodes = (payload.elements || []).filter((element) => element.type === "node");
+    } catch (overpassError) {
+      console.warn("trails-overpass-fallback", overpassError);
+      provider = "OpenStreetMap map API fallback";
+      const mapController = new AbortController();
+      const mapTimeout = setTimeout(() => mapController.abort(), 15_000);
+      try {
+        const mapBbox = `${bbox.west},${bbox.south},${bbox.east},${bbox.north}`;
+        const response = await fetch(`${OSM_MAP_URL}?bbox=${encodeURIComponent(mapBbox)}`, {
+          headers: { "User-Agent": "BaitLogic/1.0 (baitlogicadmin@gmail.com)" },
+          signal: mapController.signal,
+        });
+        if (!response.ok) throw new Error(`OpenStreetMap map request failed (${response.status})`);
+        ({ ways, nodes } = parseOsmXml(await response.text()));
+      } finally {
+        clearTimeout(mapTimeout);
+      }
+    } finally {
+      clearTimeout(overpassTimeout);
+    }
     const features = ways.map(toFeature).filter(Boolean).slice(0, MAX_FEATURES);
     const trailheads = nodes.map(toTrailhead).filter(Boolean).slice(0, 300);
     return res.status(200).json({
@@ -143,15 +213,14 @@ module.exports = async function handler(req, res) {
       fetchedAt: new Date().toISOString(),
       truncated: features.length === MAX_FEATURES,
       source: "OpenStreetMap contributors",
+      provider,
       sourceUrl: "https://www.openstreetmap.org/copyright",
       notice: "Trail geometry is community-mapped unless an official operator or government source is shown. Check current agency notices and posted signs.",
     });
   } catch (error) {
     console.error("trails", error);
     return res.status(502).json({ error: "Mapped trails could not be loaded right now. A saved offline area may still be available." });
-  } finally {
-    clearTimeout(timeout);
   }
 };
 
-module.exports._test = { parseBbox, distanceMiles, toFeature, toTrailhead };
+module.exports._test = { parseBbox, distanceMiles, toFeature, toTrailhead, parseOsmXml };
