@@ -180,6 +180,7 @@ Never call something verified, deployed, live, successful, scientifically valida
 - GitHub deployment-readiness workflow
 - mobile barometer location-loading fix merged
 - four-column mobile quick-tool layout fix merged
+- Illinois/Missouri trail-map implementation in the production code path: viewport-bounded mapped route geometry, official-operator/community-source labeling, trailhead directions, GPX export, saved offline route geometry, and direct official trail-map sources
 
 ### Requires verification / hardening
 
@@ -190,6 +191,7 @@ Never call something verified, deployed, live, successful, scientifically valida
 - resolve `email_not_configured` by checking active Supabase Edge Function deployment plus `RESEND_API_KEY` and `BAITLOGIC_EMAIL_FROM`
 - complete one real consented welcome email + admin notification + weekly send + unsubscribe loop
 - confirm all official reporting links and phone routes on production mobile devices
+- verify trail selection, GPS tracking, GPX download, saved-route relaunch, background-map fallback, and agency closure freshness on physical Android and iPhone devices before calling trail navigation production-validated
 - continue Supabase performance/security-advisor maintenance
 - maintain deliberate grants and RLS on every public table
 - production monitoring remains limited by current Vercel log retention

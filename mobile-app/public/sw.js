@@ -1,4 +1,4 @@
-const CACHE = "baitlogic-field-kit-v7";
+const CACHE = "baitlogic-field-kit-v8";
 const CORE = [
   "/manifest.webmanifest",
   "/assets/baitlogic-logo.png",
@@ -92,7 +92,7 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  if (["/api/barometer-snapshot", "/api/water-snapshot"].includes(requestUrl.pathname)) {
+  if (["/api/barometer-snapshot", "/api/water-snapshot", "/api/trails"].includes(requestUrl.pathname)) {
     event.respondWith((async () => {
       const cache = await caches.open(CACHE);
       try {

@@ -195,6 +195,18 @@
   font: 800 12px/1 Roboto, system-ui, sans-serif;
 }
 
+.map-command-bar button:disabled,
+.trail-field-heading button:disabled {
+  cursor: wait;
+  opacity: .62;
+}
+
+.map-command-bar .trail-load-button {
+  background: #062452;
+  color: #fff;
+  border-color: #062452;
+}
+
 .map-legend {
   position: absolute;
   z-index: 3;
@@ -228,6 +240,26 @@
   box-shadow: 0 0 0 2px #fff;
 }
 
+.trail-line {
+  width: 18px;
+  height: 4px;
+  display: inline-block;
+  border-radius: 999px;
+  box-shadow: 0 0 0 2px #fff;
+}
+
+.trail-line.official { background: #19b9bd; }
+.trail-line.community { background: #e5a918; }
+
+.trailhead-dot {
+  width: 10px;
+  height: 10px;
+  display: inline-block;
+  border-radius: 50%;
+  background: #062452;
+  box-shadow: 0 0 0 2px #fff;
+}
+
 .baitlogic-map-popup {
   display: grid;
   gap: 5px;
@@ -257,6 +289,24 @@
   text-decoration: none;
 }
 
+.baitlogic-map-popup em {
+  color: #6a5730;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 700;
+}
+
+.baitlogic-map-popup button {
+  margin-top: 3px;
+  min-height: 34px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 9px;
+  background: #062452;
+  color: #fff;
+  font: 800 11px/1 Roboto, system-ui, sans-serif;
+}
+
 .quick-jumps {
   display: flex;
   gap: 8px;
@@ -278,6 +328,91 @@
   background: #eef9f7;
   color: #07505b;
   font: 800 12px/1 Roboto, system-ui, sans-serif;
+}
+
+.trail-field-kit {
+  display: grid;
+  gap: 10px;
+  padding: 17px;
+  border: 1px solid rgba(6, 36, 82, .15);
+  border-radius: 20px;
+  background: linear-gradient(145deg, #fffdf7, #eef9f7);
+  box-shadow: 0 8px 22px rgba(6, 36, 82, .07);
+}
+
+.trail-field-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.trail-field-heading > div {
+  display: grid;
+  gap: 4px;
+}
+
+.trail-field-heading span {
+  color: #927016;
+  font: 900 10px/1 Roboto, system-ui, sans-serif;
+  letter-spacing: .1em;
+}
+
+.trail-field-heading strong {
+  color: #0b2a54;
+  font: 800 17px/1.15 Georgia, serif;
+}
+
+.trail-field-heading button {
+  flex: 0 0 auto;
+  min-height: 40px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 12px;
+  background: #062452;
+  color: #fff;
+  font: 800 12px/1 Roboto, system-ui, sans-serif;
+}
+
+.trail-status,
+.trail-truth,
+.trail-freshness {
+  margin: 0;
+  color: #596678;
+  font: 500 12px/1.45 Roboto, system-ui, sans-serif;
+}
+
+.trail-status {
+  padding: 9px 11px;
+  border-radius: 11px;
+  background: rgba(6, 36, 82, .07);
+  color: #0b2a54;
+  font-weight: 700;
+}
+
+.trail-status.live { background: #e2f6f4; color: #07505b; }
+.trail-status.saved { background: #f4e8c4; color: #694f0d; }
+.trail-freshness { color: #6d7581; }
+
+.trail-summary {
+  display: grid;
+  grid-template-columns: auto 1fr auto 1fr;
+  align-items: baseline;
+  gap: 4px 7px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid rgba(6, 36, 82, .1);
+}
+
+.trail-summary strong {
+  color: #087f8c;
+  font: 900 18px/1 Georgia, serif;
+}
+
+.trail-summary span {
+  color: #687386;
+  font: 600 10px/1.25 Roboto, system-ui, sans-serif;
 }
 
 .live-intel-grid {
@@ -332,7 +467,7 @@
 
 .official-intel-links {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 7px;
 }
 
@@ -378,5 +513,14 @@
 
   .official-intel-links {
     grid-template-columns: 1fr;
+  }
+
+  .trail-field-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .trail-summary {
+    grid-template-columns: auto 1fr;
   }
 }

@@ -9,6 +9,7 @@
 - Color direction approved on 2026-08-19: keep the current deep navy, gold, warm white, and controlled rainbow accents; do not recolor the approved app without a new explicit review.
 - The primary contribution CTA is “What did you notice?” and must reassure people: “No expertise needed. Exact spots stay private.”
 - Keep the product broad across weather, water, wildlife, trails, conservation, community, and saved/offline field intelligence.
+- Trail navigation must show actual route geometry rather than generic park links. Preserve official-source links, clearly distinguish official-operator evidence from community-mapped OpenStreetMap geometry, keep unnamed connectors visible, support trailhead directions and GPX export, and never claim closure freshness while offline.
 - Never deploy or publish without Amber's explicit review and approval.
 
 In ChatGPT Work Mode, run `sites-preview start "$PWD"`, open `http://terminal.local:4173/` in the cloud browser, and verify the rendered app and its primary interactions. Keep that preview open and tell the user to inspect it in the cloud browser; do not present the local URL as a user-facing chat link. In Codex Desktop, run the local server yourself, open the preview in the in-app browser, and provide the clickable local URL. Do not deploy to Sites unless the user explicitly asks to share, publish, or deploy. Do not give the user server-start instructions when you can run it.
