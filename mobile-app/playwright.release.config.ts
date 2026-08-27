@@ -8,6 +8,9 @@ export default defineConfig({
   use: {
     baseURL: `http://127.0.0.1:${testPort}`,
     viewport: { width: 430, height: 1000 },
+    // Release-surface tests isolate page runtime behavior. PWA/service-worker
+    // contracts are verified separately by the offline foundation suite.
+    serviceWorkers: "block",
   },
   webServer: {
     command: `npx vite preview --host 127.0.0.1 --port ${testPort}`,
