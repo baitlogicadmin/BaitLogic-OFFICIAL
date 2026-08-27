@@ -87,12 +87,14 @@ test("built Barometer loads live conditions, visible water evidence, and refresh
   const waterStyles = await page.locator(".water-evidence-grid article").first().evaluate((article) => {
     const value = article.querySelector("strong");
     return {
-      backgroundImage: getComputedStyle(article).backgroundImage,
+      backgroundColor: getComputedStyle(article).backgroundColor,
       valueColor: value ? getComputedStyle(value).color : "",
     };
   });
-  expect(waterStyles.backgroundImage).not.toBe("none");
-  expect(waterStyles.valueColor).not.toBe("rgb(255, 255, 255, 0)");
+  expect(waterStyles.backgroundColor).not.toBe("rgb(255, 255, 255)");
+  expect(waterStyles.backgroundColor).not.toBe("rgba(255, 255, 255, 1)");
+  expect(waterStyles.valueColor).not.toBe("rgba(0, 0, 0, 0)");
+  expect(waterStyles.valueColor).not.toBe(waterStyles.backgroundColor);
 
   const before = weatherRequests;
   await page.getByRole("button", { name: "Refresh now" }).click();
