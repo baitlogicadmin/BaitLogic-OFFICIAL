@@ -218,7 +218,20 @@ test("keyboard and its attached footer dismiss on the same transition", async ({
 
   await input.click();
   await expect(keyboard).toHaveAttribute("data-visible", "true");
-  await drag(page, footer, 0, 120, 5);
+
+  // Start the dismissal gesture on the footer surface itself, not on the text input.
+  const footerBox = await footer.boundingBox();
+  if (!footerBox) throw new Error("Footer has no bounding box");
+  const startX = footerBox.x + 6;
+  const startY = footerBox.y + 6;
+  await page.mouse.move(startX, startY);
+  await page.mouse.down();
+  for (let step = 1; step <= 5; step += 1) {
+    await page.mouse.move(startX, startY + (120 * step) / 5);
+    await page.waitForTimeout(8);
+  }
+  await page.mouse.up();
+
   await expect(keyboard).toHaveAttribute("data-visible", "false");
 
   await page.waitForTimeout(100);
