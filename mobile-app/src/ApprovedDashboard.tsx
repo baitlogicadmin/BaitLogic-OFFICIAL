@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import type { FormEvent } from "react";
 import { ChevronRightIcon, Crosshair2Icon, EyeOpenIcon, GlobeIcon, HeartIcon, PersonIcon } from "@radix-ui/react-icons";
 import { readFieldChecks, type FieldCheck } from "./data/baitlogicData";
 
@@ -88,7 +89,7 @@ export default function ApprovedDashboard(){
   const [signupState,setSignupState]=useState<"idle"|"submitting"|"success"|"error">("idle");
   const [signupMessage,setSignupMessage]=useState("");
 
-  async function submitSignup(event:React.FormEvent<HTMLFormElement>){
+  async function submitSignup(event:FormEvent<HTMLFormElement>){
     event.preventDefault();
     const email=signupEmail.trim().toLowerCase();
     if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)){
