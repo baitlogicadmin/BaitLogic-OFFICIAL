@@ -36,11 +36,16 @@ function readCache():Snapshot|undefined{
 }
 
 const lessons=[
-  ["Camping Preparedness 101","Build a practical before-you-go plan for shelter, water, food, weather, fire safety, navigation and emergencies.","7 min read"],
-  ["Hiking & Trail Safety","Plan your route, check closures and daylight, manage footing and weather, and know when to turn around.","6 min read"],
-  ["Weather Before You Go","Use temperature, wind, storms, pressure and daylight together to make safer outdoor decisions.","5 min read"],
-  ["Water & Wildlife Awareness","Read changing water, habitat and wildlife signals without disturbing the places and species you came to enjoy.","6 min read"],
-  ["See Something? Report It.","Recognize pollution, fish kills, damaged habitat and urgent concerns, then document and report them responsibly.","4 min read"],
+  ["Camping Preparedness 101","Shelter, water, food, weather, fire safety, navigation and emergency planning.","7 min read"],
+  ["Hiking & Trail Safety","Route planning, closures, daylight, footing, weather and knowing when to turn around.","6 min read"],
+  ["Weather Before You Go","Use temperature, wind, storms, pressure and daylight together before heading out.","5 min read"],
+  ["Water & Wildlife Awareness","Read water, habitat and wildlife signals without disturbing the places you enjoy.","6 min read"],
+  ["See Something? Report It.","Recognize pollution, fish kills, habitat damage and urgent concerns, then report responsibly.","4 min read"],
+  ["Campfire & Burn Safety","Know local restrictions, build safer fires, extinguish completely and leave no trace.","5 min read"],
+  ["Navigation Without Service","Use downloaded maps, landmarks, compass basics and a turnaround plan when signal disappears.","7 min read"],
+  ["Heat, Cold & Hydration","Spot early signs of heat illness, cold stress and dehydration before they become emergencies.","6 min read"],
+  ["Wildlife Encounters","Give animals space, secure food, avoid attractants and know when an encounter becomes unsafe.","5 min read"],
+  ["Leave No Trace Basics","Reduce impact on trails, campsites, shorelines, wildlife and the people using them after you.","5 min read"],
 ];
 
 export default function ApprovedDashboard(){
