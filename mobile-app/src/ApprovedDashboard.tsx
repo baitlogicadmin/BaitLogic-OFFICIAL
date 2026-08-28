@@ -170,3 +170,5 @@ export default function ApprovedDashboard(){
     </footer>
     <div className="copyright">© 2026 BaitLogic Outdoors · About · Contact · Privacy · Terms</div>
   </div>
+
+}
