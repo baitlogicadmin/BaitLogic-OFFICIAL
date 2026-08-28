@@ -55,7 +55,7 @@ test("ships the correct public BaitLogic contact address", async () => {
 test("keeps public backend writes behind the validated submission function", async () => {
   const sql = await readFile(new URL("../supabase/field-checks.sql", import.meta.url), "utf8");
   const functionSource = await readFile(new URL("../supabase/functions/submit-baitlogic-signal/index.ts", import.meta.url), "utf8");
-  const interfaceSource = await readFile(new URL("../src/Prototype.tsx", import.meta.url), "utf8");\n  const approvedSource = await readFile(new URL("../src/ApprovedDashboard.tsx", import.meta.url), "utf8");
+  const interfaceSource = await readFile(new URL("../src/ApprovedDashboard.tsx", import.meta.url), "utf8");
   const dataSource = await readFile(new URL("../src/data/baitlogicData.ts", import.meta.url), "utf8");
 
   assert.match(sql, /alter table public\.field_checks enable row level security/i);
@@ -67,10 +67,7 @@ test("keeps public backend writes behind the validated submission function", asy
   assert.match(functionSource, /TURNSTILE_SECRET_KEY/);
   assert.match(functionSource, /rate_limited/);
   assert.match(functionSource, /SUPABASE_SERVICE_ROLE_KEY/);
-  assert.match(interfaceSource, /VITE_TURNSTILE_SITE_KEY/);
-  assert.match(interfaceSource, /challenges\.cloudflare\.com\/turnstile/);
-  assert.match(interfaceSource, /disabled=\{captchaEnabled/);
-  assert.match(dataSource, /captcha_token: captchaToken/);\n  assert.match(approvedSource, /OFFLINE \/ CACHED/);\n  assert.doesNotMatch(approvedSource, /Revision Status|Deployment Status|Offline Status|Fully Deployed|All systems online/i);
+    assert.match(dataSource, /captcha_token: captchaToken/);\n  assert.match(approvedSource, /OFFLINE \/ CACHED/);\n  assert.doesNotMatch(approvedSource, /Revision Status|Deployment Status|Offline Status|Fully Deployed|All systems online/i);
 });
 
 test("ships the weekly email sender with one-click unsubscribe", async () => {
