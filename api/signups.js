@@ -36,13 +36,13 @@ module.exports = async function handler(req, res) {
   try {
     const name = toText(req.body?.name, 80);
     const email = toText(req.body?.email, 120).toLowerCase();
-    if (!name || !validEmail(email)) return res.status(400).json({ error: "Valid name and email required." });
+    if (!validEmail(email)) return res.status(400).json({ error: "Valid email required." });
 
     const result = await submitWeeklySignup({ name, email });
     const welcome = result.welcome || "unavailable";
     const message = welcome === "sent"
-      ? "You’re on the BaitLogic list. Confirmation email sent."
-      : "You’re on the BaitLogic list. Your confirmation email is delayed.";
+      ? "You’re on the BaitLogic list. Welcome email sent."
+      : "You’re on the BaitLogic list. Email delivery is delayed.";
 
     return res.status(201).json({ message, welcome });
   } catch (error) {

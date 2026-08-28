@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import type { FormEvent } from "react";
 import { ChevronRightIcon, Crosshair2Icon, EyeOpenIcon, GlobeIcon, HeartIcon, PersonIcon } from "@radix-ui/react-icons";
 import { readFieldChecks, type FieldCheck } from "./data/baitlogicData";
 
@@ -84,12 +85,47 @@ export default function ApprovedDashboard(){
   const region=(snapshot?.location?.region || "").replace("Illinois","IL").replace("Missouri","MO");
   const pressureTrend=trend(w?.pressureDelta3h ?? 0);
   const latestReports=useMemo(()=>reports.slice(0,3),[reports]);
+  const [signupEmail,setSignupEmail]=useState("");
+  const [signupState,setSignupState]=useState<"idle"|"submitting"|"success"|"error">("idle");
+  const [signupMessage,setSignupMessage]=useState("");
+
+  async function submitSignup(event:FormEvent<HTMLFormElement>){
+    event.preventDefault();
+    const email=signupEmail.trim().toLowerCase();
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)){
+      setSignupState("error");
+      setSignupMessage("Enter a valid email address.");
+      return;
+    }
+    if(!online){
+      setSignupState("error");
+      setSignupMessage("You’re offline. Reconnect to join the email list.");
+      return;
+    }
+    setSignupState("submitting");
+    setSignupMessage("Joining…");
+    try{
+      const response=await fetch("/api/signups",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({email}),
+      });
+      const data=await response.json().catch(()=>({}));
+      if(!response.ok) throw new Error(data?.error || "Signup is temporarily unavailable.");
+      setSignupState("success");
+      setSignupMessage(data?.message || "You’re on the BaitLogic list.");
+      setSignupEmail("");
+    }catch(error){
+      setSignupState("error");
+      setSignupMessage(error instanceof Error ? error.message : "Signup is temporarily unavailable.");
+    }
+  }
 
   return <div className="approved-dashboard">
     <header className="bl-header">
       <a className="bl-brand" href="/" aria-label="BaitLogic Outdoors home">
         <img src="/assets/baitlogic-logo.png" alt="BaitLogic Outdoors" />
-        <span>Beyond the Bite. Protect What Matters.</span>
+        <span>Beyond the Bite. Powered by People and Purpose.</span>
       </a>
       <nav aria-label="Primary">
         <a className="active" href="/">HOME</a><a href="/barometer.html">BAROMETER</a><a href="#catches">CATCHES</a><a href="#field-checks">FIELD CHECKS</a><a href="#learn">LEARN</a><a href="#community">COMMUNITY</a><a href="#conservation">CONSERVATION</a>
@@ -159,9 +195,9 @@ export default function ApprovedDashboard(){
           <a className="utility-action" href="/field-intel.html#conservation">REPORT A CONCERN ♢</a>
         </article>
 
-        <article className="utility-card connect"><h3>Stay Connected!</h3><p>Get local conditions, community highlights, and conservation updates that matter—straight to your inbox.</p><form onSubmit={e=>e.preventDefault()}><input type="email" placeholder="Email address"/><button>SIGN ME UP!</button></form><small>No spam. Unsubscribe anytime.</small></article>
+        <article className="utility-card connect"><h3>Stay Connected!</h3><p>Get local conditions, community highlights, and conservation updates that matter—straight to your inbox.</p><form onSubmit={submitSignup}><input type="email" name="email" autoComplete="email" value={signupEmail} onChange={e=>setSignupEmail(e.target.value)} placeholder="Email address" aria-label="Email address" required/><button type="submit" disabled={signupState==="submitting"}>{signupState==="submitting"?"JOINING…":"SIGN ME UP!"}</button></form><small aria-live="polite">{signupMessage || "No spam. Unsubscribe anytime."}</small></article>
 
-        <article className="utility-card join"><h3>JOIN THE COMMUNITY!</h3><p>Visit our Facebook page or follow BaitLogic on Instagram.</p><a href="https://www.facebook.com/baitlogic" target="_blank" rel="noreferrer">www.facebook.com/baitlogic</a><a href="https://www.instagram.com/baitlogicadmin?igsh=MTVuOHV2dDljaTd3Yg==" target="_blank" rel="noreferrer">Open Instagram →</a></article>
+        <article className="utility-card join"><h3>JOIN THE COMMUNITY!</h3><p>Visit our Facebook page or follow BaitLogic on Instagram.</p><a href="https://www.facebook.com/share/1C3i4dL3vk/" target="_blank" rel="noreferrer">Open Facebook →</a><a href="https://www.instagram.com/baitlogicadmin?igsh=MTVuOHV2dDljaTd3Yg==" target="_blank" rel="noreferrer">Open Instagram →</a></article>
       </section>
     </main>
 
@@ -171,9 +207,9 @@ export default function ApprovedDashboard(){
       <div><strong>♧ Community First</strong><span>Built by people like you.</span></div>
       <div><strong>⌖ Local Focused</strong><span>Southern Illinois & St. Louis Metro East</span></div>
       <div><strong>♧ Conservation Driven</strong><span>Protect what we all love to enjoy.</span></div>
-      <div className="footer-links"><a href="https://www.facebook.com/baitlogic" target="_blank" rel="noreferrer" aria-label="BaitLogic on Facebook">f</a><a href="https://www.instagram.com/baitlogicadmin?igsh=MTVuOHV2dDljaTd3Yg==" target="_blank" rel="noreferrer" aria-label="BaitLogic on Instagram">◎</a></div><div className="footer-mantra">People. Purpose. Passion. That’s BaitLogic.</div>
+      <div className="footer-links"><a href="https://www.facebook.com/share/1C3i4dL3vk/" target="_blank" rel="noreferrer" aria-label="BaitLogic on Facebook">f</a><a href="https://www.instagram.com/baitlogicadmin?igsh=MTVuOHV2dDljaTd3Yg==" target="_blank" rel="noreferrer" aria-label="BaitLogic on Instagram">◎</a></div><div className="footer-mantra">People. Purpose. Passion. That’s BaitLogic.</div>
     </footer>
-    <div className="copyright">© 2026 BaitLogic Outdoors · About · Contact · Privacy · Terms</div>
+    <div className="copyright">© 2026 BaitLogic Outdoors · About · <a href="mailto:baitlogicadmin@gmail.com">Contact</a> · Privacy · Terms</div>
   </div>
 
 }
