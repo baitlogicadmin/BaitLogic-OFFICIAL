@@ -449,10 +449,10 @@
 .approved-dashboard .learn-strip{
   color:#fff!important;
   background:
-    linear-gradient(135deg,rgba(82,38,78,.90),rgba(51,24,64,.86)),
-    linear-gradient(180deg,rgba(255,255,255,.035),rgba(0,0,0,.12))!important;
-  border:2px solid rgba(216,143,209,.42)!important;
-  box-shadow:0 12px 30px rgba(12,4,18,.28)!important;
+    linear-gradient(135deg,rgba(112,58,108,.84),rgba(70,36,84,.82)),
+    linear-gradient(180deg,rgba(255,255,255,.055),rgba(0,0,0,.10))!important;
+  border:2px solid rgba(226,169,219,.48)!important;
+  box-shadow:0 12px 30px rgba(12,4,18,.28), inset 0 1px 0 rgba(255,255,255,.06)!important;
 }
 .approved-dashboard .learn-heading span{color:#eaddeb!important}
 .approved-dashboard .learn-heading a{color:#d8f76b!important}
