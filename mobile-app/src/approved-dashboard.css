@@ -1,10 +1,6 @@
 @import "@fontsource/roboto/400.css";
 @import "@fontsource/roboto/500.css";
 @import "@fontsource/roboto/700.css";
-@import "@fontsource/roboto-condensed/400.css";
-@import "@fontsource/roboto-condensed/500.css";
-@import "@fontsource/roboto-condensed/700.css";
-@import "@fontsource/roboto-condensed/900.css";
 
 .approved-dashboard{
   --bl-bg:#020c16;
@@ -427,7 +423,7 @@
 
 /* 2026-08-28 reference lock: condensed typography + expanded outdoor Learn cards. */
 .approved-dashboard{
-  font-family:"Roboto Condensed",Roboto,Arial,sans-serif;
+  font-family:"Roboto Condensed","Arial Narrow","Liberation Sans Narrow",Roboto,Arial,sans-serif;
 }
 .approved-dashboard .bl-header nav a,
 .approved-dashboard .location-chip,
@@ -442,7 +438,7 @@
 .approved-dashboard .lesson-grid article small,
 .approved-dashboard .utility-card header,
 .approved-dashboard .utility-action{
-  font-family:"Roboto Condensed",Roboto,Arial,sans-serif;
+  font-family:"Roboto Condensed","Arial Narrow","Liberation Sans Narrow",Roboto,Arial,sans-serif;
 }
 .approved-dashboard .hero-copy-panel h1{
   font-style:italic;
