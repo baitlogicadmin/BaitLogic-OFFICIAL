@@ -166,7 +166,7 @@ export default function ApprovedDashboard(){
       <div><strong>♧ Community First</strong><span>Built by people like you.</span></div>
       <div><strong>⌖ Local Focused</strong><span>Southern Illinois & St. Louis Metro East</span></div>
       <div><strong>♧ Conservation Driven</strong><span>Protect what we all love to enjoy.</span></div>
-      <div className="footer-links"><a href="https://www.facebook.com/baitlogic" target="_blank" rel="noreferrer">f</a><a href="https://www.instagram.com/baitlogicadmin?igsh=MTVuOHV2dDljaTd3Yg==" target="_blank" rel="noreferrer">◎</a></div>
+      <div className="footer-links"><a href="https://www.facebook.com/baitlogic" target="_blank" rel="noreferrer" aria-label="BaitLogic on Facebook">f</a><a href="https://www.instagram.com/baitlogicadmin?igsh=MTVuOHV2dDljaTd3Yg==" target="_blank" rel="noreferrer" aria-label="BaitLogic on Instagram">◎</a></div><div className="footer-mantra">People. Purpose. Passion. That’s BaitLogic.</div>
     </footer>
     <div className="copyright">© 2026 BaitLogic Outdoors · About · Contact · Privacy · Terms</div>
   </div>
