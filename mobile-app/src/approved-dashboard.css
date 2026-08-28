@@ -192,8 +192,23 @@
   .approved-dashboard .learn-heading{flex-wrap:wrap;gap:8px}
   .approved-dashboard .learn-heading a{margin-left:0}
   .approved-dashboard .lesson-grid{grid-template-columns:1fr}
-  .approved-dashboard .lesson-grid article{grid-template-columns:92px 1fr}
-  .approved-dashboard .lesson-grid article img{width:92px;height:92px}
+  .approved-dashboard .lesson-grid article{
+    grid-template-columns:minmax(132px,36%) 1fr;
+    align-items:start;
+    min-height:150px;
+    overflow:hidden;
+  }
+  .approved-dashboard .lesson-grid article img{
+    width:100%;
+    height:auto;
+    aspect-ratio:4/3;
+    min-height:112px;
+    max-height:145px;
+    border-radius:6px;
+    object-fit:cover;
+    object-position:center;
+    display:block;
+  }
   .approved-dashboard .utility-grid{grid-template-columns:1fr}
   .approved-dashboard .bl-footer{width:calc(100% - 18px);grid-template-columns:1fr 1fr}
   .approved-dashboard .bl-footer img{width:175px}
