@@ -92,6 +92,14 @@ The product should feel like one connected system:
 
 Do not present every outdoor subject as a separate top-level identity. Supporting topics must reinforce this hierarchy.
 
+### Education placement rule — LOCKED
+
+**Camping education must be a front-and-center education option alongside fishing education.**
+
+This is a mandatory product/UX rule. Whenever BaitLogic presents primary educational choices, featured learning categories, homepage learning entry points, or mobile learning navigation, **Camping** must be visibly available next to **Fishing** at the same first-line discovery level. Camping education must not be buried behind generic outdoor categories or treated as an afterthought.
+
+This rule does **not** create a fifth primary product pillar. It governs the prominence and discoverability of education within the existing four-pillar BaitLogic system.
+
 ---
 
 ## 3. Current production architecture — LOCKED
@@ -366,6 +374,7 @@ When an imperative product, brand, infrastructure, security, or mission fact cha
 
 ## Change log
 
+- **2026-08-28 — Camping education prominence:** locked Camping as a front-and-center education option alongside Fishing. Any primary education chooser, featured learning surface, homepage learning entry point, or mobile learning navigation must expose Camping next to Fishing rather than burying it under generic outdoor categories. This is a mandatory education/UX rule and does not create a fifth primary product pillar.
 - **2026-08-25 — Narrative consolidation:** locked BaitLogic around four primary pillars: Fishing Intelligence, Community Knowledge, Water & Environment, and Conservation Action. Locked the system flow `Conditions → Community Knowledge → Better Fishing/Outdoor Decisions → Conservation Action`. Clarified that hiking, paddling, camping, wildlife, trails, habitat, and access are supporting categories rather than competing top-level identities. Locked `Beyond the Bite. Protect What Matters.` and `Understand the water. Learn from the community. Fish smarter. Protect what matters.` as the primary message hierarchy.
 - **2026-08-25 — Architecture correction:** explicitly recorded that `mobile-app/` is production, root `public/` is deprecated, and the active PWA includes `mobile-app/public/sw.js`; this supersedes any audit conclusion based only on the legacy root tree that claimed service-worker/offline architecture was absent.
 - **2026-08-24 — AI/code context alignment:** recorded Field Check photo implementation, signup welcome/admin delivery tracking, the `email_not_configured` blocker, merged barometer location-loading fix, active code map, visual-direction reconciliation, funnel cadence, and runtime conflicts.
