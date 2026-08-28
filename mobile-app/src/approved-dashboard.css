@@ -1,6 +1,10 @@
 @import "@fontsource/roboto/400.css";
 @import "@fontsource/roboto/500.css";
 @import "@fontsource/roboto/700.css";
+@import "@fontsource/roboto-condensed/400.css";
+@import "@fontsource/roboto-condensed/500.css";
+@import "@fontsource/roboto-condensed/700.css";
+@import "@fontsource/roboto-condensed/900.css";
 
 .approved-dashboard{
   --bl-bg:#020c16;
@@ -419,3 +423,98 @@
   }
 }
 
+
+
+/* 2026-08-28 reference lock: condensed typography + expanded outdoor Learn cards. */
+.approved-dashboard{
+  font-family:"Roboto Condensed",Roboto,Arial,sans-serif;
+}
+.approved-dashboard .bl-header nav a,
+.approved-dashboard .location-chip,
+.approved-dashboard .hero-copy-panel h1,
+.approved-dashboard .action strong,
+.approved-dashboard .conditions-title strong,
+.approved-dashboard .conditions-metrics,
+.approved-dashboard .pillar h2,
+.approved-dashboard .pillar>span,
+.approved-dashboard .learn-heading strong,
+.approved-dashboard .lesson-grid article strong,
+.approved-dashboard .lesson-grid article small,
+.approved-dashboard .utility-card header,
+.approved-dashboard .utility-action{
+  font-family:"Roboto Condensed",Roboto,Arial,sans-serif;
+}
+.approved-dashboard .hero-copy-panel h1{
+  font-style:italic;
+  font-stretch:condensed;
+  font-weight:900;
+  letter-spacing:-.025em;
+}
+.approved-dashboard .learn-strip{
+  color:#fff!important;
+  background:
+    linear-gradient(135deg,rgba(82,38,78,.90),rgba(51,24,64,.86)),
+    linear-gradient(180deg,rgba(255,255,255,.035),rgba(0,0,0,.12))!important;
+  border:2px solid rgba(216,143,209,.42)!important;
+  box-shadow:0 12px 30px rgba(12,4,18,.28)!important;
+}
+.approved-dashboard .learn-heading span{color:#eaddeb!important}
+.approved-dashboard .learn-heading a{color:#d8f76b!important}
+.approved-dashboard .lesson-grid{
+  display:grid!important;
+  grid-template-columns:none!important;
+  grid-auto-flow:column;
+  grid-auto-columns:calc((100% - 28px)/5);
+  gap:7px;
+  overflow-x:auto;
+  overscroll-behavior-inline:contain;
+  scroll-snap-type:x proximity;
+  scrollbar-width:thin;
+  padding-bottom:3px;
+}
+.approved-dashboard .lesson-grid article,
+.approved-dashboard .learn-cta{
+  scroll-snap-align:start;
+  min-width:0;
+}
+.approved-dashboard .lesson-grid article{
+  color:#fff!important;
+  background:linear-gradient(145deg,rgba(74,32,72,.88),rgba(39,20,52,.92))!important;
+  border:1px solid rgba(224,159,216,.36)!important;
+  box-shadow:0 7px 18px rgba(13,5,18,.24)!important;
+}
+.approved-dashboard .lesson-grid article strong{color:#fff!important;font-weight:800}
+.approved-dashboard .lesson-grid article p{color:#efe5f0!important}
+.approved-dashboard .lesson-grid article small{color:#d9f36a!important;font-weight:700}
+.approved-dashboard .learn-cta{
+  color:#fff!important;
+  background:linear-gradient(145deg,rgba(68,30,68,.90),rgba(34,18,48,.94))!important;
+  border:1px solid rgba(224,159,216,.38)!important;
+}
+.approved-dashboard .learn-cta strong{color:#fff!important}
+.approved-dashboard .learn-cta span{color:#efe5f0!important}
+.approved-dashboard .learn-cta b{
+  color:#17210a!important;
+  background:linear-gradient(90deg,#d5f570,#afd43c)!important;
+}
+@media(max-width:760px){
+  .approved-dashboard .lesson-grid{
+    grid-template-columns:none!important;
+    grid-auto-flow:column!important;
+    grid-auto-columns:min(88vw,360px)!important;
+    overflow-x:auto!important;
+    gap:10px!important;
+    scroll-snap-type:x mandatory;
+  }
+  .approved-dashboard .lesson-grid article{
+    grid-template-columns:minmax(120px,40%) 1fr!important;
+    min-height:152px!important;
+  }
+  .approved-dashboard .lesson-grid article img{
+    width:100%!important;
+    height:100%!important;
+    min-height:130px!important;
+    max-height:154px!important;
+    object-fit:cover!important;
+  }
+}
