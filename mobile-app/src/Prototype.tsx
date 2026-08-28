@@ -474,8 +474,20 @@ export default function Prototype() {
               <div className="hero-topline"><ConnectionPill online={online} mode={syncMode} communityCount={approvedReports.length} /><button className="conditions-status" onClick={() => void loadConditions()}>{conditionsStatus}</button></div>
               <div className="hero-copy"><p>{currentDateLabel}</p><h1>{conditions.data?.location?.locality || conditions.data?.location?.name?.split(",")[0] || "Your"} outdoor pulse</h1><span>Verified weather when online. Clearly dated saved conditions when offline.</span></div>
             </section>
-            <section className="conditions-grid" aria-label="Verified local weather conditions" aria-live="polite">
-              <div><span>NOW</span><strong>{weather ? `${Math.round(weather.temperatureF)}°` : "—"}</strong><small>{weather ? `${conditionName} · feels ${Math.round(weather.apparentTemperatureF)}°` : "Waiting for verified data"}</small></div><div><span>PRESSURE</span><strong>{weather ? trend : "—"}</strong><small>{weather ? `${weather.pressureInHg.toFixed(2)} inHg` : "Waiting for verified data"}</small></div><div><span>WIND</span><strong>{weather ? `${Math.round(weather.windMph)} mph` : "—"}</strong><small>{weather ? `${compassDirection(weather.windDirection)} · gusts ${Math.round(weather.gustMph)}` : "Waiting for verified data"}</small></div>
+            <section className="intel-cockpit" aria-label="BaitLogic live fishing intelligence" aria-live="polite">
+              <div className="cockpit-head">
+                <div><span>LIVE FISHING INTELLIGENCE</span><h2>Read the water before the cast.</h2></div>
+                <a href="/barometer.html">Open full Barometer <ChevronRightIcon /></a>
+              </div>
+              <div className="pressure-hero">
+                <div className="pressure-ring"><span>PRESSURE</span><strong>{weather ? weather.pressureInHg.toFixed(2) : "—"}</strong><small>inHg</small></div>
+                <div className="pressure-copy"><span>TREND</span><strong>{weather ? trend : "Waiting for live data"}</strong><small>{weather ? `${weather.pressureDelta3h >= 0 ? "+" : ""}${weather.pressureDelta3h.toFixed(2)} inHg / 3h` : "Location-based pressure will appear here."}</small></div>
+              </div>
+              <div className="intel-metrics">
+                <div><span>AIR</span><strong>{weather ? `${Math.round(weather.temperatureF)}°F` : "—"}</strong><small>{weather ? conditionName : "Waiting"}</small></div>
+                <div><span>WIND</span><strong>{weather ? `${Math.round(weather.windMph)} mph` : "—"}</strong><small>{weather ? `${compassDirection(weather.windDirection)} · gust ${Math.round(weather.gustMph)}` : "Waiting"}</small></div>
+                <div><span>CLOUD</span><strong>{weather ? `${Math.round(weather.cloudCover)}%` : "—"}</strong><small>cover</small></div>
+              </div>
             </section>
             <section className="watch-card" aria-labelledby="watch-card-title">
               <div className="watch-heading"><span>SEE SOMETHING? SAY SOMETHING.</span><strong id="watch-card-title">Know what matters. Make a difference.</strong></div>
