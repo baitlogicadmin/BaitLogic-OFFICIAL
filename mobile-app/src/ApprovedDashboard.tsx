@@ -36,11 +36,11 @@ function readCache():Snapshot|undefined{
 }
 
 const lessons=[
-  ["Why Barometric Pressure Matters","How pressure changes affect fish behavior and feeding.","5 min read"],
-  ["Reading Water Like a Pro","Understand structure, seasonal movement, and how fish use habitat.","7 min read"],
-  ["Streamflow 101","What flow means, why it changes, and how it impacts fishing.","6 min read"],
-  ["Fish Kill: What to Do","How to recognize a fish kill, what to report, and what information helps.","4 min read"],
-  ["Beginner’s Guide to Lure Selection","Simple tips to match conditions and catch more fish.","6 min read"],
+  ["Camping Preparedness 101","Build a practical before-you-go plan for shelter, water, food, weather, fire safety, navigation and emergencies.","7 min read"],
+  ["Hiking & Trail Safety","Plan your route, check closures and daylight, manage footing and weather, and know when to turn around.","6 min read"],
+  ["Weather Before You Go","Use temperature, wind, storms, pressure and daylight together to make safer outdoor decisions.","5 min read"],
+  ["Water & Wildlife Awareness","Read changing water, habitat and wildlife signals without disturbing the places and species you came to enjoy.","6 min read"],
+  ["See Something? Report It.","Recognize pollution, fish kills, damaged habitat and urgent concerns, then document and report them responsibly.","4 min read"],
 ];
 
 export default function ApprovedDashboard(){
@@ -133,7 +133,7 @@ export default function ApprovedDashboard(){
         <div className="learn-heading"><strong>🎓 LEARN SOMETHING NEW</strong><span>Knowledge today. Better tomorrow.</span><a href="/field-intel.html">VIEW ALL LESSONS →</a></div>
         <div className="lesson-grid">
           {lessons.map(([title,body,time],i)=><article key={title}><img src={i===1?"/assets/water-pulse.png":i===2?"/assets/habitat-restoration.png":"/assets/hero-observer.png"} alt="" /><div><strong>{title}</strong><p>{body}</p><small>◷ {time}</small></div></article>)}
-          <a className="learn-cta" href="/field-intel.html"><strong>▤<br/>BAITLOGIC<br/>LEARN</strong><span>Your library for fishing, water, wildlife, habitat and conservation.</span><b>EXPLORE LEARN →</b></a>
+          <a className="learn-cta" href="/field-intel.html"><strong>▤<br/>BAITLOGIC<br/>LEARN</strong><span>Your library for camping, hiking, weather, water, wildlife, fishing, habitat and conservation.</span><b>EXPLORE LEARN →</b></a>
         </div>
       </section>
 
