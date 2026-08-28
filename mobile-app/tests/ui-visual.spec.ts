@@ -1,5 +1,7 @@
 import { expect, test } from "@playwright/test";
 
+test.use({ viewport: { width: 430, height: 1100 }, deviceScaleFactor: 3 });
+
 const visualConditions = {
   updatedAt: "2026-08-26T11:35:00.000Z",
   location: { name: "Highland, Illinois", locality: "Highland", region: "Illinois" },
@@ -20,7 +22,6 @@ const visualConditions = {
 };
 
 test("render established BaitLogic home candidate", async ({ page }) => {
-  await page.setViewportSize({ width: 430, height: 1100 });
   await page.addInitScript(() => {
     Object.defineProperty(navigator, "geolocation", {
       configurable: true,
