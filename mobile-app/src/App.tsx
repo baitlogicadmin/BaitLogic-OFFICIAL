@@ -1,11 +1,6 @@
-import Prototype from "./Prototype";
-import FeatureTools from "./FeatureTools";
+import ApprovedDashboard from "./ApprovedDashboard";
+import "./approved-dashboard.css";
 
 export default function App() {
-  return (
-    <>
-      <FeatureTools />
-      <Prototype />
-    </>
-  );
+  return <ApprovedDashboard />;
 }
