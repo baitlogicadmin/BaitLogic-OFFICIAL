@@ -1,6 +1,11 @@
-import ApprovedDashboard from "./ApprovedDashboard";
-import "./approved-dashboard.css";
+import Prototype from "./Prototype";
+import FeatureTools from "./FeatureTools";
 
 export default function App() {
-  return <ApprovedDashboard />;
+  return (
+    <>
+      <FeatureTools />
+      <Prototype />
+    </>
+  );
 }
