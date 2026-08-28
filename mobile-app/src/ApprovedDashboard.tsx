@@ -84,7 +84,7 @@ export default function ApprovedDashboard(){
     <header className="bl-header">
       <a className="bl-brand" href="/" aria-label="BaitLogic Outdoors home">
         <img src="/assets/baitlogic-logo.png" alt="BaitLogic Outdoors" />
-        <span>Beyond The Bite. Protect What Matters.</span>
+        <span>Beyond the Bite. Protect What Matters.</span>
       </a>
       <nav aria-label="Primary">
         <a className="active" href="/">HOME</a><a href="/barometer.html">BAROMETER</a><a href="#catches">CATCHES</a><a href="#field-checks">FIELD CHECKS</a><a href="#learn">LEARN</a><a href="#community">COMMUNITY</a><a href="#conservation">CONSERVATION</a>
@@ -101,7 +101,7 @@ export default function ApprovedDashboard(){
           <p>Real-time conditions, community knowledge, and conservation action—so we can enjoy the outdoors today and protect it for tomorrow.</p>
           <div className="hero-actions">
             <a className="action teal" href="/barometer.html">☀ <span><strong>CHECK CONDITIONS</strong><small>Live Weather & Water</small></span></a>
-            <a className="action gold" href="#conservation">♢ <span><strong>REPORT A CONCERN</strong><small>See Something, Say Something</small></span></a>
+            <a className="action magenta" href="#conservation">♢ <span><strong>REPORT A CONCERN</strong><small>See Something, Say Something</small></span></a>
           </div>
           <div className="trust-row"><span>♡ Always Free</span><span>♧ Community Powered</span><span>♧ Conservation Focused</span><span>◈ Woman-Owned</span></div>
         </div>
@@ -156,7 +156,7 @@ export default function ApprovedDashboard(){
 
         <article className="utility-card connect"><h3>Stay Connected!</h3><p>Get local conditions, community highlights, and conservation updates that matter—straight to your inbox.</p><form onSubmit={e=>e.preventDefault()}><input type="email" placeholder="Email address"/><button>SIGN ME UP!</button></form><small>No spam. Unsubscribe anytime.</small></article>
 
-        <article className="utility-card join"><h3>JOIN THE COMMUNITY!</h3><p>Follow BaitLogic on Facebook and Instagram.</p><a href="https://www.facebook.com/share/1C3i4dL3vk/" target="_blank" rel="noreferrer">Open Facebook →</a><a href="https://www.instagram.com/baitlogicadmin?igsh=MTVuOHV2dDljaTd3Yg==" target="_blank" rel="noreferrer">Open Instagram →</a></article>
+        <article className="utility-card join"><h3>JOIN THE COMMUNITY!</h3><p>Visit our Facebook page or follow BaitLogic on Instagram.</p><a href="https://www.facebook.com/baitlogic" target="_blank" rel="noreferrer">www.facebook.com/baitlogic</a><a href="https://www.instagram.com/baitlogicadmin?igsh=MTVuOHV2dDljaTd3Yg==" target="_blank" rel="noreferrer">Open Instagram →</a></article>
       </section>
     </main>
 
@@ -166,7 +166,7 @@ export default function ApprovedDashboard(){
       <div><strong>♧ Community First</strong><span>Built by people like you.</span></div>
       <div><strong>⌖ Local Focused</strong><span>Southern Illinois & St. Louis Metro East</span></div>
       <div><strong>♧ Conservation Driven</strong><span>Protect what we all love to enjoy.</span></div>
-      <div className="footer-links"><a href="https://www.facebook.com/share/1C3i4dL3vk/" target="_blank" rel="noreferrer">f</a><a href="https://www.instagram.com/baitlogicadmin?igsh=MTVuOHV2dDljaTd3Yg==" target="_blank" rel="noreferrer">◎</a></div>
+      <div className="footer-links"><a href="https://www.facebook.com/baitlogic" target="_blank" rel="noreferrer">f</a><a href="https://www.instagram.com/baitlogicadmin?igsh=MTVuOHV2dDljaTd3Yg==" target="_blank" rel="noreferrer">◎</a></div>
     </footer>
     <div className="copyright">© 2026 BaitLogic Outdoors · About · Contact · Privacy · Terms</div>
   </div>
