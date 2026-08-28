@@ -67,7 +67,9 @@ test("keeps public backend writes behind the validated submission function", asy
   assert.match(functionSource, /TURNSTILE_SECRET_KEY/);
   assert.match(functionSource, /rate_limited/);
   assert.match(functionSource, /SUPABASE_SERVICE_ROLE_KEY/);
-    assert.match(dataSource, /captcha_token: captchaToken/);\n  assert.match(approvedSource, /OFFLINE \/ CACHED/);\n  assert.doesNotMatch(approvedSource, /Revision Status|Deployment Status|Offline Status|Fully Deployed|All systems online/i);
+  assert.match(dataSource, /captcha_token: captchaToken/);
+  assert.match(interfaceSource, /OFFLINE \/ CACHED/);
+  assert.doesNotMatch(interfaceSource, /Revision Status|Deployment Status|Offline Status|Fully Deployed|All systems online/i);
 });
 
 test("ships the weekly email sender with one-click unsubscribe", async () => {
