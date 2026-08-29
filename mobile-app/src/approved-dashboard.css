@@ -271,6 +271,46 @@ main{
 .pillar.fishing>span,.pillar.water>span{color:var(--cyan)}
 .pillar.camping>span{color:#ff9d00}
 .pillar.conservation>span{color:var(--lime)}
+.official-report-links{
+  position:absolute;
+  left:15px;
+  right:15px;
+  bottom:13px;
+  display:grid;
+  gap:6px;
+}
+.official-report-links a{
+  min-height:30px;
+  padding:7px 9px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid rgba(255,255,255,.28);
+  border-radius:6px;
+  background:rgba(1,9,14,.82);
+  color:var(--lime);
+  font-size:10px;
+  font-weight:800;
+  text-align:center;
+}
+.impact-report-links{
+  margin-top:auto;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px;
+}
+.impact-report-links a{
+  min-height:34px;
+  padding:8px 10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:5px;
+  text-align:center;
+  background:linear-gradient(90deg,#93c912,#71a800);
+  font-size:10px;
+  font-weight:800;
+}
 
 .lower-grid{
   margin-top:12px;
@@ -503,6 +543,8 @@ main{
   .pillar h2{font-size:17px}
   .pillar p{display:none}
   .pillar>span{display:none}
+  .official-report-links{left:10px;right:10px;bottom:10px;gap:5px}
+  .official-report-links a{min-height:28px;padding:6px;font-size:8px}
   .lower-grid{grid-template-columns:1fr}
   .learn-strip{min-height:0;padding:10px}
   .lesson-grid{grid-template-columns:1fr}
