@@ -154,7 +154,7 @@ export default function ApprovedDashboard(){
         <section className="conditions-card" aria-label="Local conditions">
           <div className="conditions-title">
             <strong>LOCAL CONDITIONS</strong>
-            <span className={online && status==="live"?"live":"cached"}>{online&&status==="live"?"● LIVE":"● CACHED"}</span>
+            <span className={online && status==="live"?"live":"cached"}>{online&&status==="live"?"● LIVE":"● OFFLINE / CACHED"}</span>
           </div>
           <div className="conditions-metrics">
             <div className="pressure"><span>BAROMETRIC<br/>PRESSURE</span><strong>{w?w.pressureInHg.toFixed(2):"—"}</strong><small>inHg</small><b>↓ {pressureTrend}</b></div>
