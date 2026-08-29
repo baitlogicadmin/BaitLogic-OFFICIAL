@@ -125,7 +125,7 @@ export default function ApprovedDashboard(){
         <a className="active" href="/">HOME</a>
         <a href="/barometer.html">BAROMETER</a>
         <a href="#field-checks">CATCHES</a>
-        <a href="#field-checks">FIELD CHECKS</a>
+        <a href="/field-intel.html#field-check">FIELD CHECKS</a>
         <a href="#learn">LEARN</a>
         <a href="#more">MORE</a>
       </nav>
@@ -170,12 +170,12 @@ export default function ApprovedDashboard(){
         <a className="pillar fishing" href="/barometer.html"><EyeOpenIcon/><h2>FISHING<br/>INTELLIGENCE</h2><p>Live conditions, patterns, forecasts & proven tactics.</p><span>CHECK THE INTEL →</span></a>
         <a className="pillar camping" href="#learn"><div className="camp-icon">△</div><h2>CAMPING<br/>EDUCATION</h2><p>Skills, gear guides, and backwoods know-how.</p><span>START LEARNING →</span></a>
         <a className="pillar water" href="/field-intel.html#water"><GlobeIcon/><h2>WATER &<br/>ENVIRONMENT</h2><p>Water levels, quality, habitat, wildlife & ecosystem health.</p><span>EXPLORE THE DATA →</span></a>
-        <article className="pillar conservation"><HeartIcon/><h2>CONSERVATION<br/>ACTION</h2><p>Report issues directly to the appropriate state conservation agency.</p><div className="official-report-links"><a href="https://dnr.illinois.gov/lawenforcement/target-poachers.html" target="_blank" rel="noreferrer">ILLINOIS — IDNR REPORT →</a><a href="https://mdc12.mdc.mo.gov/Applications/FishKillsIntake/Intake" target="_blank" rel="noreferrer">MISSOURI — MDC REPORT →</a></div></article>
+        <article className="pillar conservation" id="official-reporting"><HeartIcon/><h2>CONSERVATION<br/>ACTION</h2><p>Report issues directly to the appropriate state conservation agency.</p><div className="official-report-links"><a href="https://dnr.illinois.gov/lawenforcement/target-poachers.html" target="_blank" rel="noreferrer">ILLINOIS — IDNR REPORT →</a><a href="https://mdc12.mdc.mo.gov/Applications/FishKillsIntake/Intake" target="_blank" rel="noreferrer">MISSOURI — MDC REPORT →</a></div></article>
       </section>
 
       <section className="lower-grid">
         <section className="learn-strip" id="learn">
-          <div className="learn-heading"><strong>▱ LEARN SOMETHING NEW</strong><a href="/field-intel.html">VIEW ALL LESSONS →</a></div>
+          <div className="learn-heading"><strong>▱ LEARN SOMETHING NEW</strong><a href="/field-intel.html#intelligence">VIEW ALL LESSONS →</a></div>
           <div className="lesson-grid">
             {lessons.map(([title,time],i)=><article key={title}>
               <img src={i===0?"/assets/app-icon-192.png":i===1?"/assets/water-pulse.png":i===2?"/assets/hero-observer.png":"/assets/habitat-restoration.png"} alt="" />
@@ -223,5 +223,13 @@ export default function ApprovedDashboard(){
       <div><strong>⌖ LOCAL FOCUSED</strong><span>{place}{region?", "+region:""} & surrounding areas.</span></div>
       <div><strong>♧ CONSERVATION DRIVEN</strong><span>Healthy waters. Stronger future.</span></div>
     </footer>
+
+    <nav className="mobile-nav" aria-label="Mobile navigation">
+      <a href="/" aria-label="Home"><span>⌂</span><b>HOME</b></a>
+      <a href="/barometer.html" aria-label="Barometer"><span>◉</span><b>BAROMETER</b></a>
+      <a href="/field-intel.html#field-check" aria-label="Add a Field Check"><span>＋</span><b>FIELD CHECK</b></a>
+      <a href="#learn" aria-label="Learn"><span>▱</span><b>LEARN</b></a>
+      <a href="#official-reporting" aria-label="Official reporting"><span>♡</span><b>PROTECT</b></a>
+    </nav>
   </div>
 }
