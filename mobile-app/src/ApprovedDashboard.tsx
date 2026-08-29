@@ -170,7 +170,7 @@ export default function ApprovedDashboard(){
         <a className="pillar fishing" href="/barometer.html"><EyeOpenIcon/><h2>FISHING<br/>INTELLIGENCE</h2><p>Live conditions, patterns, forecasts & proven tactics.</p><span>CHECK THE INTEL →</span></a>
         <a className="pillar camping" href="#learn"><div className="camp-icon">△</div><h2>CAMPING<br/>EDUCATION</h2><p>Skills, gear guides, and backwoods know-how.</p><span>START LEARNING →</span></a>
         <a className="pillar water" href="/field-intel.html#water"><GlobeIcon/><h2>WATER &<br/>ENVIRONMENT</h2><p>Water levels, quality, habitat, wildlife & ecosystem health.</p><span>EXPLORE THE DATA →</span></a>
-        <article className="pillar conservation" id="official-reporting"><HeartIcon/><h2>CONSERVATION<br/>ACTION</h2><p>Report issues directly to the appropriate state conservation agency.</p><div className="official-report-links"><a href="https://dnr.illinois.gov/lawenforcement/target-poachers.html" target="_blank" rel="noreferrer">ILLINOIS — IDNR REPORT →</a><a href="https://mdc12.mdc.mo.gov/Applications/FishKillsIntake/Intake" target="_blank" rel="noreferrer">MISSOURI — MDC REPORT →</a></div></article>
+        <article className="pillar conservation" id="official-reporting"><HeartIcon/><h2>CONSERVATION<br/>ACTION</h2><p>Report issues directly to the appropriate state conservation agency.</p><div className="official-report-links"><a href="https://dnr2.illinois.gov/OLETIPHotline/" target="_blank" rel="noreferrer">ILLINOIS — IDNR REPORT →</a><a href="https://mdc12.mdc.mo.gov/Applications/FishKillsIntake/Intake" target="_blank" rel="noreferrer">MISSOURI — MDC REPORT →</a></div></article>
       </section>
 
       <section className="lower-grid">
@@ -195,7 +195,7 @@ export default function ApprovedDashboard(){
         <article className="impact-card">
           <h3>♢ MAKE AN IMPACT</h3>
           <p>Small actions create big change. Report issues and help protect our waters.</p>
-          <div className="impact-report-links"><a href="https://dnr.illinois.gov/lawenforcement/target-poachers.html" target="_blank" rel="noreferrer">ILLINOIS — IDNR →</a><a href="https://mdc12.mdc.mo.gov/Applications/FishKillsIntake/Intake" target="_blank" rel="noreferrer">MISSOURI — MDC →</a></div>
+          <div className="impact-report-links"><a href="https://dnr2.illinois.gov/OLETIPHotline/" target="_blank" rel="noreferrer">ILLINOIS — IDNR →</a><a href="https://mdc12.mdc.mo.gov/Applications/FishKillsIntake/Intake" target="_blank" rel="noreferrer">MISSOURI — MDC →</a></div>
         </article>
       </section>
 
