@@ -83,6 +83,7 @@ const requiredFiles = [
   "dist/client/manifest.webmanifest",
   "dist/client/barometer.html",
   "dist/client/field-intel.html",
+  "dist/client/trails.html",
   "dist/client/conservation-prairie.html",
   "supabase/functions/submit-baitlogic-signal/index.ts",
   "supabase/functions/send-baitlogic-weekly/index.ts",
