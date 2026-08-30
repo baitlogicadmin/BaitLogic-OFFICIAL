@@ -2,7 +2,7 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.112.3";
 
 const CORS = {
-  "access-control-allow-headers": "authorization, x-client-info, apikey, content-type, x-baitlogic-web-bridge",
+  "access-control-allow-headers": "authorization, x-client-info, apikey, content-type",
   "access-control-allow-methods": "POST, OPTIONS",
   "access-control-allow-origin": "*",
 };
@@ -44,7 +44,7 @@ async function sha256(value: string) {
 
 async function verifyTurnstile(request: Request, token: unknown) {
   const secret = Deno.env.get("TURNSTILE_SECRET_KEY");
-  if (!secret) return true;
+  if (!secret) return false;
   if (typeof token !== "string" || token.length < 10) return false;
 
   const form = new FormData();
@@ -81,6 +81,7 @@ async function sendResendEmail(apiKey: string, payload: Record<string, unknown>)
     method: "POST",
     headers: { authorization: `Bearer ${apiKey}`, "content-type": "application/json" },
     body: JSON.stringify(payload),
+    signal: AbortSignal.timeout(12_000),
   });
   const providerText = await response.text();
   let providerId: string | null = null;
@@ -108,8 +109,7 @@ Deno.serve(async (request) => {
   if (typeof body.website === "string" && body.website.trim()) return json({ accepted: true });
 
   const requestedKind = body.kind === "weekly_signup" ? "weekly_signup" : body.kind === "field_checks" ? "field_checks" : null;
-  const trustedWebBridge = requestedKind !== null && request.headers.get("x-baitlogic-web-bridge") === "legacy-public-form";
-  if (!trustedWebBridge && !await verifyTurnstile(request, body.captcha_token)) {
+  if (!await verifyTurnstile(request, body.captcha_token)) {
     return json({ error: "captcha_required" }, 403);
   }
   const kind = requestedKind;

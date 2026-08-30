@@ -7,5 +7,11 @@ module.exports = async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store, max-age=0");
   if (req.method === "OPTIONS") return res.status(204).end();
   if (req.method !== "GET") return res.status(405).json({ error: "Method not allowed." });
-  return res.status(200).json({ ok: true, siteTitle: "BaitLogic", storage: "supabase", timestamp: new Date().toISOString() });
+  return res.status(200).json({
+    ok: true,
+    siteTitle: "BaitLogic",
+    storage: "supabase",
+    turnstileSiteKey: process.env.VITE_TURNSTILE_SITE_KEY || process.env.TURNSTILE_SITE_KEY || "",
+    timestamp: new Date().toISOString(),
+  });
 };

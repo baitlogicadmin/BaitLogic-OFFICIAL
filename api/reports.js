@@ -29,15 +29,14 @@ function validClientId(value) {
   return /^web-[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(String(value || ""));
 }
 
-async function submitFieldCheck(item) {
+async function submitFieldCheck(item, captchaToken) {
   const response = await fetch(`${SUPABASE_URL}/functions/v1/submit-baitlogic-signal`, {
     method: "POST",
     headers: {
       apikey: SUPABASE_KEY,
       "Content-Type": "application/json",
-      "x-baitlogic-web-bridge": "legacy-public-form",
     },
-    body: JSON.stringify({ kind: "field_checks", items: [item] }),
+    body: JSON.stringify({ kind: "field_checks", items: [item], captcha_token: captchaToken }),
   });
   const text = await response.text();
   let data = null;
@@ -76,9 +75,11 @@ module.exports = async function handler(req, res) {
       const report = toText(req.body?.report, 500);
       const photoData = typeof req.body?.photo_data === "string" ? req.body.photo_data : "";
       const requestedClientId = toText(req.body?.client_id, 120);
+      const captchaToken = toText(req.body?.captcha_token, 4096);
 
       if (!FIELD_CATEGORIES.has(category)) return res.status(400).json({ error: "Choose a valid Field Check category." });
       if (!water || !report) return res.status(400).json({ error: "Area and observation are required." });
+      if (!captchaToken) return res.status(403).json({ error: "Complete the security check and try again." });
       if (photoData.length > 2_050_000) return res.status(413).json({ error: "Photo is too large. Choose a smaller image and try again." });
 
       const clientId = validClientId(requestedClientId) ? requestedClientId : `web-${randomUUID()}`;
@@ -89,7 +90,7 @@ module.exports = async function handler(req, res) {
         place: water,
         display_name: name,
         photo_data: photoData || undefined,
-      });
+      }, captchaToken);
       const photoUpload = result?.photos?.find?.(item => item.client_id === clientId)?.status || "none";
 
       return res.status(202).json({

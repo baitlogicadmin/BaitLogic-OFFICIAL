@@ -110,3 +110,4 @@ button,a{touch-action:manipulation}
   .section{padding:23px 0}.section h2,.wide-card h2{font-size:28px}.section p.lead,.lead{font-size:15px}.grid.four,.grid.three,.grid.two,.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.card{padding:16px}.wide-card{padding:18px}.card h3{font-size:18px}.card p{font-size:14px}.btnrow{display:grid;grid-template-columns:1fr}.btn{width:100%;min-height:48px;font-size:14px}
   .field-check-intro{grid-template-columns:1fr}.field-check-rule{max-width:none}.category-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.privacy-grid{grid-template-columns:1fr}.location-entry{grid-template-columns:1fr}.water-row{grid-template-columns:1fr 1fr}.footer{padding-bottom:116px}
 }
+.turnstile-mount{min-height:65px;margin:12px 0;max-width:100%;overflow:hidden}

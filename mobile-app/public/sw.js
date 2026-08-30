@@ -1,12 +1,15 @@
-const CACHE = "baitlogic-field-kit-v9";
+const CACHE = "baitlogic-field-kit-v11";
 const CORE = [
   "/manifest.webmanifest",
   "/assets/baitlogic-logo.png",
   "/assets/app-icon-192.png",
   "/assets/app-icon-512.png",
-  "/assets/hero-observer.png",
-  "/assets/water-pulse.png",
-  "/assets/habitat-restoration.png",
+  "/assets/baitlogic-lockup.webp",
+  "/assets/hero-sunset.webp",
+  "/assets/pillar-fishing.webp",
+  "/assets/pillar-camping.webp",
+  "/assets/pillar-conservation.webp",
+  "/assets/baitlogic-facebook-qr.png",
   "/assets/approved-pressure.webp",
   "/assets/approved-fish-kill.webp",
   "/assets/approved-hero-sunrise.webp",

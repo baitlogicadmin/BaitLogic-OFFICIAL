@@ -1,6 +1,55 @@
 "use strict";
 
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],safe=v=>String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+const verificationTokens={report:"",signup:""},verificationWidgets={report:null,signup:null};
+
+function loadTurnstileScript(){
+  if(window.turnstile)return Promise.resolve(window.turnstile);
+  return new Promise((resolve,reject)=>{
+    const script=document.createElement("script");
+    script.src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+    script.async=true;script.defer=true;
+    script.onload=()=>window.turnstile?resolve(window.turnstile):reject(new Error("Verification did not load."));
+    script.onerror=()=>reject(new Error("Verification did not load."));
+    document.head.append(script);
+  });
+}
+
+async function initTurnstile(){
+  try{
+    const config=await api("/api/health");
+    if(!config.turnstileSiteKey)throw new Error("Verification is temporarily unavailable.");
+    const turnstile=await loadTurnstileScript();
+    for(const [kind,id] of [["report","#reportTurnstile"],["signup","#signupTurnstile"]]){
+      const mount=$(id);if(!mount)continue;
+      verificationWidgets[kind]=turnstile.render(mount,{
+        sitekey:config.turnstileSiteKey,
+        theme:"auto",
+        size:"flexible",
+        callback:token=>{verificationTokens[kind]=token},
+        "expired-callback":()=>{verificationTokens[kind]=""},
+        "error-callback":()=>{verificationTokens[kind]=""},
+      });
+    }
+  }catch(error){
+    msg("#reportMsg",String(error?.message||"Verification is temporarily unavailable."));
+    msg("#signupMsg",String(error?.message||"Verification is temporarily unavailable."));
+  }
+}
+
+function resetVerification(kind){
+  verificationTokens[kind]="";
+  const widget=verificationWidgets[kind];
+  if(widget!==null&&window.turnstile)window.turnstile.reset(widget);
+}
+
+function savePrivateDraft(key,value){
+  try{localStorage.setItem(key,JSON.stringify(value));return true}catch{return false}
+}
+
+function readPrivateDraft(key){
+  try{return JSON.parse(localStorage.getItem(key)||"null")}catch{return null}
+}
 
 async function api(url,opts={}){
   const r=await fetch(url,{headers:{"Content-Type":"application/json",...(opts.headers||{})},...opts});
@@ -158,6 +207,19 @@ function reportForm(){
   const submit=f.querySelector("button[type='submit']");
   let retryClientId="";
 
+  const savedDraft=readPrivateDraft("baitlogic-field-check-draft-v1");
+  if(savedDraft){
+    const category=[...f.querySelectorAll('input[name="category"]')].find(input=>input.value===String(savedDraft.category||""));
+    const privacy=[...f.querySelectorAll('input[name="privacy"]')].find(input=>input.value===String(savedDraft.privacy||"local_picture"));
+    if(category)category.checked=true;
+    if(privacy)privacy.checked=true;
+    if(f.elements.water)f.elements.water.value=String(savedDraft.water||"");
+    if(f.elements.report)f.elements.report.value=String(savedDraft.report||"");
+    if(f.elements.name)f.elements.name.value=String(savedDraft.name||"");
+    applyPrivacy();
+    msg("#reportMsg","Restored your private draft. Reconnect, reselect any photo, and complete verification to submit.",true);
+  }
+
   f.addEventListener("submit",async e=>{
     e.preventDefault();
     if(photo.isBusy())return msg("#reportMsg","Your photo is still being prepared. Give it a moment, then submit.");
@@ -179,14 +241,23 @@ function reportForm(){
     if(!payload.water)return msg("#reportMsg","Add the town, park, lake, trail or general area where you noticed it.");
     if(!payload.report)return msg("#reportMsg","Tell us what caught your attention.");
 
-    msg("#reportMsg",navigator.onLine?(retryClientId?"Retrying your photo…":"Submitting your Field Check…"):"Saving your Field Check offline…");
+    if(!navigator.onLine){
+      const saved=savePrivateDraft("baitlogic-field-check-draft-v1",{
+        category:payload.category,water:payload.water,report:payload.report,
+        privacy,name:privacy==="public"?payload.name:"",
+      });
+      return msg("#reportMsg",saved
+        ? "Saved as a private text draft on this device. Reconnect, reselect any photo, and complete verification to submit it."
+        : "This device could not save the draft. Copy your observation before leaving this page.",saved);
+    }
+    if(!verificationTokens.report)return msg("#reportMsg","Complete the security check and try again.");
+    payload.captcha_token=verificationTokens.report;
+
+    msg("#reportMsg",retryClientId?"Retrying your photo…":"Submitting your Field Check…");
     if(submit)submit.disabled=true;
     try{
       const d=await api("/api/reports",{method:"POST",body:JSON.stringify(payload)});
-      if(d.queued||d._offline==="queued"){
-        retryClientId="";f.reset();photo.clear();applyPrivacy();if(submit)submit.textContent="Add My Field Check";
-        msg("#reportMsg","Saved on this device — including your attached photo. It will be submitted for review automatically when connection returns.",true);
-      }else if(d.photo_upload==="failed"){
+      if(d.photo_upload==="failed"){
         retryClientId=d.report?.id||payload.client_id;
         if(submit)submit.textContent="Retry Photo";
         track("field_check_saved_photo_failed");
@@ -195,14 +266,16 @@ function reportForm(){
         retryClientId="";f.reset();photo.clear();applyPrivacy();if(submit)submit.textContent="Add My Field Check";
         track("field_check_submitted");
         msg("#reportMsg",d.photo_upload==="uploaded"?"Submitted with your photo for review. It will appear in the local picture after approval.":"Submitted for review. It will appear in the local picture after approval.",true);
+        localStorage.removeItem("baitlogic-field-check-draft-v1");
       }else{
         retryClientId="";f.reset();photo.clear();applyPrivacy();if(submit)submit.textContent="Add My Field Check";
         track("field_check_success");
         msg("#reportMsg",d.message||"Field Check received.",true);
+        localStorage.removeItem("baitlogic-field-check-draft-v1");
         loadReports();
       }
     }catch(err){msg("#reportMsg",err.message)}
-    finally{if(submit)submit.disabled=false}
+    finally{if(submit)submit.disabled=false;resetVerification("report")}
   });
 
   $("#reportGps")?.addEventListener("click",()=>{
@@ -224,17 +297,31 @@ function reportForm(){
 
 function signup(){
   const f=$("#signupForm");
+  const savedDraft=readPrivateDraft("baitlogic-signup-draft-v1");
+  if(f&&savedDraft){
+    if(f.elements.name)f.elements.name.value=String(savedDraft.name||"");
+    if(f.elements.email)f.elements.email.value=String(savedDraft.email||"");
+    msg("#signupMsg","Restored your private draft. Reconnect and complete verification to join.",true);
+  }
   f?.addEventListener("submit",async e=>{
-    e.preventDefault();msg("#signupMsg",navigator.onLine?"Joining…":"Saving signup offline…");
+    e.preventDefault();
+    const payload=Object.fromEntries(new FormData(f).entries());
+    if(!navigator.onLine){
+      const saved=savePrivateDraft("baitlogic-signup-draft-v1",payload);
+      return msg("#signupMsg",saved
+        ? "Saved as a private draft on this device. Reconnect and complete verification to join."
+        : "This device could not save the draft. Copy your email before leaving this page.",saved);
+    }
+    if(!verificationTokens.signup)return msg("#signupMsg","Complete the security check and try again.");
+    payload.captcha_token=verificationTokens.signup;
+    msg("#signupMsg","Joining…");
     try{
-      const d=await api("/api/signups",{method:"POST",body:JSON.stringify(Object.fromEntries(new FormData(f).entries()))});
+      const d=await api("/api/signups",{method:"POST",body:JSON.stringify(payload)});
       f.reset();
-      if(d.queued||d._offline==="queued")msg("#signupMsg","Saved on this device. Your signup will sync automatically when connection returns.",true);
-      else{
-        track("signup_success");
-        msg("#signupMsg",d.welcome==="sent"?"You’re in. Confirmation email sent — check your inbox or spam folder.":"You’re subscribed. The confirmation email is delayed, but your signup is safely recorded.",true);
-      }
-    }catch(err){msg("#signupMsg",err.message)}
+      track("signup_success");
+      msg("#signupMsg",d.welcome==="sent"?"You’re in. Confirmation email sent — check your inbox or spam folder.":"You’re subscribed. The confirmation email is delayed, but your signup is safely recorded.",true);
+      localStorage.removeItem("baitlogic-signup-draft-v1");resetVerification("signup");
+    }catch(err){msg("#signupMsg",err.message);resetVerification("signup")}
   });
 }
 
@@ -272,6 +359,6 @@ function registerPwa(){
   if("serviceWorker" in navigator){navigator.serviceWorker.register("/sw.js").then(()=>{window.addEventListener("online",()=>navigator.serviceWorker.controller?.postMessage({type:"BAITLOGIC_FLUSH_QUEUE"}))}).catch(()=>{})}
 }
 
-document.addEventListener("DOMContentLoaded",()=>{track("page_view");menu();liveEntry();health();loadReports();reportForm();signup();water();nav();registerPwa()});
+document.addEventListener("DOMContentLoaded",()=>{track("page_view");menu();liveEntry();health();loadReports();reportForm();signup();water();nav();registerPwa();initTurnstile()});
 window.addEventListener("online",()=>{health();loadReports()});
 window.addEventListener("offline",health);

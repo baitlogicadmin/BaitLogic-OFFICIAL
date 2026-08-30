@@ -136,6 +136,7 @@
             <input id="name" name="name" maxlength="60" autocomplete="nickname" placeholder="How should the community know you?">
           </div>
 
+          <div id="reportTurnstile" class="turnstile-mount" aria-label="Field Check verification"></div>
           <button class="btn primary field-check-submit" type="submit">Add My Field Check</button>
           <div class="message field-check-message" id="reportMsg" aria-live="polite"></div>
           <p class="field-check-disclaimer">Field Checks are community observations, not verified agency or scientific records. If you see pollution, injured wildlife, a fish kill or an urgent hazard, <a href="#conservation">use the official reporting path too.</a></p>
@@ -155,8 +156,8 @@
     <div class="section-head"><div><div class="eyebrow">Conservation Action Center</div><h2>See something. Document it. Send it to the right place.</h2><p class="lead">A BaitLogic Field Check does not replace an official agency report. For urgent environmental or wildlife problems, use the appropriate authority.</p></div></div>
     <div class="grid four">
       <a class="card feature-link community-action-card" href="/conservation-prairie.html"><div class="kicker">Community Action #001</div><h3>Less Than 1% Remains</h3><p>See why Illinois prairie loss matters and go directly to people restoring what remains.</p></a>
-      <a class="card feature-link" href="https://dnr.illinois.gov/" target="_blank" rel="noopener"><div class="kicker">Illinois</div><h3>Illinois DNR</h3><p>Official state resource for wildlife, habitat, water, public lands and conservation information.</p></a>
-      <a class="card feature-link" href="https://mdc.mo.gov/" target="_blank" rel="noopener"><div class="kicker">Missouri</div><h3>Missouri Department of Conservation</h3><p>Official Missouri wildlife, habitat, outdoor and conservation resource.</p></a>
+      <a class="card feature-link" href="https://dnr2.illinois.gov/OLETIPHotline/" target="_blank" rel="noopener"><div class="kicker">Illinois</div><h3>Target Illinois Poachers Report</h3><p>Open the official IDNR incident reporting form directly.</p></a>
+      <a class="card feature-link" href="https://mdc12.mdc.mo.gov/Applications/FishKillsIntake/Intake" target="_blank" rel="noopener"><div class="kicker">Missouri</div><h3>Fish Kill / Water Quality Report</h3><p>Open the official MDC water-quality event form directly.</p></a>
       <a class="card feature-link" href="https://epa.illinois.gov/pollution-complaint/submit-a-complaint.html" target="_blank" rel="noopener"><div class="kicker">Pollution</div><h3>Illinois Pollution Complaint</h3><p>Official Illinois route for environmental pollution complaints and concerns.</p></a>
     </div>
     <div class="grid four" style="margin-top:14px">
@@ -170,7 +171,7 @@
   <section class="shell section">
     <div class="wide-card action-strip">
       <div><div class="eyebrow">Stay Connected</div><h2>Get the changes that matter outdoors.</h2><p class="lead">Useful local field, water, wildlife, conservation and community updates when there is something worth knowing. No paywall. No filler.</p></div>
-      <form id="signupForm"><div class="form-grid"><div class="field"><label for="signupName">Name</label><input id="signupName" name="name" required maxlength="80"></div><div class="field"><label for="signupEmail">Email</label><input id="signupEmail" name="email" type="email" required maxlength="120"></div></div><button class="btn coral" type="submit">Keep Me Informed</button><div class="message" id="signupMsg" aria-live="polite"></div></form>
+      <form id="signupForm"><div class="form-grid"><div class="field"><label for="signupName">Name</label><input id="signupName" name="name" required maxlength="80"></div><div class="field"><label for="signupEmail">Email</label><input id="signupEmail" name="email" type="email" required maxlength="120"></div></div><div id="signupTurnstile" class="turnstile-mount" aria-label="Signup verification"></div><button class="btn coral" type="submit">Keep Me Informed</button><div class="message" id="signupMsg" aria-live="polite"></div></form>
     </div>
   </section>
 </main>
