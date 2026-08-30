@@ -14,7 +14,7 @@ test("ships an installable BaitLogic web app manifest", async () => {
 test("ships the versioned app-shell service worker", async () => {
   const worker = await readFile(new URL("../dist/client/sw.js", import.meta.url), "utf8");
 
-  assert.match(worker, /baitlogic-field-kit-v13/);
+  assert.match(worker, /baitlogic-field-kit-v14/);
   assert.match(worker, /baitlogic-facebook-qr\.png/);
   assert.match(worker, /hero-sunset\.webp/);
   assert.match(worker, /pillar-fishing\.webp/);
@@ -23,6 +23,7 @@ test("ships the versioned app-shell service worker", async () => {
   assert.match(worker, /cache\.match\("\/"\)/);
   assert.match(worker, /\/api\/barometer-snapshot/);
   assert.match(worker, /\/api\/water-snapshot/);
+  assert.match(worker, /\/trails\.html/);
   assert.match(worker, /X-BaitLogic-Source/);
   assert.match(worker, /offline-cache/);
 });
