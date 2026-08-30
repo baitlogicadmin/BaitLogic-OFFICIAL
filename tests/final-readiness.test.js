@@ -14,6 +14,7 @@ const edgeFunction = readFileSync(join(root, "mobile-app/supabase/functions/subm
 const fieldIntel = readFileSync(join(root, "public/index.html"), "utf8");
 const fieldIntelJs = readFileSync(join(root, "public/site.js"), "utf8");
 const serviceWorker = readFileSync(join(root, "mobile-app/public/sw.js"), "utf8");
+const barometerPage = readFileSync(join(root, "public/barometer.html"), "utf8");
 
 test("approved dashboard signup is wired to the live signup endpoint", () => {
   assert.match(dashboard, /fetch\("\/api\/signups"/);
@@ -48,4 +49,17 @@ test("approved conservation, education, QR, and data-truth contracts are present
   assert.match(dashboardCss, /grid-template-columns:minmax\(0,1fr\)/);
   assert.match(fieldIntelJs, /Restored your private draft/);
   assert.doesNotMatch(fieldIntelJs, /sync automatically when connection returns/);
+});
+
+test("dashboard destinations and mobile recovery actions are real", () => {
+  for (const anchor of ["water", "field-check", "conservation"]) {
+    assert.match(fieldIntel, new RegExp(`id=["']${anchor}["']`));
+    assert.match(dashboard, new RegExp(`/field-intel\\.html#${anchor}`));
+  }
+  for (const anchor of ["learn", "field-checks", "more"]) {
+    assert.match(dashboard, new RegExp(`id=["']${anchor}["']`));
+  }
+  assert.match(barometerPage, /id="beginLocation"/);
+  assert.match(barometerPage, /id="useHighland"/);
+  assert.match(dashboardCss, /font-size:clamp\(25px,7\.2vw,28px\)/);
 });

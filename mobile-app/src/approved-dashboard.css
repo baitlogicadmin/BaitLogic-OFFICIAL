@@ -502,15 +502,19 @@ main{
     position:relative;
     grid-template-columns:auto 1fr;
     min-height:auto;
-    padding:10px 14px 8px;
+    padding:6px 12px 7px;
+    gap:5px;
   }
-  .bl-brand img{width:220px;height:70px}
-  .location-chip{grid-column:1/-1;justify-self:stretch;justify-content:center;min-height:40px}
+  .bl-brand img{width:184px;height:55px}
+  .brand-subline{margin-top:0;font-size:8px}
+  .location-chip{grid-column:1/-1;justify-self:stretch;justify-content:center;min-height:38px;padding:5px 10px}
+  .location-chip>svg:first-child{width:19px;height:19px}
+  .location-chip strong{font-size:13px}
   .bl-header nav{display:none}
-  .approved-dashboard main{width:calc(100% - 18px);max-width:calc(100% - 18px);min-width:0}
+  .approved-dashboard main{width:calc(100% - 12px);max-width:calc(100% - 12px);min-width:0}
   .hero-zone{
     min-height:auto;
-    padding:10px 0 0;
+    padding:6px 0 0;
     grid-template-columns:minmax(0,1fr);
     gap:10px;
     width:100%;
@@ -522,22 +526,26 @@ main{
       url("/assets/hero-sunset.webp") center/cover no-repeat;
   }
   .hero-copy-panel,.conditions-card{width:100%;max-width:100%;min-width:0}
-  .hero-copy-panel{padding:10px 10px 8px;overflow:hidden}
-  .hero-copy-panel h1{max-width:100%;font-size:clamp(28px,8.5vw,34px);letter-spacing:-.035em;overflow-wrap:anywhere}
-  .hero-copy-panel h1 em{display:block;max-width:100%;white-space:normal}
-  .hero-copy-panel p{max-width:100%;font-size:13px;overflow-wrap:anywhere}
-  .hero-actions{display:grid;grid-template-columns:minmax(0,1fr);max-width:100%}
-  .action{width:100%;min-width:0;min-height:54px}
+  .hero-copy-panel{padding:8px 9px 6px;overflow:hidden}
+  .hero-copy-panel h1{max-width:100%;font-size:clamp(25px,7.2vw,28px);line-height:1.02;letter-spacing:-.04em;overflow-wrap:normal}
+  .hero-copy-panel h1 em{display:block;max-width:100%;white-space:nowrap}
+  .hero-copy-panel p{max-width:100%;margin:10px 0;font-size:12px;line-height:1.35;overflow-wrap:anywhere}
+  .hero-actions{display:grid;grid-template-columns:minmax(0,1fr);max-width:100%;gap:8px}
+  .action{width:100%;min-width:0;min-height:48px;padding:6px 12px;gap:10px}
+  .action>svg{width:28px;height:28px}
+  .action strong{font-size:13px}
+  .action small{font-size:9px}
   .action span:last-child,.action strong,.action small{min-width:0;max-width:100%;overflow-wrap:anywhere}
   .approved-dashboard .trust-row{display:none}
-  .conditions-card{margin:0 0 4px;padding:11px 12px}
-  .conditions-title strong{font-size:17px}
+  .conditions-card{margin:0 0 4px;padding:9px 10px}
+  .conditions-title{padding-bottom:7px}
+  .conditions-title strong{font-size:16px}
   .conditions-card{min-height:0}
-  .conditions-metrics{min-height:210px;grid-template-columns:repeat(2,minmax(0,1fr));padding:10px 0}
-  .conditions-metrics>div{grid-template-columns:28px minmax(0,1fr);padding:8px 6px;overflow:hidden}
-  .conditions-metrics>div>svg{width:25px;height:25px}
+  .conditions-metrics{min-height:168px;grid-template-columns:repeat(2,minmax(0,1fr));padding:7px 0}
+  .conditions-metrics>div{grid-template-columns:25px minmax(0,1fr);padding:6px 5px;overflow:hidden}
+  .conditions-metrics>div>svg{width:22px;height:22px}
   .conditions-metrics span{font-size:8px}
-  .conditions-metrics strong{max-width:100%;font-size:25px;white-space:nowrap}
+  .conditions-metrics strong{max-width:100%;font-size:22px;white-space:nowrap}
   .conditions-metrics .pressure b{font-size:9px}
   .full-barometer{min-height:34px;font-size:11px}
   .pillar-grid{grid-template-columns:repeat(2,1fr);gap:8px}

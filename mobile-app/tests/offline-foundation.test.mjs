@@ -14,7 +14,7 @@ test("ships an installable BaitLogic web app manifest", async () => {
 test("ships the versioned app-shell service worker", async () => {
   const worker = await readFile(new URL("../dist/client/sw.js", import.meta.url), "utf8");
 
-  assert.match(worker, /baitlogic-field-kit-v12/);
+  assert.match(worker, /baitlogic-field-kit-v13/);
   assert.match(worker, /baitlogic-facebook-qr\.png/);
   assert.match(worker, /hero-sunset\.webp/);
   assert.match(worker, /pillar-fishing\.webp/);
@@ -38,7 +38,7 @@ test("barometer location loading has a bounded Android-friendly fallback", async
   assert.match(app, /Location permission is blocked/);
   assert.match(app, /baitlogic-barometer-last-v1/);
   assert.match(app, /Saved verified conditions are shown/);
-  assert.match(page, /barometer\/app\.js\?v=11/);
+  assert.match(page, /barometer\/app\.js\?v=12/);
   assert.match(page, /barometer\/connection-ui\.js\?v=3/);
 });
 

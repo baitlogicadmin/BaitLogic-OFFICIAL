@@ -1,4 +1,4 @@
-const CACHE = "baitlogic-field-kit-v12";
+const CACHE = "baitlogic-field-kit-v13";
 const CORE = [
   "/manifest.webmanifest",
   "/assets/baitlogic-logo.png",
@@ -29,7 +29,7 @@ const CORE = [
   "/barometer/mobile-v2.css?v=1",
   "/barometer/mobile-details-v2.css?v=1",
   "/barometer/loading-v1.css",
-  "/barometer/app.js?v=11",
+  "/barometer/app.js?v=12",
   "/barometer/water-evidence.js?v=1",
   "/barometer/trend-ui.js?v=1",
   "/barometer/connection-ui.js?v=3",

@@ -33,6 +33,7 @@ type Snapshot = {
 };
 
 const CACHE_KEY = "baitlogic-approved-dashboard-conditions-v1";
+const LAST_LOCATION_KEY = "baitlogic-last-location-v1";
 const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY?.trim() || "";
 const FACEBOOK_URL = "https://www.facebook.com/share/1C3i4dL3vk/";
 const IDNR_REPORT_URL = "https://dnr2.illinois.gov/OLETIPHotline/";
@@ -116,6 +117,12 @@ export default function ApprovedDashboard(){
           if(!r.ok || !d?.weather)throw new Error();
           if(!active)return;
           localStorage.setItem(CACHE_KEY,JSON.stringify(d));
+          localStorage.setItem(LAST_LOCATION_KEY,JSON.stringify({
+            savedAt:Date.now(),
+            lat:pos.coords.latitude,
+            lon:pos.coords.longitude,
+            accuracy:pos.coords.accuracy,
+          }));
           setSnapshot(d);setStatus("live");
         }catch{useFallback("error")}
       },()=>useFallback("error"),{enableHighAccuracy:false,timeout:12000,maximumAge:300000});

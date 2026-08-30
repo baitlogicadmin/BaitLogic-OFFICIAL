@@ -90,11 +90,36 @@ test("barometer uses a fast location fix and renders live Highland data", async 
   await new Promise((resolve) => setTimeout(resolve, 20));
 
   assert.equal(options.enableHighAccuracy, false);
-  assert.equal(options.timeout, 9000);
+  assert.equal(options.timeout, 5000);
   assert.equal(options.maximumAge, 300000);
   assert.equal(elements.get("#locationName").textContent, "Highland, Illinois");
   assert.equal(elements.get("#pressureValue").textContent, "30.05");
   assert.equal(elements.get("#connectionStatus").textContent, "Live");
+});
+
+test("barometer reuses the location already approved on the dashboard", async () => {
+  let geolocationCalls = 0;
+  const { elements } = harness(() => { geolocationCalls += 1; }, {
+    "baitlogic-last-location-v1": JSON.stringify({
+      savedAt: Date.now(), lat: 38.7395, lon: -89.6712, accuracy: 24,
+    }),
+  });
+
+  await new Promise((resolve) => setTimeout(resolve, 20));
+
+  assert.equal(geolocationCalls, 0);
+  assert.equal(elements.get("#locationName").textContent, "Highland, Illinois");
+  assert.equal(elements.get("#pressureValue").textContent, "30.05");
+});
+
+test("barometer provides an immediate manual Highland fallback", async () => {
+  const { elements } = harness(() => {});
+  elements.get("#useHighland").listeners.click();
+
+  await new Promise((resolve) => setTimeout(resolve, 20));
+
+  assert.equal(elements.get("#locationName").textContent, "Highland, Illinois");
+  assert.equal(elements.get("#pressureValue").textContent, "30.05");
 });
 
 test("barometer replaces the endless locator with an actionable permission error", () => {
