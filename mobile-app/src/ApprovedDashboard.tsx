@@ -196,7 +196,7 @@ export default function ApprovedDashboard(){
         <a href="#field-checks">CATCHES</a>
         <a href="#field-checks">FIELD CHECKS</a>
         <a href="#learn">LEARN</a>
-        <a href="#more">MORE</a>
+        <a href="/trails.html">TRAILS</a>
       </nav>
       <button className="location-chip" type="button" onClick={()=>location.reload()}>
         <Crosshair2Icon/><span><strong>{place}{region?", "+region:""}</strong><small>Change Location</small></span><ChevronDownIcon/>
