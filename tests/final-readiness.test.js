@@ -44,6 +44,8 @@ test("approved conservation, education, QR, and data-truth contracts are present
   assert.doesNotMatch(dashboardCss, /lesson-grid article:not\(:first-child\)\{display:none\}/);
   assert.doesNotMatch(dashboardCss, /community-panel,.impact-card\{display:none\}/);
   assert.match(dashboardCss, /\.connect-row\{display:grid;grid-template-columns:1fr\}/);
+  assert.match(dashboardCss, /\.approved-dashboard \.trust-row\{display:none\}/);
+  assert.match(dashboardCss, /grid-template-columns:minmax\(0,1fr\)/);
   assert.match(fieldIntelJs, /Restored your private draft/);
   assert.doesNotMatch(fieldIntelJs, /sync automatically when connection returns/);
 });
