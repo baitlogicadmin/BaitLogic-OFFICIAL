@@ -1,4 +1,4 @@
-const CACHE = "baitlogic-field-kit-v13";
+const CACHE = "baitlogic-field-kit-v14";
 const CORE = [
   "/manifest.webmanifest",
   "/assets/baitlogic-logo.png",
@@ -18,6 +18,7 @@ const CORE = [
   "/conservation-prairie.html",
   "/nature-check.html",
   "/outdoor.html",
+  "/trails.html",
   "/site.css?v=3",
   "/site.js?v=3",
   "/premium.css",
