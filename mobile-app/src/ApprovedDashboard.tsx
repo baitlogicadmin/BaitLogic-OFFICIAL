@@ -17,7 +17,8 @@ type Snapshot = {
   };
 };
 
-const CACHE_KEY="baitlogic-approved-dashboard-conditions-v1";\n// Readiness contract marker: OFFLINE / CACHED
+const CACHE_KEY="baitlogic-approved-dashboard-conditions-v1";
+// Readiness contract marker: OFFLINE / CACHED
 
 function readCache():Snapshot|undefined{
   try{
