@@ -91,14 +91,14 @@ test("ships the weekly email sender with one-click unsubscribe", async () => {
 
 
 test("renders mobile and desktop as separate implementations and ships Community Catches", async () => {
-  const app = await readFile(new URL("../src/App.tsx", import.meta.url), "utf8");
+  const prototype = await readFile(new URL("../src/Prototype.tsx", import.meta.url), "utf8");
   const mobile = await readFile(new URL("../src/MobileDashboard.tsx", import.meta.url), "utf8");
   const desktop = await readFile(new URL("../src/DesktopDashboard.tsx", import.meta.url), "utf8");
   const catches = await readFile(new URL("../public/catches.html", import.meta.url), "utf8");
 
-  assert.match(app, /MobileDashboard/);
-  assert.match(app, /DesktopDashboard/);
-  assert.match(app, /matchMedia/);
+  assert.match(prototype, /MobileDashboard/);
+  assert.match(prototype, /DesktopDashboard/);
+  assert.match(prototype, /matchMedia/);
   assert.match(mobile, /CONSERVATION REPORTING · LOCAL/);
   assert.match(mobile, /href:"\/catches\.html"/);
   assert.doesNotMatch(mobile, />68°F</);
