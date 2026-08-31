@@ -68,6 +68,16 @@ export function pressureTrend(delta?: number) {
 
 export function formatClock(value?: string | null) {
   if (!value) return "—";
+  const localClock = value.match(/T(\d{2}):(\d{2})/);
+  if (localClock) {
+    const hour24 = Number(localClock[1]);
+    const minute = localClock[2];
+    if (Number.isFinite(hour24)) {
+      const suffix = hour24 >= 12 ? "PM" : "AM";
+      const hour12 = hour24 % 12 || 12;
+      return `${hour12}:${minute} ${suffix}`;
+    }
+  }
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "—";
   return new Intl.DateTimeFormat("en-US",{hour:"numeric",minute:"2-digit"}).format(date);
