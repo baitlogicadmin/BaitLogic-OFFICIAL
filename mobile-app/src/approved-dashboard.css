@@ -40,15 +40,35 @@ button{font:inherit}
   align-items:center;
   gap:20px;
 }
-.brand-lockup{min-width:0}
-.brand-lockup img{
-  display:block;
-  width:min(500px,100%);
-  max-height:116px;
-  object-fit:cover;
-  object-position:center;
-  filter:saturate(1.08) contrast(1.04);
+.brand-lockup{
+  min-width:0;
+  display:flex;
+  align-items:center;
+  gap:14px;
 }
+.compass-mark{width:92px;height:92px;flex:0 0 auto;filter:drop-shadow(0 4px 8px rgba(0,0,0,.55))}
+.wordmark{min-width:0;display:flex;flex-direction:column;line-height:1}
+.wordmark>strong{
+  color:#e8b35c;
+  font-family:Georgia,serif;
+  font-size:42px;
+  letter-spacing:.035em;
+  text-shadow:0 2px 0 #5f3213,0 3px 8px rgba(0,0,0,.55);
+}
+.wordmark>b{
+  margin-top:4px;
+  color:#12c1d2;
+  font-size:17px;
+  letter-spacing:.38em;
+  font-weight:700;
+}
+.wordmark>small{
+  margin-top:7px;
+  color:#eee7df;
+  font-size:10px;
+  white-space:nowrap;
+}
+.wordmark>small em{color:var(--orange);font-style:normal}
 .mobile-location{
   justify-self:end;
   min-width:185px;
@@ -156,7 +176,31 @@ button{font:inherit}
     linear-gradient(100deg,rgba(82,26,57,.7),rgba(30,17,31,.82) 55%,rgba(2,15,18,.94));
 }
 .say-copy{display:flex;align-items:center;gap:18px}
-.megaphone{font-size:56px;filter:saturate(.85)}
+.megaphone{
+  position:relative;
+  width:78px;height:66px;
+  flex:0 0 78px;
+  display:block;
+}
+.megaphone .horn{
+  position:absolute;left:8px;top:16px;width:50px;height:34px;
+  border-radius:6px 22px 22px 6px;
+  background:linear-gradient(135deg,#fff0f5 0 42%,#e2608c 43% 66%,#8d274d 67%);
+  border:2px solid #f0c0cf;
+  transform:rotate(-10deg);
+  box-shadow:0 4px 10px rgba(0,0,0,.35);
+}
+.megaphone .horn:after{
+  content:"";position:absolute;right:-8px;top:6px;width:12px;height:22px;border-radius:50%;
+  border:3px solid #f2c7d3;background:#24252a;
+}
+.megaphone .handle{
+  position:absolute;left:26px;top:43px;width:14px;height:22px;border-radius:3px;
+  background:linear-gradient(#f5d5df,#cf5a82);transform:rotate(17deg);
+}
+.megaphone .sound{position:absolute;right:1px;width:18px;height:2px;background:#f5f1ed;transform-origin:left}
+.megaphone .s1{top:15px;transform:rotate(-28deg)}
+.megaphone .s2{top:50px;transform:rotate(28deg)}
 .say-copy h2{margin:0;font-size:25px;line-height:1.08;letter-spacing:.02em}
 .say-copy p{margin:8px 0 0;font-size:14px;line-height:1.35;color:#f4f2ef}
 .say-actions{display:grid;gap:10px}
@@ -225,30 +269,35 @@ button{font:inherit}
 .feature-card b{position:relative;z-index:2;margin-top:auto;padding-top:14px;font-size:15px;letter-spacing:.02em}
 
 .barometer-card{
-  color:#db86c4;
-  border-color:#7c4a75;
-  background:linear-gradient(180deg,#0a1018,#211324 70%,#140f18);
+  color:#d789c3;
+  border-color:#734c70;
+  background:linear-gradient(180deg,#0a1018,#1a111d 72%,#120e14);
 }
-.barometer-card .feature-image{
-  filter:saturate(.82) brightness(.79) hue-rotate(250deg);
-}
-.nature-card{color:var(--lime)}
-.trails-card{color:var(--magenta)}
-.knowledge-card{color:#ffd83f}
+.barometer-card .feature-image{filter:saturate(.72) brightness(.63) hue-rotate(245deg)}
+.nature-card{color:var(--lime);border-color:rgba(181,242,10,.52)}
+.trails-card{color:var(--magenta);border-color:rgba(221,60,136,.55)}
+.knowledge-card{color:#ffd83f;border-color:rgba(244,176,31,.65)}
 .field-card{
   color:var(--magenta);
-  background:linear-gradient(180deg,#211128,#17111b);
+  border-color:rgba(221,60,136,.44);
+  background:linear-gradient(180deg,#1d1221,#130f17);
 }
-.field-card .feature-image{filter:saturate(.72) brightness(.78) hue-rotate(275deg)}
-.catches-card{
-  color:var(--blue);
-  border-color:rgba(36,157,255,.72);
+.field-card .feature-image{
+  background-image:
+    linear-gradient(180deg,rgba(25,8,24,.15),rgba(12,8,12,.92)),
+    radial-gradient(circle at 32% 40%,#6b3d21 0 20%,#2a1810 22% 45%,#111 72%) !important;
 }
-.trails-card .feature-image{filter:brightness(.64) saturate(.85) hue-rotate(300deg)}
-.knowledge-card{border-color:rgba(244,176,31,.72)}
-.knowledge-card .feature-image{filter:brightness(.72) saturate(.95)}
-.nature-card .feature-image{filter:brightness(.7) saturate(.95)}
-.catches-card .feature-image{filter:brightness(.76) saturate(.9)}
+.catches-card{color:var(--blue);border-color:rgba(36,157,255,.62)}
+.trails-card .feature-image{
+  background-image:
+    radial-gradient(circle at 70% 52%,rgba(239,104,165,.16),transparent 14%),
+    repeating-radial-gradient(ellipse at 55% 55%,transparent 0 9px,rgba(201,139,70,.12) 10px 11px,transparent 12px 18px),
+    linear-gradient(180deg,#15120d,#070b0f 75%) !important;
+  filter:none;
+}
+.knowledge-card .feature-image{filter:brightness(.65) saturate(.9)}
+.nature-card .feature-image{filter:brightness(.62) saturate(.88)}
+.catches-card .feature-image{filter:brightness(.72) saturate(.9)}
 
 .trusted{
   margin-top:14px;
@@ -307,39 +356,58 @@ button{font:inherit}
 .app-bottom-nav svg{width:28px;height:28px}
 .app-bottom-nav .active{color:var(--cyan)}
 .app-bottom-nav .maps{color:var(--lime)}
-.center-brand img{
-  width:76px;height:76px;
-  object-fit:cover;
-  border-radius:50%;
-  transform:translateY(-7px);
-  filter:saturate(1.1) contrast(1.04);
-}
 .center-brand{height:56px;overflow:visible}
+.center-brand .compass-mark.small{
+  width:82px;height:82px;
+  transform:translateY(-10px);
+  filter:drop-shadow(0 4px 7px rgba(0,0,0,.55));
+}
 
 @media(max-width:760px){
   .approved-dashboard{padding-bottom:82px}
-  .mobile-header{padding:8px 18px 5px;grid-template-columns:minmax(0,1fr) 165px;gap:10px}
-  .brand-lockup img{width:100%;height:92px;object-fit:cover}
-  .mobile-location{min-width:0;padding:9px 10px}
-  .mobile-location strong{font-size:13px}
-  .mobile-location small{font-size:10px}
-  .top-tabs{padding:0 18px;gap:28px;min-height:48px}
+  .mobile-header{
+    padding:9px 14px 7px;
+    grid-template-columns:minmax(0,1fr) 152px;
+    gap:10px;
+  }
+  .brand-lockup{gap:8px}
+  .compass-mark{width:72px;height:72px}
+  .wordmark>strong{font-size:31px}
+  .wordmark>b{font-size:12px;letter-spacing:.34em}
+  .wordmark>small{font-size:8px;margin-top:5px}
+  .mobile-location{min-width:0;padding:8px 9px}
+  .mobile-location strong{font-size:12px}
+  .mobile-location small{font-size:9px}
+  .top-tabs{padding:0 16px;gap:27px;min-height:48px}
   .top-tabs a{padding:14px 0 10px;font-size:11px}
-  .mobile-shell{width:calc(100% - 16px);padding-top:8px}
+  .mobile-shell{width:calc(100% - 18px);padding-top:8px}
   .conditions-panel h2{padding:8px 12px;font-size:14px}
-  .metric-row{min-height:100px}
-  .metric-row>div{padding:10px 7px;grid-template-columns:24px minmax(0,1fr);gap:5px}
-  .metric-row svg{width:22px;height:22px}
+  .metric-row{min-height:102px}
+  .metric-row>div{
+    padding:10px 6px;
+    grid-template-columns:1fr;
+    gap:4px;
+    justify-items:center;
+    text-align:center;
+  }
+  .metric-row>div>span{align-items:center}
+  .metric-row svg{width:24px;height:24px}
   .weather-glyph,.water-glyph{font-size:24px}
   .metric-row b{font-size:7px}
   .metric-row strong{font-size:16px}
   .metric-row small{font-size:9px}
-  .say-panel{padding:12px 14px;gap:10px}
-  .megaphone{font-size:42px}
+  .say-panel{
+    padding:13px 14px;
+    gap:12px;
+    grid-template-columns:1.1fr .9fr;
+    align-items:center;
+  }
+  .say-copy{gap:10px}
+  .megaphone{width:62px;height:56px;flex-basis:62px;transform:scale(.82)}
   .say-copy h2{font-size:20px}
   .say-copy p{font-size:11px}
-  .say-actions a{min-height:48px;padding:0 12px}
-  .say-actions a span{font-size:13px}
+  .say-actions a{min-height:50px;padding:0 10px}
+  .say-actions a span{font-size:12px}
   .feature-grid{gap:10px}
   .feature-card{min-height:286px;padding:138px 10px 12px}
   .feature-image{height:160px}
@@ -352,8 +420,12 @@ button{font:inherit}
 }
 
 @media(max-width:560px){
-  .mobile-header{padding-inline:12px;grid-template-columns:minmax(0,1fr) 132px}
-  .brand-lockup img{height:78px}
+  .mobile-header{padding:7px 12px 6px;grid-template-columns:minmax(0,1fr) 130px}
+  .brand-lockup{gap:6px}
+  .compass-mark{width:62px;height:62px}
+  .wordmark>strong{font-size:26px}
+  .wordmark>b{font-size:10px;letter-spacing:.31em}
+  .wordmark>small{font-size:7px;max-width:240px;white-space:nowrap}
   .mobile-location{padding:7px 8px}
   .mobile-location svg{width:20px;height:20px}
   .mobile-location strong{font-size:11px}
