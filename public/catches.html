@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#02070b">
+<title>BaitLogic Community Catches</title>
+<style>
+:root{color-scheme:dark;font-family:Roboto,system-ui,sans-serif;background:#02070b;color:#f5f1e9}*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at 50% 0,rgba(21,127,214,.14),transparent 30%),#02070b;color:#f5f1e9}
+a{color:inherit}.wrap{width:min(900px,calc(100% - 24px));margin:auto;padding:18px 0 86px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px}.back{color:#11c7dc;text-decoration:none;font-weight:800}
+.hero{margin-top:16px;padding:20px;border:1px solid rgba(21,142,217,.55);border-radius:18px;background:#06141a}
+.eyebrow{color:#168ed9;font-size:11px;font-weight:900;letter-spacing:.12em}h1{margin:6px 0 8px;font-size:clamp(28px,7vw,48px)}
+.hero p{margin:0;color:#cfd3d4;line-height:1.5}.status{margin:14px 0 0;color:#9da8aa;font-size:12px}
+.grid{margin-top:16px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.card{padding:16px;border:1px solid rgba(255,255,255,.12);border-radius:16px;background:#071219}
+.card h2{margin:0 0 6px;color:#168ed9;font-size:19px}.card p{margin:4px 0;color:#d8dcdd;font-size:13px;line-height:1.45}
+.meta{color:#98a1a3;font-size:11px}.empty{grid-column:1/-1;padding:28px;text-align:center;border:1px dashed rgba(255,255,255,.18);border-radius:16px;color:#aeb5b6}
+.actions{margin-top:16px;display:flex;gap:10px;flex-wrap:wrap}.btn{padding:10px 13px;border-radius:10px;text-decoration:none;font-weight:800;font-size:12px}
+.primary{background:#168ed9;color:#fff}.secondary{border:1px solid rgba(17,199,220,.5);background:#06161b;color:#11c7dc}
+@media(max-width:640px){.grid{grid-template-columns:1fr}.wrap{width:calc(100% - 18px)}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="top"><a class="back" href="/">← BaitLogic Home</a><a class="back" href="/field-intel.html#field-check">Share a catch</a></div>
+  <section class="hero">
+    <div class="eyebrow">COMMUNITY CATCHES</div>
+    <h1>What the community is catching.</h1>
+    <p>Only real catches returned by BaitLogic are shown here. If none are available, the page says so instead of inventing activity.</p>
+    <div class="status" id="status">Loading verified community catches…</div>
+  </section>
+  <section class="grid" id="catches" aria-live="polite"></section>
+  <div class="actions"><a class="btn primary" href="/field-intel.html#field-check">SHARE A CATCH</a><a class="btn secondary" href="/barometer.html">OPEN BAROMETER</a></div>
+</main>
+<script>
+(async function(){
+  const status=document.getElementById("status"),grid=document.getElementById("catches");
+  function text(value){return String(value??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]));}
+  try{
+    const response=await fetch("/api/catches",{cache:"no-store"});
+    if(!response.ok) throw new Error("Community catches are temporarily unavailable.");
+    const data=await response.json();
+    const rows=Array.isArray(data.catches)?data.catches:[];
+    if(!rows.length){
+      status.textContent="No community catches are available right now.";
+      grid.innerHTML='<div class="empty">No verified community catches have been returned yet.</div>';
+      return;
+    }
+    status.textContent=rows.length+" community catch"+(rows.length===1?"":"es")+" loaded.";
+    grid.innerHTML=rows.map(c=>'<article class="card"><h2>'+text(c.species||"Catch")+'</h2><p>'+text(c.notes||"No notes provided.")+'</p><div class="meta">'+text(c.location||"Area not shared")+(c.weight!=null?' · '+text(c.weight)+' lb':'')+(c.createdAt?' · '+text(new Date(c.createdAt).toLocaleDateString()):'')+'</div></article>').join("");
+  }catch(error){
+    status.textContent="Community catches are temporarily unavailable.";
+    grid.innerHTML='<div class="empty">We could not verify community catch data right now. Please try again later.</div>';
+  }
+})();
+</script>
+</body>
+</html>
