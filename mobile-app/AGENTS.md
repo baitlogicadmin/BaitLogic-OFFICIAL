@@ -78,3 +78,23 @@ When any text-entry control loses focus, dismiss the simulated keyboard. If the 
 - Fixed phone chrome should not animate with pushed screens. Screen content can animate; the status bar, camera cutout, and preview chrome should stay put.
 - Keep the keyboard below the home indicator/safe area layer in z-index, and above ordinary app UI while visible.
 - Keep the home indicator as the topmost safe-area layer in the z-index above everything else in the prototype.
+
+
+## Safety-critical mobile acceptance gate — LOCKED 2026-08-31
+
+The mobile experience may be used for real outdoor decisions. Treat the approved mobile UI and all linked field information as safety-critical.
+
+Before any production deployment of the mobile home or a safety-relevant mobile change:
+
+1. Render the actual production candidate at phone width and compare it directly with the founder-approved reference image.
+2. Verify every visible internal CTA, bottom-nav item, top-nav item, card link, image, logo, and asset path.
+3. Repeat the internal link/asset verification against the built/deployed candidate; no 404, broken image, dead control, or mislabeled destination is acceptable.
+4. Verify direct official external reporting, trail, closure, water, and safety resources against the intended authoritative destination.
+5. Verify scroll reachability through the final content, fixed-nav non-obstruction, offline/stale labeling, reconnect behavior, and geolocation fallback where relevant.
+6. Never display invented fallback conditions. Missing verified values must render as unavailable/unknown, never as a believable hard-coded number.
+7. Never mark cached data as live.
+8. Do not deploy a visual approximation. The approved reference governs layout, hierarchy, card order, imagery treatment, color balance, typography, spacing, borders, and navigation unless the founder explicitly changes it.
+9. Do not use automated readiness as a substitute for visual or live-route verification.
+10. If any acceptance check is not proven, the release is blocked.
+
+The current founder-approved mobile reference is the visual accepted on 2026-08-31 after the corrected mockup review. Production must match that reference directly before deployment.
