@@ -120,9 +120,9 @@ test("approved card order and dedicated Community Catches route are preserved", 
 
   await expect(page.locator(selector)).toHaveCount(6);
   expect(await page.locator(headingSelector).allTextContents()).toEqual([
-    "CONSERVATION REPORTING · LOCAL",
-    "TRAILS & OFF-GRID",
     "BAROMETER",
+    "NATURE CHECK",
+    "TRAILS & OFF-GRID",
     "OUTDOOR KNOWLEDGE",
     "FIELD LOG",
     "COMMUNITY CATCHES",
@@ -137,17 +137,21 @@ test("mobile geometry stays compact and bottom navigation does not cover final c
   await page.goto("/");
 
   const conditionBox = await page.locator(".mobile-conditions").boundingBox();
-  expect(conditionBox?.height ?? 9999).toBeLessThanOrEqual(275);
+  expect(conditionBox?.height ?? 9999).toBeLessThanOrEqual(190);
 
   const metricColumns = await page.locator(".mobile-metrics").evaluate(el =>
     getComputedStyle(el).gridTemplateColumns.split(" ").filter(Boolean).length
   );
-  expect(metricColumns).toBe(3);
+  expect(metricColumns).toBe(6);
 
   const cardColumns = await page.locator(".mobile-card-grid").evaluate(el =>
     getComputedStyle(el).gridTemplateColumns.split(" ").filter(Boolean).length
   );
-  expect(cardColumns).toBe(2);
+  expect(cardColumns).toBe(3);
+
+  await expect(page.getByText("SEE SOMETHING.", { exact: true })).toBeVisible();
+  await expect(page.getByText("CONSERVATION FIRST", { exact: true })).toBeVisible();
+  await expect(page.getByText("COMMUNITY", { exact: true })).toBeVisible();
 
   const nav = page.locator(".mobile-bottom-nav");
   const initialNavBox = await nav.boundingBox();
