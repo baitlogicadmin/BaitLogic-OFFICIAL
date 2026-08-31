@@ -86,7 +86,8 @@ test("renders the correct implementation for the active device class", async ({ 
 
 test("verified condition data reaches the rendered UI without invented fallback values", async ({ page }, testInfo) => {
   await page.goto("/");
-  await expect(page.getByText("29.91", { exact: true })).toBeVisible();\n  await expect(page.getByText("inHg", { exact: true })).toBeVisible();
+  await expect(page.getByText("29.91", { exact: true })).toBeVisible();
+  await expect(page.getByText("inHg", { exact: true })).toBeVisible();
   await expect(page.getByText("74°F", { exact: true })).toBeVisible();
   await expect(page.getByText("68.0°F", { exact: true })).toBeVisible();
   await expect(page.getByText("8 mph", { exact: true })).toBeVisible();
