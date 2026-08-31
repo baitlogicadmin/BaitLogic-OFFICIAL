@@ -16,5 +16,9 @@
     "dotenv": "^16.6.1",
     "express": "^4.21.2",
     "helmet": "^8.1.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.62.1",
+    "@types/node": "^26.4.0"
   }
 }
