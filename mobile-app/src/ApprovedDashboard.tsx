@@ -38,6 +38,36 @@ function trend(delta:number){
   return "Steady";
 }
 
+
+function CompassAnchorMark({small=false}:{small?:boolean}){
+  return <svg className={small?"compass-mark small":"compass-mark"} viewBox="0 0 120 120" aria-hidden="true">
+    <defs>
+      <radialGradient id={small?"tealSmall":"tealLarge"} cx="50%" cy="42%" r="62%">
+        <stop offset="0%" stopColor="#0fa7a5"/>
+        <stop offset="72%" stopColor="#006f73"/>
+        <stop offset="100%" stopColor="#004f55"/>
+      </radialGradient>
+      <linearGradient id={small?"goldSmall":"goldLarge"} x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stopColor="#ffe08b"/>
+        <stop offset="35%" stopColor="#d89a34"/>
+        <stop offset="72%" stopColor="#a85e18"/>
+        <stop offset="100%" stopColor="#f2c763"/>
+      </linearGradient>
+    </defs>
+    <circle cx="60" cy="60" r="49" fill="#073a8c" stroke="#d9a447" strokeWidth="3"/>
+    <circle cx="60" cy="60" r="42" fill={`url(#${small?"tealSmall":"tealLarge"})`} stroke="#f1c96c" strokeWidth="2.2"/>
+    <path d="M60 3 66 18 60 15 54 18ZM117 60 102 66 105 60 102 54ZM60 117 54 102 60 105 66 102ZM3 60 18 54 15 60 18 66Z" fill={`url(#${small?"goldSmall":"goldLarge"})`} stroke="#8d511d" strokeWidth="1"/>
+    <g fill="#f5d47f" fontSize="8.5" fontWeight="800" textAnchor="middle">
+      <text x="60" y="26">N</text><text x="94" y="63">E</text><text x="60" y="99">S</text><text x="26" y="63">W</text>
+    </g>
+    <g fill="none" stroke={`url(#${small?"goldSmall":"goldLarge"})`} strokeWidth="5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="60" cy="37" r="7"/>
+      <path d="M60 44v37M43 52h34M60 81c-7 0-13-5-16-12M60 81c7 0 13-5 16-12"/>
+      <path d="M42 66c0 13 8 22 18 22s18-9 18-22M38 70l4-4 5 2M82 70l-4-4-5 2"/>
+    </g>
+  </svg>
+}
+
 const cards = [
   {cls:"barometer-card", title:"BAROMETER", text:"Real-time weather, pressure, wind, and water data.", cta:"VIEW DASHBOARD", href:"/barometer.html", img:"/assets/approved-pressure.webp", icon:"◴"},
   {cls:"nature-card", title:"NATURE CHECK", text:"Report environmental concerns. Protect what we all enjoy.", cta:"REPORT NOW", href:"/field-intel.html#field-check", img:"/assets/pillar-conservation.webp", icon:"♧"},
@@ -89,9 +119,14 @@ export default function ApprovedDashboard(){
 
   return <div className="approved-dashboard">
     <header className="mobile-header">
-      <div className="brand-lockup">
-        <img src="/assets/baitlogic-lockup.webp" alt="BaitLogic Outdoors"/>
-      </div>
+      <a className="brand-lockup" href="/" aria-label="BaitLogic Outdoors home">
+        <CompassAnchorMark/>
+        <span className="wordmark">
+          <strong>BAITLOGIC</strong>
+          <b>OUTDOORS</b>
+          <small><em>Beyond the Bite.</em> Powered by People and Purpose.</small>
+        </span>
+      </a>
       <button className="mobile-location" type="button" onClick={()=>location.reload()}>
         <Crosshair2Icon/><span><strong>{place}, {region}</strong><small>● {live?"LIVE":"CACHED"}</small></span>
       </button>
@@ -120,7 +155,7 @@ export default function ApprovedDashboard(){
       </section>
 
       <section className="say-panel">
-        <div className="say-copy"><span className="megaphone">📣</span><div><h2>SEE SOMETHING.<br/>SAY SOMETHING.</h2><p>Help protect and improve<br/>the outdoors around you.</p></div></div>
+        <div className="say-copy"><span className="megaphone" aria-hidden="true"><span className="horn"></span><span className="handle"></span><span className="sound s1"></span><span className="sound s2"></span></span><div><h2>SEE SOMETHING.<br/>SAY SOMETHING.</h2><p>Help protect and improve<br/>the outdoors around you.</p></div></div>
         <div className="say-actions">
           <a className="report-issue" href="/field-intel.html#conservation">⚠ <span>REPORT AN ISSUE</span></a>
           <a className="share-good" href="/field-intel.html#field-check">♡ <span>SHARE SOMETHING GOOD</span></a>
@@ -154,7 +189,7 @@ export default function ApprovedDashboard(){
     <nav className="app-bottom-nav" aria-label="App navigation">
       <a className="active" href="/"><HomeIcon/><span>HOME</span></a>
       <a className="maps" href="/trails.html"><GlobeIcon/><span>MAPS</span></a>
-      <a className="center-brand" href="/field-intel.html#field-check"><img src="/assets/baitlogic-lockup.webp" alt="Report"/></a>
+      <a className="center-brand" href="/field-intel.html#field-check" aria-label="Add a report"><CompassAnchorMark small/></a>
       <a href="/field-intel.html"><ReaderIcon/><span>LOG</span></a>
       <a href="/field-intel.html#field-check"><PersonIcon/><span>PROFILE</span></a>
     </nav>
