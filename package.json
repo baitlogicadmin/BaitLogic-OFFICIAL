@@ -9,12 +9,17 @@
     "dev": "node server.js",
     "build": "npm --prefix mobile-app run check:readiness",
     "check:readiness": "npm --prefix mobile-app run check:readiness",
-    "test:legacy-api": "node --test tests/server.test.js"
+    "test:legacy-api": "node --test tests/server.test.js",
+    "check-readiness": "npm --prefix mobile-app run check:readiness"
   },
   "dependencies": {
     "compression": "^1.8.1",
     "dotenv": "^16.6.1",
     "express": "^4.21.2",
     "helmet": "^8.1.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.62.1",
+    "@types/node": "^26.4.0"
   }
 }
