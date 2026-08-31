@@ -4,7 +4,7 @@ html,body,#root{margin:0;min-height:100%;background:#02070b}
 .mobile-dashboard{
   --cyan:#11c7dc;--cobalt:#157fd6;--gold:#c88730;--orange:#f59a18;--lime:#9ed80d;
   --magenta:#e43c8b;--plum:#8f477d;--text:#f6f3ee;--muted:#c4c0b8;
-  min-height:100dvh;padding:14px 0 98px;color:var(--text);
+  min-height:100dvh;padding:14px 0 88px;color:var(--text);
   background:radial-gradient(circle at 50% -6%,rgba(16,91,102,.18),transparent 26%),linear-gradient(180deg,#031017,#02070b 60%,#020508);
   font-family:Roboto,system-ui,sans-serif;overflow-x:hidden
 }
@@ -156,9 +156,9 @@ html,body,#root{margin:0;min-height:100%;background:#02070b}
   .mobile-say-panel{padding:9px 10px;gap:8px}.mobile-say-copy{gap:5px}.mobile-megaphone{font-size:37px}
   .mobile-say-copy h2{font-size:15px}.mobile-say-copy p{font-size:8px;margin-top:4px}
   .mobile-say-actions{gap:6px}.mobile-say-actions a{min-height:37px;padding:0 7px;font-size:9px;gap:5px}
-  .mobile-card-grid{gap:8px}.mobile-card{min-height:270px;padding:125px 7px 10px}.mobile-card-image{height:145px}
-  .mobile-card-icon{width:43px;height:43px;margin-top:-22px;font-size:19px}.mobile-card h3{font-size:12px}.mobile-card p{font-size:8.5px}.mobile-card b{font-size:9px}
-  .mobile-trusted h2{font-size:11px}.mobile-trusted strong{font-size:9px}.mobile-trusted small{font-size:7px}
-  .mobile-offline{grid-template-columns:43px 1fr 16px;gap:8px}.offline-icon{font-size:31px}.mobile-offline h2{font-size:14px}.mobile-offline p{font-size:8px}.mobile-offline small{font-size:7px}
-  .mobile-conservation-strip{padding:7px 8px}.mobile-conservation-strip strong{font-size:9px}.mobile-conservation-strip span{font-size:7px}.mobile-conservation-strip a{font-size:8px;padding:7px}
+  .mobile-card-grid{gap:8px}.mobile-card{min-height:194px;padding:94px 7px 9px}.mobile-card-image{height:112px}
+  .mobile-card-icon{width:38px;height:38px;margin-top:-19px;font-size:17px}.mobile-card h3{margin-top:8px;font-size:11px}.mobile-card p{font-size:7.8px;line-height:1.35}.mobile-card b{font-size:8px;padding-top:6px}
+  .mobile-trusted{padding:8px 9px}.mobile-trusted h2{margin-bottom:7px;font-size:10px}.mobile-trusted>div span{padding:7px 3px}.mobile-trusted strong{font-size:8px}.mobile-trusted small{font-size:6px}
+  .mobile-offline{padding:9px 10px;grid-template-columns:36px 1fr 14px;gap:7px}.offline-icon{font-size:26px}.mobile-offline h2{font-size:12px}.mobile-offline p{font-size:7px}.mobile-offline small{font-size:6px}
+  .mobile-conservation-strip{padding:6px 7px}.mobile-conservation-strip strong{font-size:8px}.mobile-conservation-strip span{font-size:6px}.mobile-conservation-strip a{font-size:7px;padding:6px 7px}
 }
