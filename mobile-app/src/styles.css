@@ -16,8 +16,7 @@ html,
 body,
 #root {
   width: 100%;
-  min-height: 100%;
-  height: auto;
+  height: 100%;
   margin: 0;
 }
 
@@ -43,9 +42,7 @@ body,
 
 body {
   min-width: 320px;
-  overflow-x: hidden;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+  overflow: hidden;
 }
 
 button,
