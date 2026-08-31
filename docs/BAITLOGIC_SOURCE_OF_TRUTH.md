@@ -372,7 +372,35 @@ When an imperative product, brand, infrastructure, security, or mission fact cha
 
 ---
 
+
+## 14. Safety-critical trust standard — LOCKED 2026-08-31
+
+The founder has explicitly designated BaitLogic as a product where people may eventually rely on information while outdoors and where errors in conditions, navigation, closures, reporting, offline behavior, or safety context could have serious consequences.
+
+Therefore:
+
+- correctness, provenance, freshness, uncertainty, and clear failure states outrank launch speed or cosmetic completion
+- no safety-relevant value may be fabricated or silently substituted
+- unavailable verified data must be labeled unavailable/unknown; stale or cached data must be labeled stale/cached and never presented as live
+- broken internal routes, dead CTAs, missing assets, mislabeled destinations, and unverified authoritative external links are release blockers
+- launch-critical internal links/assets must be checked twice: built candidate and deployed/live candidate
+- official reporting, trail, closure, water, and safety destinations must resolve to the intended authoritative resource
+- mobile scrolling, fixed-nav obstruction, offline/stale behavior, reconnect behavior, and geolocation fallback are release-blocking when broken
+- a build/readiness PASS does not by itself establish production readiness
+- the founder-approved mobile visual is an acceptance specification; approximations or substitute visuals require explicit founder approval
+- production requires exact-candidate founder preview approval followed by live post-deploy verification
+- when evidence is incomplete, fail closed and surface the uncertainty rather than guessing
+
+For safety-critical/mobile launch work, the mandatory sequence is:
+
+`approved requirement/reference → implementation → build → automated verification → rendered phone-width review → internal link/asset verification → authoritative external-link verification → offline/stale/reconnect verification where relevant → founder approval of exact candidate → deployment → live verification`
+
+This standard is additive to all existing security, privacy, conservation, source-of-truth, and founder-alert rules and must not be weakened by a later convenience shortcut unless the founder explicitly changes this locked decision.
+
+
 ## Change log
+
+- **2026-08-31 — Safety-critical trust standard:** locked BaitLogic field/safety information, mobile release verification, double link/asset checks, fail-closed unknown/stale handling, founder-approved visual parity, and live post-deploy verification as mandatory production gates.
 
 - **2026-08-28 — Camping education prominence:** locked Camping as a front-and-center education option alongside Fishing. Any primary education chooser, featured learning surface, homepage learning entry point, or mobile learning navigation must expose Camping next to Fishing rather than burying it under generic outdoor categories. This is a mandatory education/UX rule and does not create a fifth primary product pillar.
 - **2026-08-25 — Narrative consolidation:** locked BaitLogic around four primary pillars: Fishing Intelligence, Community Knowledge, Water & Environment, and Conservation Action. Locked the system flow `Conditions → Community Knowledge → Better Fishing/Outdoor Decisions → Conservation Action`. Clarified that hiking, paddling, camping, wildlife, trails, habitat, and access are supporting categories rather than competing top-level identities. Locked `Beyond the Bite. Protect What Matters.` and `Understand the water. Learn from the community. Fish smarter. Protect what matters.` as the primary message hierarchy.
