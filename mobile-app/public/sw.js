@@ -1,4 +1,4 @@
-const CACHE = "baitlogic-field-kit-v14";
+const CACHE = "baitlogic-field-kit-v15";
 const CORE = [
   "/manifest.webmanifest",
   "/assets/baitlogic-logo.png",
@@ -19,6 +19,7 @@ const CORE = [
   "/nature-check.html",
   "/outdoor.html",
   "/trails.html",
+  "/catches.html",
   "/site.css?v=3",
   "/site.js?v=3",
   "/premium.css",
@@ -30,7 +31,7 @@ const CORE = [
   "/barometer/mobile-v2.css?v=1",
   "/barometer/mobile-details-v2.css?v=1",
   "/barometer/loading-v1.css",
-  "/barometer/app.js?v=12",
+  "/barometer/app.js?v=13",
   "/barometer/water-evidence.js?v=1",
   "/barometer/trend-ui.js?v=1",
   "/barometer/connection-ui.js?v=3",
@@ -99,7 +100,7 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  if (["/api/barometer-snapshot", "/api/water-snapshot"].includes(requestUrl.pathname)) {
+  if (["/api/barometer-snapshot", "/api/water-snapshot", "/api/catches"].includes(requestUrl.pathname)) {
     event.respondWith((async () => {
       const cache = await caches.open(CACHE);
       try {
