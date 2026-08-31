@@ -428,3 +428,23 @@ button{font:inherit}
   .trusted strong{font-size:14px}
   .trusted small{font-size:9px}
 }
+
+
+/* Production page-scroll override for the approved standalone dashboard.
+   Kept here because src/styles.css is protected by the runtime integrity gate. */
+html:has(.approved-dashboard),
+body:has(.approved-dashboard),
+body:has(.approved-dashboard) #root {
+  height: auto !important;
+  min-height: 100% !important;
+}
+body:has(.approved-dashboard) {
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+}
+body:has(.approved-dashboard) .approved-dashboard {
+  min-height: 100dvh;
+  overflow-x: hidden;
+  overflow-y: visible;
+}
