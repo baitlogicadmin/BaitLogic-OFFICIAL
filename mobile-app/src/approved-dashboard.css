@@ -131,7 +131,7 @@ button{font:inherit}
 }
 .conditions-panel h2{
   margin:0;
-  padding:10px 14px 9px;
+  padding:8px 14px 7px;
   color:var(--cyan);
   font-size:16px;
   letter-spacing:.03em;
@@ -139,92 +139,63 @@ button{font:inherit}
 }
 .metric-row{
   display:grid;
-  grid-template-columns:repeat(5,1fr);
-  min-height:122px;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  min-height:0;
 }
 .metric-row>div{
   min-width:0;
-  padding:14px 12px;
+  min-height:108px;
+  padding:9px 8px 8px;
   display:grid;
-  grid-template-columns:34px minmax(0,1fr);
-  gap:8px;
+  grid-template-columns:28px minmax(0,1fr);
+  gap:6px;
   align-items:start;
   border-right:1px solid rgba(255,255,255,.12);
 }
 .metric-row>div:last-child{border-right:0}
-.metric-row svg{width:30px;height:30px}
+.metric-row svg{width:25px;height:25px}
 .metric-row>div:nth-child(1) svg{color:#fff}
 .metric-row>div:nth-child(4) svg{color:#fff}
 .metric-row>div:nth-child(5) svg{color:var(--gold)}
-.weather-glyph,.water-glyph{font-size:30px;line-height:1;color:var(--cyan)}
+.weather-glyph,.water-glyph{font-size:25px;line-height:1;color:var(--cyan)}
 .metric-row span:not(.weather-glyph):not(.water-glyph){display:flex;flex-direction:column}
-.metric-row b{font-size:9px;color:var(--cyan);letter-spacing:.05em}
-.metric-row strong{margin:3px 0 3px;font-size:20px;font-weight:500;line-height:1.1}
-.metric-row strong i{font-size:12px;font-style:normal}
-.metric-row small{font-size:11px;line-height:1.4;color:#ddd}
+.metric-row b{font-size:8px;color:var(--cyan);letter-spacing:.05em}
+.metric-row strong{margin:2px 0;font-size:17px;font-weight:500;line-height:1.08}
+.metric-row strong i{font-size:10px;font-style:normal}
+.metric-row small{font-size:9px;line-height:1.3;color:#ddd}
 .metric-row em{color:var(--orange);font-style:normal}
 
 .say-panel{
   margin-top:14px;
-  padding:16px 18px;
+  padding:13px 16px;
   display:grid;
-  grid-template-columns:1.05fr .95fr;
-  gap:18px;
+  grid-template-columns:1.08fr .92fr;
+  gap:14px;
+  align-items:center;
   border:1px solid rgba(221,60,136,.5);
   border-radius:12px;
-  background:
-    linear-gradient(100deg,rgba(82,26,57,.7),rgba(30,17,31,.82) 55%,rgba(2,15,18,.94));
+  background:linear-gradient(100deg,rgba(70,24,51,.72),rgba(24,15,28,.84) 55%,rgba(2,15,18,.94));
 }
-.say-copy{display:flex;align-items:center;gap:18px}
-.megaphone{
-  position:relative;
-  width:78px;height:66px;
-  flex:0 0 78px;
-  display:block;
-}
-.megaphone .horn{
-  position:absolute;left:8px;top:16px;width:50px;height:34px;
-  border-radius:6px 22px 22px 6px;
-  background:linear-gradient(135deg,#fff0f5 0 42%,#e2608c 43% 66%,#8d274d 67%);
-  border:2px solid #f0c0cf;
-  transform:rotate(-10deg);
-  box-shadow:0 4px 10px rgba(0,0,0,.35);
-}
-.megaphone .horn:after{
-  content:"";position:absolute;right:-8px;top:6px;width:12px;height:22px;border-radius:50%;
-  border:3px solid #f2c7d3;background:#24252a;
-}
-.megaphone .handle{
-  position:absolute;left:26px;top:43px;width:14px;height:22px;border-radius:3px;
-  background:linear-gradient(#f5d5df,#cf5a82);transform:rotate(17deg);
-}
-.megaphone .sound{position:absolute;right:1px;width:18px;height:2px;background:#f5f1ed;transform-origin:left}
-.megaphone .s1{top:15px;transform:rotate(-28deg)}
-.megaphone .s2{top:50px;transform:rotate(28deg)}
-.say-copy h2{margin:0;font-size:25px;line-height:1.08;letter-spacing:.02em}
-.say-copy p{margin:8px 0 0;font-size:14px;line-height:1.35;color:#f4f2ef}
-.say-actions{display:grid;gap:10px}
+.say-copy{display:flex;align-items:center;gap:12px;min-width:0}
+.megaphone{position:relative;width:68px;height:58px;flex:0 0 68px;display:block}
+.say-copy h2{margin:0;font-size:21px;line-height:1.08;letter-spacing:.02em}
+.say-copy p{margin:6px 0 0;font-size:12px;line-height:1.35;color:#f4f2ef}
+.say-actions{display:grid;gap:8px}
 .say-actions a{
-  min-height:58px;
-  padding:0 18px;
+  min-height:48px;
+  padding:0 12px;
   display:flex;
   align-items:center;
-  gap:14px;
-  justify-content:center;
-  font-size:16px;
+  gap:10px;
+  justify-content:flex-start;
+  font-size:15px;
   font-weight:700;
-  border-radius:6px;
+  border-radius:4px;
 }
-.report-issue{
-  background:linear-gradient(90deg,#682044,#4f1736);
-  border:1px solid rgba(238,96,164,.7);
-}
-.share-good{
-  background:linear-gradient(90deg,#006c6f,#005257);
-  border:1px solid rgba(18,204,203,.75);
-}
-.say-actions a:first-child{font-size:22px}
-.say-actions a span{font-size:16px}
+.report-issue{background:linear-gradient(90deg,#3d2434,#241b27);border:1px solid rgba(194,116,155,.58)}
+.share-good{background:linear-gradient(90deg,#063b43,#004e56);border:1px solid rgba(18,204,203,.72)}
+.say-actions a:first-child{font-size:19px}
+.say-actions a span{font-size:14px}
 
 .feature-grid{
   margin-top:14px;
@@ -366,48 +337,37 @@ button{font:inherit}
 @media(max-width:760px){
   .approved-dashboard{padding-bottom:82px}
   .mobile-header{
-    padding:9px 14px 7px;
-    grid-template-columns:minmax(0,1fr) 152px;
+    padding:9px 14px 8px;
+    grid-template-columns:minmax(0,1fr) 150px;
     gap:10px;
+    min-height:118px;
   }
   .brand-lockup{gap:8px}
-  .compass-mark{width:72px;height:72px}
-  .wordmark>strong{font-size:31px}
-  .wordmark>b{font-size:12px;letter-spacing:.34em}
+  .compass-mark{width:92px;height:92px}
+  .wordmark>strong{font-size:37px}
+  .wordmark>b{font-size:13px;letter-spacing:.34em}
   .wordmark>small{font-size:8px;margin-top:5px}
-  .mobile-location{min-width:0;padding:8px 9px}
-  .mobile-location strong{font-size:12px}
-  .mobile-location small{font-size:9px}
-  .top-tabs{padding:0 16px;gap:27px;min-height:48px}
-  .top-tabs a{padding:14px 0 10px;font-size:11px}
+  .mobile-location{min-width:0;padding:9px 10px}
+  .mobile-location strong{font-size:13px}
+  .mobile-location small{font-size:10px}
+  .top-tabs{padding:0 16px;gap:27px;min-height:50px}
+  .top-tabs a{padding:14px 0 10px;font-size:12px}
   .mobile-shell{width:calc(100% - 18px);padding-top:8px}
-  .conditions-panel h2{padding:8px 12px;font-size:14px}
-  .metric-row{min-height:102px}
-  .metric-row>div{
-    padding:10px 6px;
-    grid-template-columns:1fr;
-    gap:4px;
-    justify-items:center;
-    text-align:center;
-  }
+  .conditions-panel h2{padding:7px 12px;font-size:14px}
+  .metric-row>div{min-height:98px;padding:8px 5px;grid-template-columns:1fr;justify-items:center;text-align:center}
   .metric-row>div>span{align-items:center}
-  .metric-row svg{width:24px;height:24px}
-  .weather-glyph,.water-glyph{font-size:24px}
+  .metric-row svg{width:23px;height:23px}
+  .weather-glyph,.water-glyph{font-size:23px}
   .metric-row b{font-size:7px}
-  .metric-row strong{font-size:16px}
-  .metric-row small{font-size:9px}
-  .say-panel{
-    padding:13px 14px;
-    gap:12px;
-    grid-template-columns:1.1fr .9fr;
-    align-items:center;
-  }
-  .say-copy{gap:10px}
-  .megaphone{width:62px;height:56px;flex-basis:62px;transform:scale(.82)}
-  .say-copy h2{font-size:20px}
-  .say-copy p{font-size:11px}
-  .say-actions a{min-height:50px;padding:0 10px}
-  .say-actions a span{font-size:12px}
+  .metric-row strong{font-size:15px}
+  .metric-row small{font-size:8px}
+  .say-panel{padding:11px 12px;gap:10px}
+  .say-copy{gap:8px}
+  .megaphone{width:56px;height:50px;flex-basis:56px;transform:scale(.86)}
+  .say-copy h2{font-size:18px}
+  .say-copy p{font-size:10px}
+  .say-actions a{min-height:43px;padding:0 9px}
+  .say-actions a span{font-size:11px}
   .feature-grid{gap:10px}
   .feature-card{min-height:286px;padding:138px 10px 12px}
   .feature-image{height:160px}
@@ -420,33 +380,50 @@ button{font:inherit}
 }
 
 @media(max-width:560px){
-  .mobile-header{padding:7px 12px 6px;grid-template-columns:minmax(0,1fr) 130px}
-  .brand-lockup{gap:6px}
-  .compass-mark{width:62px;height:62px}
-  .wordmark>strong{font-size:26px}
-  .wordmark>b{font-size:10px;letter-spacing:.31em}
-  .wordmark>small{font-size:7px;max-width:240px;white-space:nowrap}
-  .mobile-location{padding:7px 8px}
-  .mobile-location svg{width:20px;height:20px}
-  .mobile-location strong{font-size:11px}
-  .top-tabs{padding-inline:12px;gap:24px}
-  .metric-row{grid-template-columns:repeat(5,minmax(0,1fr))}
-  .metric-row>div{grid-template-columns:1fr;text-align:center;justify-items:center}
-  .metric-row>div>span{align-items:center}
-  .metric-row b{font-size:6.5px}
-  .metric-row strong{font-size:14px}
-  .metric-row small{font-size:8px}
-  .say-panel{grid-template-columns:1fr}
-  .say-copy{justify-content:center}
-  .say-actions{grid-template-columns:1fr 1fr}
-  .say-actions a{min-height:46px}
-  .feature-grid{grid-template-columns:repeat(3,1fr)}
-  .feature-card{min-height:270px;padding:128px 8px 10px}
-  .feature-image{height:148px}
-  .feature-card h3{font-size:14px}
-  .feature-card p{font-size:10px}
-  .feature-card b{font-size:11px}
-  .feature-icon{width:46px;height:46px}
+  .mobile-header{
+    padding:7px 9px 6px;
+    grid-template-columns:minmax(0,1fr) 112px;
+    min-height:104px;
+  }
+  .brand-lockup{gap:5px}
+  .compass-mark{width:76px;height:76px}
+  .wordmark>strong{font-size:29px}
+  .wordmark>b{font-size:10px;letter-spacing:.30em}
+  .wordmark>small{font-size:6.5px;margin-top:4px}
+  .mobile-location{padding:7px 7px}
+  .mobile-location svg{width:19px;height:19px}
+  .mobile-location strong{font-size:10px}
+  .mobile-location small{font-size:8px}
+  .top-tabs{padding-inline:10px;gap:22px}
+  .top-tabs a{font-size:10.5px}
+  .mobile-shell{width:calc(100% - 16px)}
+  .conditions-panel h2{font-size:13px}
+  .metric-row>div{min-height:92px;padding:7px 3px}
+  .metric-row svg{width:21px;height:21px}
+  .weather-glyph,.water-glyph{font-size:21px}
+  .metric-row b{font-size:6px}
+  .metric-row strong{font-size:13px}
+  .metric-row small{font-size:7px}
+  .say-panel{
+    grid-template-columns:1.06fr .94fr;
+    padding:10px 9px;
+    gap:7px;
+  }
+  .say-copy{justify-content:flex-start;gap:5px}
+  .megaphone{width:48px;height:45px;flex-basis:48px;transform:scale(.72)}
+  .say-copy h2{font-size:15px}
+  .say-copy p{font-size:8.5px;margin-top:4px}
+  .say-actions{grid-template-columns:1fr;gap:6px}
+  .say-actions a{min-height:36px;padding:0 7px;gap:6px}
+  .say-actions a:first-child{font-size:14px}
+  .say-actions a span{font-size:9.5px}
+  .feature-grid{grid-template-columns:repeat(3,1fr);gap:8px}
+  .feature-card{min-height:260px;padding:122px 7px 9px}
+  .feature-image{height:143px}
+  .feature-card h3{font-size:13px}
+  .feature-card p{font-size:9px}
+  .feature-card b{font-size:10px}
+  .feature-icon{width:44px;height:44px;font-size:20px}
   .trusted>div{gap:8px}
   .trusted strong{font-size:14px}
   .trusted small{font-size:9px}
