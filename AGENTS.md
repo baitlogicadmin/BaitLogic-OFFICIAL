@@ -70,3 +70,29 @@ When the founder's requested outcome and the correct reversible next action are 
 - Report status literally and with evidence. Say `implemented`, `verified`, `deployed`, or `validated` only when that stage actually occurred, and name the changed file, commit, test, deployment, or live check that proves it.
 - Acknowledging an instruction, changing conversational behavior, drafting text, or creating a task is not implementation of product work. Never present it as such.
 
+
+
+## Safety-critical production standard — LOCKED 2026-08-31
+
+BaitLogic is intended to become a trusted outdoor field resource. Treat any feature involving weather, water, location, trails, closures, safety, conservation reporting, offline behavior, or other field decisions as **safety-critical product work**. A user may rely on what the product shows while outdoors, so convenience, aesthetics, speed, or launch pressure never outrank correctness and clear uncertainty.
+
+Non-negotiable rules:
+
+- Never fabricate, infer, smooth over, or silently substitute safety-relevant data. If a verified value is unavailable, show an explicit unavailable/stale/unknown state.
+- Never label cached or stale information as live. Show source, freshness, and offline/stale state wherever materially relevant.
+- Never knowingly ship a broken internal route, dead CTA, missing image/asset, invalid external safety/reporting link, or navigation destination that does not match its label.
+- Verify every launch-critical internal link and asset path **twice** before production: once in the built candidate and again against the deployed candidate/live production target.
+- Verify authoritative external reporting, closure, trail, water, and safety links against the intended official destination before release; do not substitute generic homepages when a direct official intake/resource exists.
+- Treat mobile scrolling, fixed navigation, offline access, reconnect behavior, stale-data labeling, geolocation fallback, and external-link handling as release-blocking when broken.
+- Do not convert missing water, weather, trail, closure, or conservation information into a plausible-looking placeholder value.
+- For material mobile visual work, the founder-approved reference image is the acceptance specification. Do not deploy an approximation, reinterpretation, or substitute visual without explicit founder approval.
+- A passing build, readiness script, or unit-test suite is necessary but not sufficient. Production approval requires rendered mobile verification, link/asset verification, relevant interaction checks, and founder approval of the exact production candidate.
+- If any launch-critical verification is incomplete, contradictory, stale, or unavailable, stop the deployment and report the exact blocker rather than guessing.
+- Prefer fail-closed behavior for safety-relevant uncertainty: clearly withhold or label uncertain information instead of presenting it as dependable.
+- Never claim "perfect," "safe," "verified," "live," or "production-ready" beyond the evidence actually collected.
+
+Required release sequence for safety-critical/mobile homepage work:
+
+`approved requirement/reference → implementation → build → automated tests → rendered phone-width review → internal link/asset pass → external authoritative-link pass → offline/stale/reconnect checks where relevant → founder preview approval → deployment → live post-deploy verification`
+
+No step may be skipped merely to save time or credits.
