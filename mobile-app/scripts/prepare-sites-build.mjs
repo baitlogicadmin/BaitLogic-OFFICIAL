@@ -18,6 +18,7 @@ const featureFiles = [
   ["conservation-prairie.html", "conservation-prairie.html"],
   ["nature-check.html", "nature-check.html"],
   ["outdoor.html", "outdoor.html"],
+  ["catches.html", "catches.html"],
   ["site.css", "site.css"],
   ["site.js", "site.js"],
   ["premium.css", "premium.css"],
