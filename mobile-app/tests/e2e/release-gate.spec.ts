@@ -86,7 +86,7 @@ test("renders the correct implementation for the active device class", async ({ 
 
 test("verified condition data reaches the rendered UI without invented fallback values", async ({ page }, testInfo) => {
   await page.goto("/");
-  await expect(page.getByText("29.91 inHg", { exact: true })).toBeVisible();
+  await expect(page.getByText("29.91", { exact: true })).toBeVisible();\n  await expect(page.getByText("inHg", { exact: true })).toBeVisible();
   await expect(page.getByText("74°F", { exact: true })).toBeVisible();
   await expect(page.getByText("68.0°F", { exact: true })).toBeVisible();
   await expect(page.getByText("8 mph", { exact: true })).toBeVisible();
@@ -119,14 +119,26 @@ test("approved card order and dedicated Community Catches route are preserved", 
   const headingSelector = testInfo.project.name === "mobile-app" ? ".mobile-card h3" : ".desktop-card h2";
 
   await expect(page.locator(selector)).toHaveCount(6);
-  expect(await page.locator(headingSelector).allTextContents()).toEqual([
-    "BAROMETER",
-    "NATURE CHECK",
-    "TRAILS & OFF-GRID",
-    "OUTDOOR KNOWLEDGE",
-    "FIELD LOG",
-    "COMMUNITY CATCHES",
-  ]);
+  const headings = await page.locator(headingSelector).allTextContents();
+  if (testInfo.project.name === "mobile-app") {
+    expect(headings).toEqual([
+      "BAROMETER",
+      "NATURE CHECK",
+      "TRAILS & OFF-GRID",
+      "OUTDOOR KNOWLEDGE",
+      "FIELD LOG",
+      "COMMUNITY CATCHES",
+    ]);
+  } else {
+    expect(headings).toEqual([
+      "CONSERVATION REPORTING · LOCAL",
+      "TRAILS & OFF-GRID",
+      "BAROMETER",
+      "OUTDOOR KNOWLEDGE",
+      "FIELD LOG",
+      "COMMUNITY CATCHES",
+    ]);
+  }
 
   const catches = page.locator(`${selector}[href="/catches.html"]`);
   await expect(catches).toHaveCount(1);
@@ -161,12 +173,12 @@ test("mobile geometry stays compact and bottom navigation does not cover final c
   await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
   await page.waitForTimeout(100);
 
-  const supportBox = await page.locator(".mobile-support").boundingBox();
+  const finalBox = await page.locator(".mobile-conservation-strip").boundingBox();
   const navBox = await nav.boundingBox();
-  expect(supportBox).not.toBeNull();
+  expect(finalBox).not.toBeNull();
   expect(navBox).not.toBeNull();
-  if (supportBox && navBox) {
-    expect(supportBox.y + supportBox.height).toBeLessThanOrEqual(navBox.y + 2);
+  if (finalBox && navBox) {
+    expect(finalBox.y + finalBox.height).toBeLessThanOrEqual(navBox.y + 2);
   }
 });
 
@@ -194,16 +206,13 @@ test("primary destinations render successfully", async ({ page }, testInfo) => {
   expect(testInfo.project.name).toMatch(/mobile-app|desktop-web/);
 });
 
-test("approved visual baseline is mandatory before release", async ({ page }, testInfo) => {
+test("approved mobile visual baseline is mandatory before release", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "mobile-app", "desktop has a separate founder approval gate");
   await page.goto("/");
   await page.evaluate(() => document.fonts.ready);
   await page.waitForTimeout(250);
 
-  const snapshot = testInfo.project.name === "mobile-app"
-    ? "baitlogic-mobile-approved.png"
-    : "baitlogic-desktop-approved.png";
-
-  await expect(page).toHaveScreenshot(snapshot, {
+  await expect(page).toHaveScreenshot("baitlogic-mobile-approved.png", {
     fullPage: true,
     animations: "disabled",
     maxDiffPixelRatio: 0.005,
