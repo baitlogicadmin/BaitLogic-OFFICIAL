@@ -95,6 +95,7 @@ export function useBaitLogicConditions() {
   const cached = typeof window !== "undefined" ? readCache() : undefined;
   const [snapshot,setSnapshot] = useState<DashboardSnapshot|undefined>(cached);
   const [water,setWater] = useState<WaterSnapshot|undefined>();
+  const [waterStatus,setWaterStatus] = useState<"live"|"cached"|"unavailable">("unavailable");
   const [online,setOnline] = useState(typeof navigator === "undefined" ? true : navigator.onLine);
   const [status,setStatus] = useState<"idle"|"loading"|"live"|"cached"|"unavailable">(cached?"cached":"idle");
   const [accuracy,setAccuracy] = useState<number|undefined>();
@@ -118,10 +119,13 @@ export function useBaitLogicConditions() {
       if (waterResponse.ok) {
         const waterData = await waterResponse.json();
         setWater(waterData);
+        setWaterStatus(waterResponse.headers.get("X-BaitLogic-Source") === "offline-cache" ? "cached" : "live");
       } else {
         setWater(undefined);
+        setWaterStatus("unavailable");
       }
     } catch {
+      setWaterStatus(water ? waterStatus : "unavailable");
       const fallback = readCache();
       if (fallback) {
         setSnapshot(fallback);
@@ -162,5 +166,5 @@ export function useBaitLogicConditions() {
     return station?.temp ?? null;
   },[water]);
 
-  return {snapshot,water,waterTemp,online,status,accuracy,refreshLocation};
+  return {snapshot,water,waterTemp,waterStatus,online,status,accuracy,refreshLocation};
 }
