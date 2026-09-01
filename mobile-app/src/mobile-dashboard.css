@@ -17,8 +17,8 @@ html,body,#root{margin:0;min-height:100%;background:#160a12}
   grid-template-columns:minmax(0,1fr) 146px;gap:10px;align-items:center
 }
 .mobile-brand{display:flex;align-items:center;gap:10px;min-width:0}
-.mobile-compass{width:80px;height:80px;flex:0 0 auto;object-fit:contain;filter:drop-shadow(0 5px 12px rgba(0,0,0,.5))}
-.mobile-compass.small{width:64px;height:64px}
+.mobile-compass{width:88px;height:88px;flex:0 0 auto;object-fit:contain;filter:drop-shadow(0 5px 12px rgba(0,0,0,.5))}
+.mobile-compass.small{width:68px;height:68px}
 .mobile-wordmark{display:flex;min-width:0;flex-direction:column;align-items:center}
 .mobile-wordmark strong{
   font-family:Georgia,"Times New Roman",serif;font-size:40px;line-height:.92;letter-spacing:.025em;
@@ -124,7 +124,7 @@ html,body,#root{margin:0;min-height:100%;background:#160a12}
 @media(max-width:560px){
   .mobile-dashboard{padding-top:6px;padding-bottom:72px}
   .mobile-app-header{grid-template-columns:minmax(0,1fr) 112px;padding:5px 8px 7px;gap:5px}
-  .mobile-compass{width:62px;height:62px}.mobile-brand{gap:5px}.mobile-wordmark strong{font-size:28px}
+  .mobile-compass{width:70px;height:70px}.mobile-brand{gap:5px}.mobile-wordmark strong{font-size:28px}
   .mobile-wordmark b{font-size:9px;letter-spacing:.32em;margin-top:4px;gap:5px}.mobile-wordmark b i{width:13px}
   .mobile-wordmark small{font-size:6px;margin-top:4px;padding-bottom:2px}
   .mobile-location-chip{padding:7px 6px}.mobile-location-chip svg{width:17px;height:17px}.mobile-location-chip strong{font-size:9px}.mobile-location-chip small{font-size:7px;margin-top:4px}
@@ -138,5 +138,5 @@ html,body,#root{margin:0;min-height:100%;background:#160a12}
   .mobile-trusted{padding:6px 7px}.mobile-trusted h2{font-size:9px;margin-bottom:5px}.mobile-trusted>div span{padding:5px 2px;gap:3px}.mobile-trusted strong{font-size:11px}.mobile-trusted small{font-size:6px}
   .mobile-offline{padding:6px 8px;grid-template-columns:34px 1fr 12px}.offline-icon{font-size:27px}.mobile-offline h2{font-size:10px}.mobile-offline p{font-size:7px}.mobile-offline small{font-size:6px}.offline-arrow{font-size:18px}
   .mobile-conservation-strip{grid-template-columns:28px 1fr auto;padding:5px 6px}.conservation-heart{width:26px;height:26px;font-size:10px}.mobile-conservation-strip strong{font-size:8px}.mobile-conservation-strip span{font-size:6px}.mobile-conservation-strip a{font-size:6px;padding:5px 6px}
-  .mobile-bottom-nav{height:66px}.mobile-bottom-nav .center{transform:translateY(-6px)}.mobile-compass.small{width:55px;height:55px}
+  .mobile-bottom-nav{height:66px}.mobile-bottom-nav .center{transform:translateY(-6px)}.mobile-compass.small{width:60px;height:60px}
 }
