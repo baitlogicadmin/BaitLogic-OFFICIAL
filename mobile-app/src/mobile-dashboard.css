@@ -264,7 +264,7 @@ body{font-family:Roboto,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sa
   }
   .bl-location svg{width:21px;height:21px}
   .bl-location strong{font-size:10px;white-space:nowrap}
-  .bl-location small{font-size:8.5px}
+  .bl-location small{font-size:8px}
 
   .bl-main{padding:0 10px;gap:10px}
   .bl-conditions{border-radius:16px}
@@ -382,11 +382,11 @@ body{font-family:Roboto,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sa
 
 /* Founder-approved mobile composition: compact, three-column tools, six education cards, two-agency row. */
 @media(max-width:600px){
-  .bl-home{padding:4px 0 58px;background:#210918}
+  .bl-home{padding:4px 0 0;background:#210918}
   .bl-header{
     width:100%;max-width:100vw;height:66px;margin:0;
     padding:5px 9px 5px;
-    display:grid;grid-template-columns:minmax(0,1fr) 118px;gap:7px;align-items:center
+    display:grid;grid-template-columns:minmax(0,1fr) 94px;gap:6px;align-items:center
   }
   .bl-header>*,.bl-main>*,.bl-brand,.bl-wordmark,.bl-location,
   .bl-conditions-top>*,.bl-condition-metrics>*,.bl-report-now>*,
@@ -400,17 +400,17 @@ body{font-family:Roboto,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sa
   .bl-wordmark>small{font-size:8px;line-height:1.12;margin-top:4px;white-space:nowrap;max-width:100%}
   .bl-rainbow{width:74%;height:3px;margin-top:4px}
   .bl-location{
-    max-width:118px;min-height:48px;padding:6px 7px;gap:6px;border-radius:12px
+    max-width:94px;min-height:48px;padding:6px 5px;gap:4px;border-radius:12px
   }
-  .bl-location svg{width:20px;height:20px}
+  .bl-location svg{width:18px;height:18px}
   .bl-location span{min-width:0}
-  .bl-location strong{font-size:10.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .bl-location strong{font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .bl-location small{font-size:8.5px}
 
   .bl-main{width:100%;max-width:100vw;padding:0 9px;gap:6px}
 
   .bl-conditions{border-radius:13px;box-shadow:none}
-  .bl-conditions-top{min-height:72px;grid-template-columns:1.06fr .94fr}
+  .bl-conditions-top{min-height:72px;grid-template-columns:.78fr 1.02fr}
   .bl-conditions-top>div:first-child{padding:8px 10px 6px}
   .bl-conditions h1{font-size:13px;line-height:1;white-space:nowrap}
   .bl-conditions h1 span{font-size:9px;margin-left:4px}
@@ -431,20 +431,20 @@ body{font-family:Roboto,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sa
   .bl-metric strong{font-size:10.5px;line-height:1.02}
   .bl-metric em{font-size:6.5px}
   .bl-metric strong,.bl-metric small,.bl-metric em{overflow-wrap:anywhere}
-  .bl-primary-cta{
+  .bl-home .bl-primary-cta{
     margin:6px 10px 7px;min-height:28px;border-radius:7px;
-    font-size:12px;border-width:1.5px
+    font-size:12px;border-width:1.5px;color:var(--lime)
   }
   .bl-primary-cta span{right:10px;font-size:19px}
 
   .bl-report-now{
     min-height:47px;border-radius:12px;padding:7px 9px;
-    display:grid;grid-template-columns:34px minmax(0,1fr) 132px;
+    display:grid;grid-template-columns:34px minmax(0,1fr) 116px;
     grid-template-areas:"icon copy cta";gap:7px;align-items:center
   }
   .bl-alert-icon{grid-area:icon;width:31px;height:31px;font-size:20px;border-width:2px}
   .bl-report-now>div:nth-child(2){grid-area:copy}
-  .bl-report-now h2{font-size:11.5px;line-height:1.05;margin:0 0 2px;white-space:nowrap}
+  .bl-report-now h2{font-size:10.5px;line-height:1.05;margin:0 0 2px;white-space:nowrap}
   .bl-report-now p{font-size:8.5px;line-height:1.2}
   .bl-report-now>a{
     grid-area:cta;justify-self:stretch;width:100%;min-height:31px;
@@ -462,7 +462,7 @@ body{font-family:Roboto,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sa
   .bl-feature::after{
     background:linear-gradient(90deg,rgba(5,6,7,.68),rgba(5,5,6,.18) 72%,rgba(0,0,0,.05))
   }
-  .bl-feature h2{font-size:10.5px;line-height:1.04}
+  .bl-feature h2{font-size:9.5px;line-height:1.04;white-space:nowrap}
   .bl-feature p{font-size:8.5px;line-height:1.25;max-width:82%;margin-top:5px}
   .bl-feature-arrow{
     width:27px;height:27px;right:6px;bottom:6px;transform:none;font-size:17px;border-width:1.5px
@@ -491,7 +491,7 @@ body{font-family:Roboto,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sa
   .bl-agency .illinois{grid-area:il}
   .bl-agency .missouri{grid-area:mo}
   .bl-agency h2{font-size:10.5px;line-height:1.04;margin-bottom:3px}
-  .bl-agency p{font-size:7.5px;line-height:1.18}
+  .bl-agency p{font-size:7.5px;line-height:1.18;color:#fff;opacity:.95}
   .bl-agency>a{min-height:45px;gap:5px;padding:5px 6px;border-radius:8px}
   .bl-agency .state-icon{width:22px;height:28px;font-size:7px;border-radius:5px}
   .bl-agency strong{font-size:8px;line-height:1.05}
@@ -507,8 +507,8 @@ body{font-family:Roboto,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sa
   }
 
   .bl-bottom-nav{
-    left:0;right:0;bottom:0;transform:none;width:100%;max-width:100vw;
-    height:54px;padding:4px 7px 5px;border-radius:22px 22px 0 0
+    position:relative;left:auto;right:auto;bottom:auto;transform:none;width:100%;max-width:100vw;
+    height:54px;margin-top:6px;padding:4px 7px 5px;border-radius:22px 22px 0 0
   }
   .bl-bottom-nav a{font-size:9px;gap:2px}
   .bl-bottom-nav svg{width:19px;height:19px}
