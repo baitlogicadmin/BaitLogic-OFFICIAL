@@ -17,7 +17,7 @@ html,body,#root{margin:0;min-height:100%;background:#160a12}
   grid-template-columns:minmax(0,1fr) 146px;gap:10px;align-items:center
 }
 .mobile-brand{display:flex;align-items:center;gap:10px;min-width:0}
-.mobile-compass{width:80px;height:80px;flex:0 0 auto;filter:drop-shadow(0 5px 12px rgba(0,0,0,.5))}
+.mobile-compass{width:80px;height:80px;flex:0 0 auto;object-fit:contain;filter:drop-shadow(0 5px 12px rgba(0,0,0,.5))}
 .mobile-compass.small{width:64px;height:64px}
 .mobile-wordmark{display:flex;min-width:0;flex-direction:column;align-items:center}
 .mobile-wordmark strong{
@@ -74,13 +74,7 @@ html,body,#root{margin:0;min-height:100%;background:#160a12}
   position:absolute;inset:0 0 auto;height:150px;background-size:cover;background-position:center;
   filter:saturate(.96) brightness(.76)
 }
-.mobile-card.trails .mobile-card-image{
-  background-image:
-    radial-gradient(circle at 72% 36%,#a8cf21 0 4px,transparent 5px),
-    radial-gradient(circle at 72% 36%,rgba(168,207,33,.32) 0 8px,transparent 9px),
-    repeating-radial-gradient(ellipse at 45% 42%,transparent 0 14px,rgba(205,150,70,.16) 15px 16px,transparent 17px 28px),
-    linear-gradient(135deg,#171210,#211510)!important
-}
+
 .mobile-card.conservation{--accent:#e65d76}.mobile-card.trails{--accent:#a8c719}.mobile-card.barometer{--accent:#2da7c8}
 .mobile-card.knowledge{--accent:#d14dd0}.mobile-card.field{--accent:#f39a18}.mobile-card.catches{--accent:#249ad5}
 .mobile-card-icon{
