@@ -24,7 +24,8 @@ test("ships the versioned app-shell service worker", async () => {
   assert.match(worker, /\/api\/barometer-snapshot/);
   assert.match(worker, /\/api\/water-snapshot/);
   assert.match(worker, /\/trails\.html/);
-  assert.match(worker, /\/catches\.html/);\n  assert.match(worker, /\/profile\.html/);
+  assert.match(worker, /\/catches\.html/);
+  assert.match(worker, /\/profile\.html/);
   assert.match(worker, /\/api\/catches/);
   assert.match(worker, /X-BaitLogic-Source/);
   assert.match(worker, /offline-cache/);
