@@ -42,11 +42,11 @@ jobs:
         run: npm run test:release
         working-directory: mobile-app
 
-      - name: Upload Playwright evidence on failure
-        if: failure()
+      - name: Upload Playwright evidence
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: baitlogic-playwright-failure-evidence
+          name: baitlogic-playwright-evidence
           path: |
             mobile-app/playwright-report/
             mobile-app/test-results/
