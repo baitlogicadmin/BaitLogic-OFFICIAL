@@ -90,7 +90,6 @@ test("ships the weekly email sender with one-click unsubscribe", async () => {
   assert.match(unsubscribe, /safeEqual/);
 });
 
-
 test("renders mobile and desktop as separate implementations and ships Community Catches", async () => {
   const prototype = await readFile(new URL("../src/Prototype.tsx", import.meta.url), "utf8");
   const mobile = await readFile(new URL("../src/MobileDashboard.tsx", import.meta.url), "utf8");
@@ -100,24 +99,27 @@ test("renders mobile and desktop as separate implementations and ships Community
   assert.match(prototype, /MobileDashboard/);
   assert.match(prototype, /DesktopDashboard/);
   assert.match(prototype, /matchMedia/);
-  assert.match(mobile, /CONSERVATION REPORTING · LOCAL/);
-  assert.match(mobile, /TRAILS & OFF-GRID/);
-  assert.match(mobile, /BAROMETER/);
-  assert.match(mobile, /OUTDOOR KNOWLEDGE/);
-  assert.match(mobile, /FIELD LOG/);
-  assert.match(mobile, /COMMUNITY CATCHES/);
-  assert.match(mobile, /TRUSTED DATA SOURCES/);
-  assert.match(mobile, /OFFLINE READY/);
-  assert.match(mobile, /baitlogic-logo\.png/);
-  assert.match(mobile, /href:"\/catches\.html"/);
+
+  assert.match(mobile, /OUTDOOR CONDITIONS/);
+  assert.match(mobile, /SEE SOMETHING\? SAY SOMETHING\./);
+  assert.match(mobile, /WATER &amp; FLOW/);
+  assert.match(mobile, /LOCAL CATCHES/);
+  assert.match(mobile, /TRAILS &amp; MAPS/);
+  assert.match(mobile, /OUTDOOR EDUCATION/);
+  assert.match(mobile, /REPORT TO THE RIGHT AGENCY/);
+  assert.match(mobile, /Offline Ready/);
+  assert.match(mobile, /baitlogic-boysenberry-logo\.svg/);
+  assert.match(mobile, /href="\/catches\.html"/);
+  assert.match(mobile, /https:\/\/dnr2\.illinois\.gov\/OLETIPHotline\//);
+  assert.match(mobile, /https:\/\/mdc12\.mdc\.mo\.gov\/Applications\/FishKillsIntake\/Intake/);
   assert.doesNotMatch(mobile, />68°F</);
   assert.doesNotMatch(mobile, />74°F</);
+
   assert.match(desktop, /CONSERVATION REPORTING · LOCAL/);
   assert.match(desktop, /href:"\/catches\.html"/);
   assert.match(catches, /\/api\/catches/);
   assert.match(catches, /does not invent locations, weights, species, or notes/);
 });
-
 
 test("locks safety-critical navigation and official reporting destinations", async () => {
   const outdoor = await readFile(new URL("../../public/outdoor.html", import.meta.url), "utf8");
@@ -136,7 +138,6 @@ test("locks safety-critical navigation and official reporting destinations", asy
   assert.match(fieldIntel, /https:\/\/mdc12\.mdc\.mo\.gov\/Applications\/FishKillsIntake\/Intake/);
   assert.match(fieldIntel, /https:\/\/epa\.illinois\.gov\/pollution-complaint\/submit-a-complaint\.html/);
 });
-
 
 test("fails closed when weather-alert verification or cached conditions are unsafe", async () => {
   const api = await readFile(new URL("../../api/barometer-snapshot.js", import.meta.url), "utf8");
