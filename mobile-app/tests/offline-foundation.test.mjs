@@ -7,7 +7,7 @@ test("ships an installable BaitLogic web app manifest", async () => {
 
   assert.equal(manifest.name, "BaitLogic — Local Outdoor Intelligence");
   assert.equal(manifest.display, "standalone");
-  assert.equal(manifest.theme_color, "#25101f");
+  assert.equal(manifest.theme_color, "#210918");
   assert.deepEqual(manifest.icons.map((icon) => icon.sizes), ["192x192", "512x512"]);
 });
 
