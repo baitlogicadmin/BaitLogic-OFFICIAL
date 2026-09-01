@@ -1,6 +1,5 @@
 import {
-  Crosshair2Icon, HomeIcon, ReaderIcon, GlobeIcon, LapTimerIcon,
-  ActivityLogIcon, SunIcon
+  Crosshair2Icon, HomeIcon, ReaderIcon, GlobeIcon
 } from "@radix-ui/react-icons";
 import {
   compass, pressureTrend, relativeUpdated, useBaitLogicConditions, WEATHER_LABELS
@@ -42,8 +41,6 @@ export default function MobileDashboard(){
   const region=snapshot?.location?.region?.replace("Illinois","IL").replace("Missouri","MO");
   const locationLabel=region && !place.includes(region) ? `${place}, ${region}` : place;
   const live=online&&status==="live";
-  const station=water?.stations?.[0];
-  const flow=station?.flow!=null ? `${Number(station.flow).toLocaleString()} cfs` : "No verified reading";
 
   return <div className="bl-home">
     <header className="bl-header">
@@ -97,7 +94,6 @@ export default function MobileDashboard(){
         <a className="bl-feature water-flow" href="/field-intel.html#water">
           <div><h2>≋ WATER &amp; FLOW</h2><p>Stream levels, flow, temperature &amp; pressure data.</p></div>
           <span className="bl-feature-arrow">→</span>
-          <small>{flow}</small>
         </a>
         <a className="bl-feature catches" href="/catches.html">
           <div><h2>⌾ LOCAL CATCHES</h2><p>Recent catches, species reports &amp; activity.</p></div>
