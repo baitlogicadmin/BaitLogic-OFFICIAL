@@ -485,7 +485,7 @@ body{font-family:Roboto,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sa
   .bl-agency{
     grid-template-columns:1.05fr .95fr .95fr;
     grid-template-areas:"intro il mo";
-    gap:6px;padding:6px 8px;border-radius:10px;align-items:stretch
+    gap:6px;padding:4px 8px;border-radius:10px;align-items:stretch
   }
   .bl-agency>div{grid-area:intro;align-self:center}
   .bl-agency .illinois{grid-area:il}
@@ -513,7 +513,7 @@ body{font-family:Roboto,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sa
   }
   .bl-bottom-nav a{font-size:9px;gap:2px}
   .bl-bottom-nav svg{width:17px;height:17px}
-  .bl-bottom-nav .profile-icon{font-size:20px}
+  .bl-bottom-nav .profile-icon{font-size:20px}\n  .bl-bottom-nav a:nth-child(2){color:var(--cyan)}\n  .bl-bottom-nav a:nth-child(4){color:#ff6278}\n  .bl-bottom-nav a:nth-child(5){color:var(--purple)}
   .bl-bottom-nav .log{transform:translateY(-2px)}
   .bl-bottom-nav .plus{width:32px;height:32px;font-size:23px;border-width:2px}
 }
