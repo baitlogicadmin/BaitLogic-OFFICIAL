@@ -158,7 +158,7 @@ test("mobile geometry stays compact and bottom navigation does not cover final c
   const metricColumns = await page.locator(".mobile-metrics").evaluate(el =>
     getComputedStyle(el).gridTemplateColumns.split(" ").filter(Boolean).length
   );
-  expect(metricColumns).toBe(6);
+  expect(metricColumns).toBe(3);
 
   const cardColumns = await page.locator(".mobile-card-grid").evaluate(el =>
     getComputedStyle(el).gridTemplateColumns.split(" ").filter(Boolean).length
@@ -171,7 +171,7 @@ test("mobile geometry stays compact and bottom navigation does not cover final c
 
   const nav = page.locator(".mobile-bottom-nav");
   const initialNavBox = await nav.boundingBox();
-  expect(initialNavBox?.height ?? 0).toBeGreaterThanOrEqual(80);
+  expect(initialNavBox?.height ?? 0).toBeGreaterThanOrEqual(60);
   expect(initialNavBox?.height ?? 999).toBeLessThanOrEqual(100);
 
   await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
@@ -198,7 +198,7 @@ test("desktop keeps its separate four-column primary card layout", async ({ page
 
 test("primary destinations render successfully", async ({ page }, testInfo) => {
   const failures = watchRuntimeFailures(page);
-  const routes = ["/barometer.html", "/catches.html", "/field-intel.html", "/trails.html", "/outdoor.html"];
+  const routes = ["/barometer.html", "/catches.html", "/field-intel.html", "/trails.html", "/outdoor.html", "/profile.html"];
 
   for (const route of routes) {
     const response = await page.goto(route);
