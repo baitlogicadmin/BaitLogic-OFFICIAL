@@ -103,8 +103,8 @@ module.exports = async function handler(req, res) {
     const bigDataUrl = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${encodeURIComponent(lat)}&longitude=${encodeURIComponent(lon)}&localityLanguage=en`;
 
     const [weatherResult, alertsResult, nominatimResult, bigDataResult] = await Promise.allSettled([
-      fetchJson(weatherUrl.toString(), { headers: { "User-Agent": "BaitLogic/1.0 baitlogicadmin@gmail.com" } }, 5000, 2),
-      fetchJson(alertsUrl, { headers: { "User-Agent": "BaitLogic/1.0 (baitlogicadmin@gmail.com)", "Accept": "application/geo+json" } }, 1500),
+      fetchJson(weatherUrl.toString(), { headers: { "User-Agent": "BaitLogic/1.0 baitlogicadmin@gmail.com" } }, 3800, 2),
+      fetchJson(alertsUrl, { headers: { "User-Agent": "BaitLogic/1.0 (baitlogicadmin@gmail.com)", "Accept": "application/geo+json" } }, 2500, 2),
       fetchJson(nominatimUrl, { headers: { "User-Agent": "BaitLogic/1.0 (baitlogicadmin@gmail.com)", "Accept-Language": "en" } }, 2500),
       fetchJson(bigDataUrl, { headers: { "User-Agent": "BaitLogic/1.0 baitlogicadmin@gmail.com" } }, 2200)
     ]);
