@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#02090d">
+<meta name="description" content="Community catches shared through BaitLogic Outdoors.">
+<title>Community Catches · BaitLogic Outdoors</title>
+<style>
+:root{color-scheme:dark;font-family:Roboto,system-ui,sans-serif;background:#02090d;color:#f1eee8}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% 0,rgba(20,87,101,.13),transparent 30%),#02090d;color:#f1eee8}
+a{color:inherit}.shell{width:min(1040px,calc(100% - 24px));margin:auto;padding:18px 0 80px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}.back{color:#43aeba;text-decoration:none;font-weight:800}.status{font-size:11px;color:#95bb49}
+.hero{padding:22px;border:1px solid rgba(70,158,170,.35);border-radius:16px;background:linear-gradient(135deg,#07161d,#1a1020)}
+.eyebrow{margin:0 0 6px;color:#469eaa;font-size:11px;font-weight:900;letter-spacing:.14em}.hero h1{margin:0;font-size:clamp(30px,7vw,52px);line-height:1}.hero p{max-width:720px;margin:10px 0 0;color:#cbc8c1;line-height:1.5}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}.actions a{padding:10px 12px;border:1px solid rgba(70,158,170,.45);border-radius:8px;text-decoration:none;font-size:12px;font-weight:800}
+.feed{margin-top:14px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.catch{padding:15px;border:1px solid rgba(70,158,170,.32);border-radius:14px;background:#07151b}.catch h2{margin:0;color:#5aabb5;font-size:18px}.meta{margin-top:4px;color:#989f9f;font-size:10px}.weight{color:#c99142}.location{color:#95bb49}.catch p{margin:10px 0 0;color:#d4d1ca;font-size:12px;line-height:1.45;white-space:pre-wrap}.empty{grid-column:1/-1;padding:22px;border:1px dashed rgba(255,255,255,.18);border-radius:14px;text-align:center;color:#a9b0b0}
+@media(max-width:640px){.feed{grid-template-columns:1fr}.hero{padding:17px}.shell{width:min(100% - 16px,1040px)}}
+</style>
+</head>
+<body>
+<main class="shell">
+  <div class="top"><a class="back" href="/">← BaitLogic Home</a><span class="status" id="connectionStatus">Checking connection…</span></div>
+  <section class="hero">
+    <p class="eyebrow">COMMUNITY CATCHES</p>
+    <h1>Shared catches. Real community.</h1>
+    <p>This page displays catch records already submitted to BaitLogic. It does not invent locations, weights, species, or notes.</p>
+    <div class="actions"><a href="/barometer.html">Open Barometer / Catch Logger</a><a href="/field-intel.html">Field Intelligence</a></div>
+  </section>
+  <section class="feed" id="catchFeed" aria-live="polite"><div class="empty">Loading community catches…</div></section>
+</main>
+<script>
+const feed=document.querySelector("#catchFeed"),status=document.querySelector("#connectionStatus");
+const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function when(value){if(!value)return"";const d=new Date(value);return Number.isNaN(d.getTime())?"":d.toLocaleString([], {dateStyle:"medium",timeStyle:"short"})}
+async function load(){
+  status.textContent=navigator.onLine?"Online":"Offline";
+  try{
+    const response=await fetch("/api/catches",{cache:"no-store"});
+    const data=await response.json();
+    if(!response.ok)throw new Error(data.error||"Community catches unavailable.");
+    const rows=Array.isArray(data.catches)?data.catches:[];
+    if(!rows.length){feed.innerHTML='<div class="empty">No community catches have been shared yet.</div>';return}
+    feed.innerHTML=rows.map(row=>`<article class="catch"><h2>${esc(row.species||"Catch")}</h2><div class="meta">${row.weight!=null?`<span class="weight">${Number(row.weight).toFixed(1)} lb</span> · `:""}<span class="location">${esc(row.location||"Location not shared")}</span>${row.createdAt?` · ${esc(when(row.createdAt))}`:""}</div>${row.notes?`<p>${esc(row.notes)}</p>`:""}</article>`).join("");
+  }catch(error){feed.innerHTML=`<div class="empty">${navigator.onLine?esc(error.message||"Community catches unavailable."):"No saved catch feed is available offline yet."}</div>`}
+}
+addEventListener("online",load);addEventListener("offline",()=>status.textContent="Offline");load();
+if("serviceWorker"in navigator)navigator.serviceWorker.register("/sw.js").catch(()=>{});
+</script>
+</body>
+</html>

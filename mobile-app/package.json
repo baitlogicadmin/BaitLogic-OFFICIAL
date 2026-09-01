@@ -12,7 +12,8 @@
     "predev": "npm run check:runtime",
     "dev": "vite",
     "prebuild": "npm run check:runtime",
-    "build": "tsc && vite build && node scripts/prepare-sites-build.mjs"
+    "build": "tsc && vite build && node scripts/prepare-sites-build.mjs",
+    "test:release": "playwright test tests/e2e/release-gate.spec.ts --project=mobile-app --project=desktop-web"
   },
   "dependencies": {
     "@fontsource/roboto": "5.2.10",

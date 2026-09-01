@@ -11,10 +11,8 @@ permissions:
 jobs:
   readiness:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 20
     env:
-      # CI uses Cloudflare's documented public test sitekey when the optional
-      # repository secret is absent. Vercel preview/production still use the real key.
       VITE_TURNSTILE_SITE_KEY: ${{ secrets.VITE_TURNSTILE_SITE_KEY || '1x00000000000000000000AA' }}
       BAITLOGIC_PRODUCTION_TARGET: vercel
     steps:
@@ -32,14 +30,24 @@ jobs:
         run: npm ci
         working-directory: mobile-app
 
-      - name: Run deployment readiness gate
+      - name: Run source, PWA and backend readiness
         run: npm run check:readiness
         working-directory: mobile-app
 
-      - name: Install Chromium for interaction tests
+      - name: Install Chromium
         run: npx playwright install --with-deps chromium
         working-directory: mobile-app
 
-      - name: Run mobile interaction tests
-        run: npm run test:runtime
+      - name: Run real-browser mobile and desktop release gate
+        run: npm run test:release
         working-directory: mobile-app
+
+      - name: Upload Playwright evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: baitlogic-playwright-evidence
+          path: |
+            mobile-app/playwright-report/
+            mobile-app/test-results/
+          retention-days: 14

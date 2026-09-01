@@ -7,14 +7,14 @@ test("ships an installable BaitLogic web app manifest", async () => {
 
   assert.equal(manifest.name, "BaitLogic — Local Outdoor Intelligence");
   assert.equal(manifest.display, "standalone");
-  assert.equal(manifest.theme_color, "#061535");
+  assert.equal(manifest.theme_color, "#25101f");
   assert.deepEqual(manifest.icons.map((icon) => icon.sizes), ["192x192", "512x512"]);
 });
 
 test("ships the versioned app-shell service worker", async () => {
   const worker = await readFile(new URL("../dist/client/sw.js", import.meta.url), "utf8");
 
-  assert.match(worker, /baitlogic-field-kit-v14/);
+  assert.match(worker, /baitlogic-field-kit-v16/);
   assert.match(worker, /baitlogic-facebook-qr\.png/);
   assert.match(worker, /hero-sunset\.webp/);
   assert.match(worker, /pillar-fishing\.webp/);
@@ -24,6 +24,9 @@ test("ships the versioned app-shell service worker", async () => {
   assert.match(worker, /\/api\/barometer-snapshot/);
   assert.match(worker, /\/api\/water-snapshot/);
   assert.match(worker, /\/trails\.html/);
+  assert.match(worker, /\/catches\.html/);
+  assert.match(worker, /\/profile\.html/);
+  assert.match(worker, /\/api\/catches/);
   assert.match(worker, /X-BaitLogic-Source/);
   assert.match(worker, /offline-cache/);
 });
@@ -39,7 +42,7 @@ test("barometer location loading has a bounded Android-friendly fallback", async
   assert.match(app, /Location permission is blocked/);
   assert.match(app, /baitlogic-barometer-last-v1/);
   assert.match(app, /Saved verified conditions are shown/);
-  assert.match(page, /barometer\/app\.js\?v=12/);
+  assert.match(page, /barometer\/app\.js\?v=13/);
   assert.match(page, /barometer\/connection-ui\.js\?v=3/);
 });
 
@@ -85,4 +88,24 @@ test("ships the weekly email sender with one-click unsubscribe", async () => {
   assert.match(sender, /Exact locations are never included/);
   assert.match(unsubscribe, /status: "unsubscribed"/);
   assert.match(unsubscribe, /safeEqual/);
+});
+
+
+test("renders mobile and desktop as separate implementations and ships Community Catches", async () => {
+  const prototype = await readFile(new URL("../src/Prototype.tsx", import.meta.url), "utf8");
+  const mobile = await readFile(new URL("../src/MobileDashboard.tsx", import.meta.url), "utf8");
+  const desktop = await readFile(new URL("../src/DesktopDashboard.tsx", import.meta.url), "utf8");
+  const catches = await readFile(new URL("../public/catches.html", import.meta.url), "utf8");
+
+  assert.match(prototype, /MobileDashboard/);
+  assert.match(prototype, /DesktopDashboard/);
+  assert.match(prototype, /matchMedia/);
+  assert.match(mobile, /CONSERVATION REPORTING · LOCAL/);
+  assert.match(mobile, /href:"\/catches\.html"/);
+  assert.doesNotMatch(mobile, />68°F</);
+  assert.doesNotMatch(mobile, />74°F</);
+  assert.match(desktop, /CONSERVATION REPORTING · LOCAL/);
+  assert.match(desktop, /href:"\/catches\.html"/);
+  assert.match(catches, /\/api\/catches/);
+  assert.match(catches, /does not invent locations, weights, species, or notes/);
 });
