@@ -138,7 +138,7 @@ test("primary destinations and barometer render successfully", async ({ page }, 
   const routes = ["/barometer.html", "/catches.html", "/field-intel.html", "/trails.html", "/outdoor.html", "/profile.html"];
 
   for (const route of routes) {
-    const response = await page.goto(route);
+    const response = await page.goto(route, { waitUntil: "domcontentloaded", timeout: 15000 });
     expect(response?.status(), route).toBeLessThan(400);
     await expect(page.locator("body")).not.toBeEmpty();
   }
@@ -148,8 +148,9 @@ test("primary destinations and barometer render successfully", async ({ page }, 
 });
 
 test("barometer loads verified pressure data instead of hanging", async ({ page }) => {
-  await page.goto("/barometer.html");
-  await page.getByRole("button", { name: /Use Highland, IL/i }).click();
+  await page.goto("/barometer.html", { waitUntil: "domcontentloaded", timeout: 15000 });
+  await expect(page.locator("#useHighland")).toBeVisible({ timeout: 5000 });
+  await page.locator("#useHighland").click();
   await expect(page.locator("#pressureValue")).toHaveText("29.91", { timeout: 10000 });
   await expect(page.locator("#dataState")).toContainText(/Live conditions|conditions loaded/i);
 });
