@@ -131,3 +131,29 @@ test("locks safety-critical navigation and official reporting destinations", asy
   assert.match(fieldIntel, /https:\/\/mdc12\.mdc\.mo\.gov\/Applications\/FishKillsIntake\/Intake/);
   assert.match(fieldIntel, /https:\/\/epa\.illinois\.gov\/pollution-complaint\/submit-a-complaint\.html/);
 });
+
+
+test("fails closed when weather-alert verification or cached conditions are unsafe", async () => {
+  const api = await readFile(new URL("../../api/barometer-snapshot.js", import.meta.url), "utf8");
+  const barometer = await readFile(new URL("../../public/barometer/app.js", import.meta.url), "utf8");
+  const outdoor = await readFile(new URL("../../public/outdoor.html", import.meta.url), "utf8");
+  const conditions = await readFile(new URL("../src/useBaitLogicConditions.ts", import.meta.url), "utf8");
+  const worker = await readFile(new URL("../public/sw.js", import.meta.url), "utf8");
+
+  assert.match(api, /alertsAvailable/);
+  assert.match(api, /NWS unavailable/);
+
+  assert.match(barometer, /CHECK OFFICIAL WEATHER/);
+  assert.match(barometer, /!cached&&d\.alertsAvailable!==false/);
+  assert.match(barometer, /Saved conditions are shown for context only/);
+
+  assert.match(outdoor, /CHECK OFFICIAL WEATHER/);
+  assert.match(outdoor, /X-BaitLogic-Source/);
+  assert.match(outdoor, /!stale&&d\.alertsAvailable!==false/);
+
+  assert.match(conditions, /WEATHER_CACHE_MAX_AGE_MS = 90 \* 60 \* 1000/);
+  assert.match(conditions, /WATER_CACHE_MAX_AGE_MS = 6 \* 60 \* 60 \* 1000/);
+
+  assert.match(worker, /baitlogic-field-kit-v17/);
+  assert.match(worker, /X-BaitLogic-Source/);
+});
