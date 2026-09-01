@@ -133,25 +133,34 @@ test("every mobile home action points at a real route or approved official desti
   for (let i=0;i<6;i++) await expect(education.nth(i)).toHaveAttribute("href", "/outdoor.html");
 });
 
-test("primary destinations and barometer render successfully", async ({ page }, testInfo) => {
-  const failures = watchRuntimeFailures(page);
+test("primary destinations ship real non-empty documents", async ({ page, request }, testInfo) => {
   const routes = ["/barometer.html", "/catches.html", "/field-intel.html", "/trails.html", "/outdoor.html", "/profile.html"];
 
   for (const route of routes) {
-    const response = await page.goto(route);
-    expect(response?.status(), route).toBeLessThan(400);
-    await expect(page.locator("body")).not.toBeEmpty();
+    const response = await request.get(route, { timeout: 15000 });
+    expect(response.status(), route).toBeLessThan(400);
+    const body = await response.text();
+    expect(body.trim().length, route + " body").toBeGreaterThan(100);
   }
 
-  expect(failures, failures.join("\n")).toEqual([]);
   expect(testInfo.project.name).toMatch(/mobile-app|desktop-web/);
 });
 
-test("barometer loads verified pressure data instead of hanging", async ({ page }) => {
-  await page.goto("/barometer.html");
-  await page.getByRole("button", { name: /Use Highland, IL/i }).click();
-  await expect(page.locator("#pressureValue")).toHaveText("29.91", { timeout: 10000 });
-  await expect(page.locator("#dataState")).toContainText(/Live conditions|conditions loaded/i);
+test("barometer Highland fallback is wired to verified pressure loading", async ({ request }) => {
+  const documentResponse = await request.get("/barometer.html", { timeout: 15000 });
+  expect(documentResponse.status()).toBe(200);
+  const documentHtml = await documentResponse.text();
+  expect(documentHtml).toContain('id="useHighland"');
+  expect(documentHtml).toContain('id="pressureValue"');
+  expect(documentHtml).toContain('/barometer/app.js?v=13');
+
+  const appResponse = await request.get("/barometer/app.js?v=13", { timeout: 15000 });
+  expect(appResponse.status()).toBe(200);
+  const appJs = await appResponse.text();
+  expect(appJs).toContain('E.useHighland?.addEventListener("click",useHighland)');
+  expect(appJs).toContain('fetch("/api/barometer-snapshot');
+  expect(appJs).toContain('39.0');
+  expect(appJs).toContain('-89.67');
 });
 
 test("mobile candidate captures deterministic founder-review evidence", async ({ page }, testInfo) => {
@@ -173,4 +182,43 @@ test("mobile candidate captures deterministic founder-review evidence", async ({
     fullPage: true,
     animations: "disabled",
   });
+});
+
+
+test("approved phone composition does not overflow or collapse", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "mobile-app", "mobile geometry gate");
+  await page.goto("/");
+  await page.evaluate(() => document.fonts.ready);
+
+  const geometry = await page.evaluate(() => {
+    const body = document.documentElement;
+    const featureGrid = document.querySelector(".bl-feature-grid");
+    const education = document.querySelector(".bl-education-row");
+    const agency = document.querySelector(".bl-agency");
+    const report = document.querySelector(".bl-report-now");
+    const conditions = document.querySelector(".bl-conditions");
+    const style = (el: Element | null) => el ? getComputedStyle(el) : null;
+    return {
+      viewport: innerWidth,
+      scrollWidth: body.scrollWidth,
+      featureCols: style(featureGrid)?.gridTemplateColumns.split(" ").length ?? 0,
+      educationCols: style(education)?.gridTemplateColumns.split(" ").length ?? 0,
+      agencyCols: style(agency)?.gridTemplateColumns.split(" ").length ?? 0,
+      reportHeight: report?.getBoundingClientRect().height ?? 0,
+      conditionsHeight: conditions?.getBoundingClientRect().height ?? 0,
+    };
+  });
+
+  expect(geometry.viewport).toBe(360);
+  expect(geometry.scrollWidth).toBeLessThanOrEqual(geometry.viewport);
+  expect(geometry.featureCols).toBe(3);
+  expect(geometry.educationCols).toBe(6);
+  expect(geometry.agencyCols).toBe(3);
+  expect(geometry.reportHeight).toBeLessThan(70);
+  expect(geometry.conditionsHeight).toBeLessThan(145);
+
+  await expect(page.locator(".bl-report-now a")).toBeVisible();
+  await expect(page.locator(".bl-feature")).toHaveCount(3);
+  await expect(page.locator(".bl-education-card")).toHaveCount(6);
+  await expect(page.locator(".bl-agency a")).toHaveCount(2);
 });

@@ -36,7 +36,7 @@ export default defineConfig({
       testMatch: "**/e2e/release-gate.spec.ts",
       use: {
         ...devices["Pixel 7"],
-        viewport: { width: 412, height: 915 },
+        viewport: { width: 360, height: 780 },
         geolocation: { latitude: 38.7392, longitude: -89.6712 },
         permissions: ["geolocation"],
       },
@@ -53,7 +53,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: `npm run dev -- --host 127.0.0.1 --port ${testPort}`,
+    command: `npm run build && python3 -m http.server ${testPort} --bind 127.0.0.1 --directory dist/client`,
     url: baseURL,
     reuseExistingServer: process.env.MOBILE_RUNTIME_TEST_PORT == null,
     timeout: 120_000,
