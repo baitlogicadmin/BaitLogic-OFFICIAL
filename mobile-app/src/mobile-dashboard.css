@@ -1,8 +1,9 @@
 :root{color-scheme:dark}
 *{box-sizing:border-box}
-html,body,#root{margin:0;min-height:100%;background:#210918;overflow:auto!important}
+html,body,#root{margin:0;min-height:100%;width:100%;max-width:100%;background:#210918;overflow-x:hidden!important;overflow-y:auto!important}
 body{font-family:Roboto,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
 .bl-home{
+  width:100%;max-width:100vw;
   --bg:#210918;--bg2:#2a0a20;--panel:#2a0a20;--panel2:#310b25;
   --gold:#f4c85a;--orange:#ff9a1f;--lime:#9be000;--cyan:#18c8e6;
   --pink:#ff5d73;--purple:#bd45f0;--cream:#f7efe9;--muted:#c9bbc4;
@@ -377,4 +378,41 @@ body{font-family:Roboto,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sa
   .bl-bottom-nav svg{width:24px;height:24px}
   .bl-bottom-nav .profile-icon{font-size:28px}
   .bl-bottom-nav .plus{width:50px;height:50px;font-size:34px}
+}
+
+/* Phone hardening: prevent intrinsic-content overflow and preserve the approved composition. */
+@media(max-width:600px){
+  .bl-header,.bl-main,.bl-bottom-nav{width:100%;max-width:100vw}
+  .bl-header>*,
+  .bl-main>*,
+  .bl-brand,
+  .bl-wordmark,
+  .bl-location,
+  .bl-conditions-top>*,
+  .bl-condition-metrics>*,
+  .bl-report-now>*,
+  .bl-feature-grid>*,
+  .bl-agency>*{min-width:0}
+  .bl-wordmark>small{white-space:normal;max-width:100%;overflow-wrap:anywhere}
+  .bl-location span{min-width:0}
+  .bl-location strong{max-width:100%;overflow:hidden;text-overflow:ellipsis}
+  .bl-conditions h1{white-space:normal}
+  .bl-condition-metrics{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .bl-metric{min-width:0}
+  .bl-metric>span:last-child{min-width:0}
+  .bl-metric strong,.bl-metric small,.bl-metric em{overflow-wrap:anywhere}
+  .bl-report-now{grid-template-columns:48px minmax(0,1fr);grid-template-areas:"icon copy" "cta cta"}
+  .bl-alert-icon{grid-area:icon}
+  .bl-report-now>div:nth-child(2){grid-area:copy}
+  .bl-report-now>a{grid-area:cta;justify-self:stretch;width:100%;margin-top:2px}
+  .bl-feature-grid{grid-template-columns:repeat(3,minmax(0,1fr));width:100%;overflow:hidden}
+  .bl-feature{min-width:0}
+  .bl-feature h2,.bl-feature p{overflow-wrap:anywhere}
+  .bl-education-row{width:100%;max-width:100%;overflow-x:auto}
+  .bl-agency{grid-template-columns:1fr;grid-template-areas:"intro" "il" "mo"}
+  .bl-agency>a{width:100%}
+  .bl-sources{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .bl-sources span:nth-child(2){border-right:0}
+  .bl-sources span{min-height:40px;display:flex;align-items:center;justify-content:center}
+  .bl-bottom-nav{left:0;right:0;transform:none}
 }
