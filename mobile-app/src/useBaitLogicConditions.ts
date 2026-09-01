@@ -101,7 +101,7 @@ export function useBaitLogicConditions() {
   const [accuracy,setAccuracy] = useState<number|undefined>();
 
   const snapshotRef = useRef<DashboardSnapshot|undefined>(cached);
-  const waterRef = useRef<WaterSnapshot|undefined>();
+  const waterRef = useRef<WaterSnapshot|undefined>(undefined);
 
   const loadAt = useCallback(async (lat:number,lon:number,acc?:number) => {
     setStatus(snapshotRef.current ? "cached" : "loading");
