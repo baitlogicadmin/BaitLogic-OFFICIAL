@@ -131,7 +131,8 @@ module.exports = async function handler(req, res) {
     const sunrise = Array.isArray(d.daily?.sunrise) && d.daily.sunrise.length ? d.daily.sunrise[d.daily.sunrise.length - 1] : null;
     const sunset = Array.isArray(d.daily?.sunset) && d.daily.sunset.length ? d.daily.sunset[d.daily.sunset.length - 1] : null;
 
-    const alerts = alertsResult.status === "fulfilled"
+    const alertsAvailable = alertsResult.status === "fulfilled";
+    const alerts = alertsAvailable
       ? (alertsResult.value.features || []).slice(0, 5).map(feature => ({
           event: feature.properties?.event || "Weather alert",
           severity: feature.properties?.severity || "Unknown",
@@ -149,7 +150,7 @@ module.exports = async function handler(req, res) {
     return res.status(200).json({
       source: {
         weather: "Open-Meteo",
-        alerts: alertsResult.status === "fulfilled" ? "National Weather Service" : "NWS unavailable",
+        alerts: alertsAvailable ? "National Weather Service" : "NWS unavailable",
         location: placeSource
       },
       updatedAt: new Date().toISOString(),
@@ -171,6 +172,7 @@ module.exports = async function handler(req, res) {
         sunrise,
         sunset
       },
+      alertsAvailable,
       alerts
     });
   } catch (error) {
