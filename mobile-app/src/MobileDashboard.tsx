@@ -1,145 +1,149 @@
 import {
-  Crosshair2Icon, HomeIcon, ReaderIcon, GlobeIcon
+  Crosshair2Icon, HomeIcon, ReaderIcon, GlobeIcon, PersonIcon,
+  LapTimerIcon, SunIcon, ActivityLogIcon, HeartIcon
 } from "@radix-ui/react-icons";
 import {
-  compass, pressureTrend, relativeUpdated, useBaitLogicConditions, WEATHER_LABELS
+  compass, formatClock, pressureTrend, relativeUpdated, useBaitLogicConditions, WEATHER_LABELS
 } from "./useBaitLogicConditions";
 import "./mobile-dashboard.css";
 
-const education = [
-  {title:"Camping", img:"/assets/pillar-camping.webp"},
-  {title:"Hiking", img:"/assets/hero-sunset.webp"},
-  {title:"Preparedness", img:"/assets/pillar-conservation.webp"},
-  {title:"Wildlife", img:"/assets/pillar-conservation.webp"},
-  {title:"Fishing", img:"/assets/pillar-fishing.webp"},
-  {title:"Conservation", img:"/assets/pillar-conservation.webp"},
+const cards = [
+  {
+    cls:"reporting",
+    title:"CONSERVATION REPORTING · LOCAL",
+    text:"If you see something, say something.",
+    cta:"REPORT / RESOURCES",
+    href:"/field-intel.html#conservation",
+    img:"/assets/hero-sunset.webp",
+    icon:"♧"
+  },
+  {
+    cls:"trails",
+    title:"TRAILS & OFF-GRID",
+    text:"Nearby trails, maps, and off-grid resources.",
+    cta:"EXPLORE TRAILS",
+    href:"/trails.html",
+    img:"/assets/approved-card-conservation.svg",
+    icon:"⌁"
+  },
+  {
+    cls:"barometer",
+    title:"BAROMETER",
+    text:"Real-time weather, pressure, wind and water data.",
+    cta:"VIEW DASHBOARD",
+    href:"/barometer.html",
+    img:"/assets/approved-card-barometer.svg",
+    icon:"◴"
+  },
+  {
+    cls:"knowledge",
+    title:"OUTDOOR KNOWLEDGE",
+    text:"Camping, hiking, safety, wildlife and more.",
+    cta:"LEARN MORE",
+    href:"/outdoor.html",
+    img:"/assets/pillar-camping.webp",
+    icon:"▤"
+  },
+  {
+    cls:"field",
+    title:"FIELD LOG",
+    text:"Track conditions, notes, and observations over time.",
+    cta:"OPEN LOG",
+    href:"/field-intel.html#field-check",
+    img:"/assets/approved-card-conservation.svg",
+    icon:"▣"
+  },
+  {
+    cls:"catches",
+    title:"COMMUNITY CATCHES",
+    text:"Share your catches. See what others are catching.",
+    cta:"VIEW CATCHES",
+    href:"/catches.html",
+    img:"/assets/approved-card-catches.svg",
+    icon:"◎"
+  }
 ];
 
 function Logo({small=false}:{small?:boolean}) {
-  return <img
-    className={small?"bl-logo bl-logo-small":"bl-logo"}
-    src="/assets/baitlogic-boysenberry-logo.svg"
-    alt={small?"":"BaitLogic Outdoors"}
-  />;
-}
-
-function Metric({icon,label,value,detail,cls=""}:{icon:string,label:string,value:string,detail?:string,cls?:string}) {
-  return <div className={"bl-metric "+cls}>
-    <span className="bl-metric-icon">{icon}</span>
-    <span>
-      <small>{label}</small>
-      <strong>{value}</strong>
-      {detail?<em>{detail}</em>:null}
-    </span>
-  </div>;
+  return <img className={small?"auth-logo small":"auth-logo"} src="/assets/baitlogic-logo.png" alt={small?"":"BaitLogic Outdoors"} />;
 }
 
 export default function MobileDashboard(){
-  const {snapshot,waterTemp,waterStatus,online,status,refreshLocation}=useBaitLogicConditions();
+  const {snapshot,waterTemp,online,status,refreshLocation}=useBaitLogicConditions();
   const w=snapshot?.weather;
   const place=snapshot?.location?.locality || snapshot?.location?.name || "Choose location";
   const region=snapshot?.location?.region?.replace("Illinois","IL").replace("Missouri","MO");
   const locationLabel=region && !place.includes(region) ? `${place}, ${region}` : place;
   const live=online&&status==="live";
+  const stateLabel=live?"LIVE":status==="cached"?"CACHED":"CHECK";
 
-  return <div className="bl-home">
-    <header className="bl-header">
-      <a href="/" className="bl-brand" aria-label="BaitLogic Outdoors home">
+  return <div className="authorized-home">
+    <header className="auth-header">
+      <a className="auth-brand" href="/" aria-label="BaitLogic Outdoors home">
         <Logo/>
-        <span className="bl-wordmark">
+        <span className="auth-wordmark">
           <strong>BAITLOGIC</strong>
           <b><i/>OUTDOORS<i/></b>
-          <small><em>Beyond the Bite.</em> Powered by People and Purpose.</small>
-          <span className="bl-rainbow" aria-hidden="true"/>
+          <small>Beyond the Bite. Powered by People and Purpose.</small>
         </span>
       </a>
-      <button className="bl-location" onClick={refreshLocation} type="button" aria-label="Refresh current location and conditions">
+      <button className="auth-location" type="button" onClick={refreshLocation}>
         <Crosshair2Icon/>
-        <span><strong>{locationLabel}</strong><small>● {live?"LIVE":status==="cached"?"CACHED":"CHECK"}</small></span>
+        <span><strong>{locationLabel}</strong><small>● {stateLabel}</small></span>
       </button>
     </header>
 
-    <main className="bl-main">
-      <section className="bl-conditions" aria-label="Outdoor conditions">
-        <div className="bl-conditions-top">
-          <div>
-            <h1>OUTDOOR CONDITIONS <span>{live?"● LIVE":status==="cached"?"● CACHED":"● CHECK"}</span></h1>
-            <div className="bl-temp-row">
-              <span className="bl-weather-icon">{w && [0,1].includes(w.code)?"☀":"☁"}</span>
-              <div><strong>{w?`${Math.round(w.temperatureF)}°F`:"—"}</strong><p>{w?(WEATHER_LABELS[w.code]||"Current conditions"):"Unavailable"}</p></div>
-            </div>
-          </div>
-          <div className="bl-hero-photo" aria-hidden="true"/>
+    <main className="auth-main">
+      <section className="auth-conditions">
+        <a className="auth-section-title" href="/barometer.html">CURRENT CONDITIONS <span>›</span></a>
+        <div className="auth-metrics">
+          <div><LapTimerIcon/><span><strong>{w?`${w.pressureInHg.toFixed(2)}`:"—"} <i>inHg</i></strong><small>{w?pressureTrend(w.pressureDelta3h):"Unavailable"}</small></span></div>
+          <div><span className="glyph">☁</span><span><strong>{w?`${Math.round(w.temperatureF)}°F`:"—"}</strong><small>{w?(WEATHER_LABELS[w.code]||"Current conditions"):"Unavailable"}</small></span></div>
+          <div><span className="glyph water">◯</span><span><strong>{waterTemp!=null?`${waterTemp.toFixed(1)}°F`:"—"}</strong><small>Water Temp</small></span></div>
+          <div><ActivityLogIcon/><span><strong>{w?`${Math.round(w.windMph)} mph`:"—"}</strong><small>{w?compass(w.windDirection):"Unavailable"}</small></span></div>
+          <div><SunIcon/><span><strong>{formatClock(w?.sunrise)}</strong><small>{formatClock(w?.sunset)}</small></span></div>
+          <div><span className="glyph clock">◷</span><span><strong>Updated</strong><small>{relativeUpdated(snapshot?.updatedAt)}</small></span></div>
         </div>
-
-        <div className="bl-condition-metrics">
-          <Metric icon="💧" label="Water" value={waterTemp!=null?`${waterTemp.toFixed(1)}°F`:"—"} detail={waterTemp!=null?(waterStatus==="cached"?"Cached":"Verified"):"No verified reading"} cls="water"/>
-          <Metric icon="≋" label="Wind" value={w?`${Math.round(w.windMph)} mph ${compass(w.windDirection)}`:"—"} cls="wind"/>
-          <Metric icon="◴" label="Pressure" value={w?`${w.pressureInHg.toFixed(2)} inHg`:"—"} detail={w?pressureTrend(w.pressureDelta3h):"Unavailable"} cls="pressure"/>
-          <Metric icon="◷" label="Updated" value={relativeUpdated(snapshot?.updatedAt)} cls="updated"/>
-        </div>
-        <a className="bl-primary-cta" href="/barometer.html">VIEW LOCAL CONDITIONS <span>→</span></a>
       </section>
 
-      <section className="bl-report-now" aria-label="See something say something">
-        <div className="bl-alert-icon">!</div>
+      <section className="auth-card-grid">
+        {cards.map(card=><a className={`auth-card ${card.cls}`} href={card.href} key={card.title}>
+          <div className="auth-card-image" style={{backgroundImage:`linear-gradient(180deg,rgba(10,4,12,.06),rgba(12,3,12,.86)),url("${card.img}")`}}/>
+          <span className="auth-card-icon">{card.icon}</span>
+          <h2>{card.title}</h2>
+          <p>{card.text}</p>
+          <b>{card.cta} <span>→</span></b>
+        </a>)}
+      </section>
+
+      <section className="auth-trusted">
+        <h2>◇ TRUSTED DATA SOURCES</h2>
         <div>
-          <h2>SEE SOMETHING? SAY SOMETHING.</h2>
-          <p>Report pollution, fish kills, wildlife concerns, or unsafe conditions.</p>
+          <span><strong>USGS</strong><small>Water Data</small></span>
+          <span><strong>☁ Open-Meteo</strong><small>Weather</small></span>
+          <span><strong>👥 Community</strong><small>Reports</small></span>
         </div>
-        <a href="/field-intel.html#conservation">REPORT NOW <span>▣</span></a>
       </section>
 
-      <section className="bl-feature-grid" aria-label="Outdoor tools">
-        <a className="bl-feature water-flow" href="/field-intel.html#water">
-          <div><h2>≋ WATER &amp; FLOW</h2><p>Stream levels, flow, temperature &amp; pressure data.</p></div>
-          <span className="bl-feature-arrow">→</span>
-        </a>
-        <a className="bl-feature catches" href="/catches.html">
-          <div><h2>⌾ LOCAL CATCHES</h2><p>Recent catches, species reports &amp; activity.</p></div>
-          <span className="bl-feature-arrow">→</span>
-        </a>
-        <a className="bl-feature trails" href="/trails.html">
-          <div><h2>♜ TRAILS &amp; MAPS</h2><p>Explore trails with offline maps &amp; directions.</p></div>
-          <span className="bl-feature-arrow">→</span>
-        </a>
-      </section>
+      <a className="auth-strip offline" href="/outdoor.html">
+        <span className="strip-icon">⇩</span>
+        <span><strong>OFFLINE READY</strong><small>Access key data and maps even when you're off the grid.</small><em>Always prepared. Always outdoors.</em></span>
+        <b>›</b>
+      </a>
 
-      <section className="bl-education">
-        <div className="bl-section-row"><h2>OUTDOOR EDUCATION</h2><a href="/outdoor.html">LEARN MORE →</a></div>
-        <div className="bl-education-row">
-          {education.map(item=><a href="/outdoor.html" className="bl-education-card" key={item.title}>
-            <span>{item.title}</span>
-            <div style={{backgroundImage:`url("${item.img}")`}}/>
-          </a>)}
-        </div>
-        <div className="bl-dots" aria-hidden="true"><b/><i/><i/><i/><i/></div>
-      </section>
-
-      <section className="bl-agency">
-        <div><h2>REPORT TO THE RIGHT AGENCY</h2><p>Your reports help protect our waters, wildlife, and public safety.</p></div>
-        <a className="illinois" href="https://dnr2.illinois.gov/OLETIPHotline/" target="_blank" rel="noopener noreferrer">
-          <span className="state-icon">IL</span><span><strong>REPORT TO IL DNR</strong><small>Illinois Department of Natural Resources</small></span>
-        </a>
-        <a className="missouri" href="https://mdc12.mdc.mo.gov/Applications/FishKillsIntake/Intake" target="_blank" rel="noopener noreferrer">
-          <span className="state-icon">MO</span><span><strong>REPORT TO MO CONS.</strong><small>Missouri Department of Conservation</small></span>
-        </a>
-      </section>
-
-      <section className="bl-sources" aria-label="Trusted data sources">
-        <span>💧 <b>USGS</b> Water Data</span>
-        <span>⛈ <b>NWS</b> Weather</span>
-        <span>☀ <b>Open-Meteo</b></span>
-        <span>◉ <b>Offline Ready</b></span>
-      </section>
+      <a className="auth-strip conservation" href="/field-intel.html#conservation">
+        <span className="strip-icon heart"><HeartIcon/></span>
+        <span><strong>CONSERVATION FIRST</strong><small>If you see something, say something.</small></span>
+        <em>MAKE A DIFFERENCE →</em>
+      </a>
     </main>
 
-    <nav className="bl-bottom-nav" aria-label="App navigation">
-      <a className="active" href="/"><HomeIcon/><span>Home</span></a>
-      <a href="/trails.html"><GlobeIcon/><span>Maps</span></a>
-      <a className="log" href="/field-intel.html#field-check"><span className="plus">＋</span><span>Log</span></a>
-      <a href="/field-intel.html#conservation"><ReaderIcon/><span>Reports</span></a>
-      <a href="/profile.html"><span className="profile-icon">◎</span><span>Profile</span></a>
+    <nav className="auth-bottom-nav" aria-label="App navigation">
+      <a className="active" href="/"><HomeIcon/><span>HOME</span></a>
+      <a href="/trails.html"><GlobeIcon/><span>MAPS</span></a>
+      <a className="center-logo" href="/field-intel.html#field-check" aria-label="Open field log"><Logo small/></a>
+      <a href="/field-intel.html#field-check"><ReaderIcon/><span>LOG</span></a>
+      <a href="/profile.html"><PersonIcon/><span>PROFILE</span></a>
     </nav>
   </div>;
 }
