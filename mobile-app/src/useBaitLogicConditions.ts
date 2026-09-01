@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 export type DashboardSnapshot = {
   updatedAt: string;
@@ -100,8 +100,11 @@ export function useBaitLogicConditions() {
   const [status,setStatus] = useState<"idle"|"loading"|"live"|"cached"|"unavailable">(cached?"cached":"idle");
   const [accuracy,setAccuracy] = useState<number|undefined>();
 
+  const snapshotRef = useRef<DashboardSnapshot|undefined>(cached);
+  const waterRef = useRef<WaterSnapshot|undefined>();
+
   const loadAt = useCallback(async (lat:number,lon:number,acc?:number) => {
-    setStatus(snapshot ? "cached" : "loading");
+    setStatus(snapshotRef.current ? "cached" : "loading");
     setAccuracy(acc);
     try {
       const [weatherResponse,waterResponse] = await Promise.all([
@@ -112,42 +115,47 @@ export function useBaitLogicConditions() {
       const weatherData = await weatherResponse.json();
       if (!weatherResponse.ok || !weatherData?.weather) throw new Error(weatherData?.error || "Live conditions unavailable.");
 
+      snapshotRef.current = weatherData;
       setSnapshot(weatherData);
       localStorage.setItem(CACHE_KEY,JSON.stringify(weatherData));
-      setStatus("live");
+      const weatherSource = weatherResponse.headers.get("X-BaitLogic-Source");
+      setStatus(weatherSource === "offline-cache" ? "cached" : "live");
 
       if (waterResponse.ok) {
         const waterData = await waterResponse.json();
+        waterRef.current = waterData;
         setWater(waterData);
         setWaterStatus(waterResponse.headers.get("X-BaitLogic-Source") === "offline-cache" ? "cached" : "live");
       } else {
+        waterRef.current = undefined;
         setWater(undefined);
         setWaterStatus("unavailable");
       }
     } catch {
-      setWaterStatus(water ? waterStatus : "unavailable");
+      setWaterStatus(waterRef.current ? "cached" : "unavailable");
       const fallback = readCache();
       if (fallback) {
+        snapshotRef.current = fallback;
         setSnapshot(fallback);
         setStatus("cached");
       } else {
         setStatus("unavailable");
       }
     }
-  },[snapshot]);
+  },[]);
 
   const refreshLocation = useCallback(() => {
     if (!navigator.geolocation) {
       setStatus(readCache()?"cached":"unavailable");
       return;
     }
-    setStatus(snapshot?"cached":"loading");
+    setStatus(snapshotRef.current?"cached":"loading");
     navigator.geolocation.getCurrentPosition(
       p => loadAt(p.coords.latitude,p.coords.longitude,p.coords.accuracy),
       () => setStatus(readCache()?"cached":"unavailable"),
       {enableHighAccuracy:false,timeout:8000,maximumAge:300000}
     );
-  },[loadAt,snapshot]);
+  },[loadAt]);
 
   useEffect(() => {
     const on=()=>setOnline(true),off=()=>setOnline(false);
