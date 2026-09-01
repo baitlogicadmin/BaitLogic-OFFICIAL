@@ -41,7 +41,7 @@
 <footer class="shell footer"><div class="footer-inner"><div><strong>BaitLogic</strong><br>Know what changed. Share what you see. Protect what matters.</div><div><a href="mailto:baitlogicadmin@gmail.com">baitlogicadmin@gmail.com</a></div></div></footer>
 <script>
 const $=s=>document.querySelector(s);
-let activity='family',activeAlerts=[];
+let activity='family',activeAlerts=[],alertsVerified=false;
 const modes={hike:['Hike / Walk','Heat, storms, wind, daylight and access matter most.'],camp:['Camp','Storms, overnight weather, wind, temperature swings and daylight matter most.'],paddle:['Paddle','Lightning, wind, storms, temperature and water conditions matter most.'],fish:['Fish','Lightning, weather, pressure trend, daylight and water evidence matter most.'],wildlife:['Wildlife Watch','Dawn/dusk timing, weather, modeled AQI and recent sightings matter most.'],hunt:['Hunt','Weather, wind, daylight, access and habitat observations matter most.'],family:['Family Outside','Feels-like temperature, modeled AQI, daylight and official alerts matter most.'],conservation:['Conservation','Official alerts, community habitat reports, pollution, trash and reporting paths matter most.']};
 const wxText=c=>({0:'Clear sky',1:'Mainly clear',2:'Partly cloudy',3:'Overcast',45:'Fog',48:'Rime fog',51:'Light drizzle',53:'Drizzle',55:'Heavy drizzle',61:'Light rain',63:'Rain',65:'Heavy rain',71:'Light snow',73:'Snow',75:'Heavy snow',80:'Rain showers',81:'Rain showers',82:'Heavy showers',95:'Thunderstorms',96:'Thunderstorms / hail',99:'Severe thunderstorms / hail'})[c]||'Current conditions';
 const aqiText=n=>n==null?'Unavailable':n<=50?'Good':n<=100?'Moderate':n<=150?'Unhealthy for sensitive groups':n<=200?'Unhealthy':n<=300?'Very unhealthy':'Hazardous';
@@ -54,6 +54,7 @@ function setActivity(a,b){activity=a;document.querySelectorAll('.activity').forE
 document.querySelectorAll('.activity').forEach(b=>b.addEventListener('click',()=>setActivity(b.dataset.activity,b)));
 function recommend(x){
   let label='FAVORABLE',reasons=[];
+  if(!alertsVerified){$('#goNow').textContent='CHECK OFFICIAL WEATHER';$('#goCopy').textContent='National Weather Service alerts could not be verified. Check an official weather source before relying on this activity read.';return;}
   const warning=activeAlerts.find(a=>/warning|emergency/i.test(a.event||''));
   const watch=activeAlerts.find(a=>/watch/i.test(a.event||''));
   const official=warning||watch||activeAlerts[0];
@@ -67,9 +68,11 @@ function recommend(x){
   $('#goNow').textContent=label;
   $('#goCopy').textContent=reasons.length?`Watch: ${[...new Set(reasons)].join(', ')}.`:'No major flags were found in the currently loaded signals. Keep watching local conditions.';
 }
-function renderAlerts(alerts){
+function renderAlerts(alerts,verified=true){
+  alertsVerified=verified;
   activeAlerts=alerts||[];
   const box=$('#alertsBox');
+  if(!verified){box.innerHTML='<div class="card alert-card"><h3>NWS alerts unavailable</h3><p>BaitLogic could not verify current National Weather Service alerts. Check weather.gov or another official NWS source before proceeding.</p></div>';return;}
   box.innerHTML=activeAlerts.length?activeAlerts.slice(0,6).map(a=>`<article class="card alert-card"><div class="kicker">${esc(a.severity||'Official Alert')}</div><h3>${esc(a.event||'NWS Alert')}</h3><p><strong>${esc(a.headline||'Active National Weather Service alert')}</strong></p><p>${esc((a.instruction||'').slice(0,500))}</p></article>`).join(''):'<div class="card alert-none"><h3>No active NWS alerts found for this point</h3><p>Conditions can change quickly; continue to monitor official weather information.</p></div>';
 }
 function reverseGeocode(lat,lon){
@@ -92,7 +95,7 @@ async function loadLive(lat,lon){
     const w=d.weather||{},aqi=a.current?.us_aqi??null;
     const live={temp:Number(w.temperatureF),feels:Number(w.apparentTemperatureF),humidity:Number(w.humidity),wind:Number(w.windMph),gust:Number(w.gustMph),rain:Number(w.precipitationIn),code:Number(w.code),pressureInHg:Number(w.pressureInHg),pressureDelta3h:Number(w.pressureDelta3h),pressureDelta6h:Number(w.pressureDelta6h),aqi:aqi==null?null:Number(aqi)};
     window.lastLive=live;
-    renderAlerts(d.alerts||[]);
+    renderAlerts(d.alerts||[],d.alertsAvailable!==false&&d.source?.alerts!=='NWS unavailable');
     $('#tempNow').textContent=Number.isFinite(live.temp)?`${Math.round(live.temp)}°F`:'—';
     $('#weatherNow').textContent=wxText(live.code);
     $('#feelsNow').textContent=Number.isFinite(live.feels)?`${Math.round(live.feels)}°F`:'—';
