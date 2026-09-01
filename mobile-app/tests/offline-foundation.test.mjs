@@ -100,8 +100,11 @@ test("renders mobile and desktop as separate implementations and ships Community
   assert.match(prototype, /MobileDashboard/);
   assert.match(prototype, /DesktopDashboard/);
   assert.match(prototype, /matchMedia/);
-  assert.match(mobile, /CONSERVATION REPORTING · LOCAL/);
-  assert.match(mobile, /href:"\/catches\.html"/);
+  assert.match(mobile, /SEE SOMETHING\? SAY SOMETHING\./);
+  assert.match(mobile, /href="\/catches\.html"/);
+  assert.match(mobile, /OUTDOOR EDUCATION/);
+  assert.match(mobile, /REPORT TO THE RIGHT AGENCY/);
+  assert.match(mobile, /baitlogic-boysenberry-logo\.svg/);
   assert.doesNotMatch(mobile, />68°F</);
   assert.doesNotMatch(mobile, />74°F</);
   assert.match(desktop, /CONSERVATION REPORTING · LOCAL/);
