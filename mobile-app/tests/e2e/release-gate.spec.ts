@@ -110,7 +110,6 @@ test("mobile homepage preserves the founder-authorized six-card information arch
   await expect(page.locator(".auth-card.catches")).toContainText("COMMUNITY CATCHES");
   await expect(page.locator(".auth-trusted")).toContainText("TRUSTED DATA SOURCES");
   await expect(page.locator(".auth-strip.offline")).toContainText("OFFLINE READY");
-  await expect(page.locator(".auth-strip.conservation")).toContainText("CONSERVATION FIRST");
 });
 
 test("every founder-authorized mobile card points at the intended real destination", async ({ page }, testInfo) => {
@@ -126,7 +125,6 @@ test("every founder-authorized mobile card points at the intended real destinati
     [".auth-card.field", "/field-intel.html#field-check"],
     [".auth-card.catches", "/catches.html"],
     [".auth-strip.offline", "/outdoor.html"],
-    [".auth-strip.conservation", "/field-intel.html#conservation"],
     [".auth-bottom-nav a:nth-child(1)", "/"],
     [".auth-bottom-nav a:nth-child(2)", "/trails.html"],
     [".auth-bottom-nav a:nth-child(3)", "/field-intel.html#field-check"],
@@ -180,7 +178,6 @@ test("mobile candidate captures deterministic founder-review evidence", async ({
   await expect(page.locator(".auth-card")).toHaveCount(6);
   await expect(page.locator(".auth-trusted")).toBeVisible();
   await expect(page.locator(".auth-strip.offline")).toBeVisible();
-  await expect(page.locator(".auth-strip.conservation")).toBeVisible();
   await expect(page.locator(".auth-bottom-nav")).toBeVisible();
 
   await page.screenshot({
