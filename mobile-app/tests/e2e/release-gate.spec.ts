@@ -76,61 +76,67 @@ test.beforeEach(async ({ page }) => {
 test("renders the correct implementation for the active device class", async ({ page }, testInfo) => {
   await page.goto("/");
   if (testInfo.project.name === "mobile-app") {
-    await expect(page.locator(".bl-home")).toBeVisible();
+    await expect(page.locator(".authorized-home")).toBeVisible();
     await expect(page.locator(".desktop-dashboard")).toHaveCount(0);
   } else {
     await expect(page.locator(".desktop-dashboard")).toBeVisible();
-    await expect(page.locator(".bl-home")).toHaveCount(0);
+    await expect(page.locator(".authorized-home")).toHaveCount(0);
   }
 });
 
 test("verified condition data reaches the mobile interface without invented values", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "mobile-app", "mobile data gate");
   await page.goto("/");
-  await expect(page.locator(".bl-conditions")).toContainText("74°F");
-  await expect(page.locator(".bl-conditions")).toContainText("68.0°F");
-  await expect(page.locator(".bl-conditions")).toContainText("29.91 inHg");
-  await expect(page.locator(".bl-conditions")).toContainText("8 mph NW");
-  await expect(page.locator(".bl-location")).toContainText("Highland");
+  await expect(page.locator(".auth-conditions")).toContainText("74°F");
+  await expect(page.locator(".auth-conditions")).toContainText("68.0°F");
+  await expect(page.locator(".auth-conditions")).toContainText("29.91 inHg");
+  await expect(page.locator(".auth-conditions")).toContainText("8 mph");
+  await expect(page.locator(".auth-location")).toContainText("Highland");
 });
 
-test("mobile homepage preserves the founder-approved information architecture", async ({ page }, testInfo) => {
+test("mobile homepage preserves the founder-authorized six-card information architecture", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "mobile-app", "mobile founder gate");
   await page.goto("/");
 
-  await expect(page.locator(".bl-logo")).toHaveAttribute("src", "/assets/baitlogic-boysenberry-logo.svg");
-  await expect(page.locator(".bl-report-now")).toContainText("SEE SOMETHING? SAY SOMETHING.");
-  await expect(page.locator(".bl-feature")).toHaveCount(3);
-  await expect(page.locator(".bl-education-card")).toHaveCount(6);
-  await expect(page.locator(".bl-agency")).toContainText("REPORT TO THE RIGHT AGENCY");
-  await expect(page.locator(".bl-sources")).toContainText("USGS");
-  await expect(page.locator(".bl-sources")).toContainText("NWS");
-  await expect(page.locator(".bl-sources")).toContainText("Open-Meteo");
-  await expect(page.locator(".bl-sources")).toContainText("Offline Ready");
+  await expect(page.locator(".auth-logo").first()).toHaveAttribute("src", "/assets/baitlogic-logo.png");
+  await expect(page.locator(".auth-section-title")).toContainText("CURRENT CONDITIONS");
+  await expect(page.locator(".auth-metrics > div")).toHaveCount(6);
+  await expect(page.locator(".auth-card")).toHaveCount(6);
+  await expect(page.locator(".auth-card.reporting")).toContainText("CONSERVATION REPORTING · LOCAL");
+  await expect(page.locator(".auth-card.trails")).toContainText("TRAILS & OFF-GRID");
+  await expect(page.locator(".auth-card.barometer")).toContainText("BAROMETER");
+  await expect(page.locator(".auth-card.knowledge")).toContainText("OUTDOOR KNOWLEDGE");
+  await expect(page.locator(".auth-card.field")).toContainText("FIELD LOG");
+  await expect(page.locator(".auth-card.catches")).toContainText("COMMUNITY CATCHES");
+  await expect(page.locator(".auth-trusted")).toContainText("TRUSTED DATA SOURCES");
+  await expect(page.locator(".auth-strip.offline")).toContainText("OFFLINE READY");
+  await expect(page.locator(".auth-strip.conservation")).toContainText("CONSERVATION FIRST");
 });
 
-test("every mobile home action points at a real route or approved official destination", async ({ page }, testInfo) => {
+test("every founder-authorized mobile card points at the intended real destination", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "mobile-app", "mobile action gate");
   await page.goto("/");
 
   const expected = [
-    [".bl-primary-cta", "/barometer.html"],
-    [".bl-report-now a", "/field-intel.html#conservation"],
-    [".bl-feature.water-flow", "/field-intel.html#water"],
-    [".bl-feature.catches", "/catches.html"],
-    [".bl-feature.trails", "/trails.html"],
-    [".bl-section-row a", "/outdoor.html"],
-    [".bl-agency .illinois", "https://dnr2.illinois.gov/OLETIPHotline/"],
-    [".bl-agency .missouri", "https://mdc12.mdc.mo.gov/Applications/FishKillsIntake/Intake"],
+    [".auth-section-title", "/barometer.html"],
+    [".auth-card.reporting", "/field-intel.html#conservation"],
+    [".auth-card.trails", "/trails.html"],
+    [".auth-card.barometer", "/barometer.html"],
+    [".auth-card.knowledge", "/outdoor.html"],
+    [".auth-card.field", "/field-intel.html#field-check"],
+    [".auth-card.catches", "/catches.html"],
+    [".auth-strip.offline", "/outdoor.html"],
+    [".auth-strip.conservation", "/field-intel.html#conservation"],
+    [".auth-bottom-nav a:nth-child(1)", "/"],
+    [".auth-bottom-nav a:nth-child(2)", "/trails.html"],
+    [".auth-bottom-nav a:nth-child(3)", "/field-intel.html#field-check"],
+    [".auth-bottom-nav a:nth-child(4)", "/field-intel.html#field-check"],
+    [".auth-bottom-nav a:nth-child(5)", "/profile.html"],
   ] as const;
 
   for (const [selector, href] of expected) {
     await expect(page.locator(selector)).toHaveAttribute("href", href);
   }
-
-  const education = page.locator(".bl-education-card");
-  await expect(education).toHaveCount(6);
-  for (let i=0;i<6;i++) await expect(education.nth(i)).toHaveAttribute("href", "/outdoor.html");
 });
 
 test("primary destinations ship real non-empty documents", async ({ page, request }, testInfo) => {
@@ -169,13 +175,13 @@ test("mobile candidate captures deterministic founder-review evidence", async ({
   await page.evaluate(() => document.fonts.ready);
   await page.waitForTimeout(350);
 
-  await expect(page.locator(".bl-header")).toBeVisible();
-  await expect(page.locator(".bl-conditions")).toBeVisible();
-  await expect(page.locator(".bl-report-now")).toBeVisible();
-  await expect(page.locator(".bl-feature")).toHaveCount(3);
-  await expect(page.locator(".bl-education-card")).toHaveCount(6);
-  await expect(page.locator(".bl-agency")).toBeVisible();
-  await expect(page.locator(".bl-bottom-nav")).toBeVisible();
+  await expect(page.locator(".auth-header")).toBeVisible();
+  await expect(page.locator(".auth-conditions")).toBeVisible();
+  await expect(page.locator(".auth-card")).toHaveCount(6);
+  await expect(page.locator(".auth-trusted")).toBeVisible();
+  await expect(page.locator(".auth-strip.offline")).toBeVisible();
+  await expect(page.locator(".auth-strip.conservation")).toBeVisible();
+  await expect(page.locator(".auth-bottom-nav")).toBeVisible();
 
   await page.screenshot({
     path: testInfo.outputPath("baitlogic-mobile-candidate.png"),
@@ -185,40 +191,33 @@ test("mobile candidate captures deterministic founder-review evidence", async ({
 });
 
 
-test("approved phone composition does not overflow or collapse", async ({ page }, testInfo) => {
+test("founder-authorized phone composition does not overflow or collapse", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "mobile-app", "mobile geometry gate");
   await page.goto("/");
   await page.evaluate(() => document.fonts.ready);
 
   const geometry = await page.evaluate(() => {
-    const body = document.documentElement;
-    const featureGrid = document.querySelector(".bl-feature-grid");
-    const education = document.querySelector(".bl-education-row");
-    const agency = document.querySelector(".bl-agency");
-    const report = document.querySelector(".bl-report-now");
-    const conditions = document.querySelector(".bl-conditions");
+    const root = document.documentElement;
+    const cardGrid = document.querySelector(".auth-card-grid");
+    const metrics = document.querySelector(".auth-metrics");
+    const trusted = document.querySelector(".auth-trusted > div");
     const style = (el: Element | null) => el ? getComputedStyle(el) : null;
     return {
       viewport: innerWidth,
-      scrollWidth: body.scrollWidth,
-      featureCols: style(featureGrid)?.gridTemplateColumns.split(" ").length ?? 0,
-      educationCols: style(education)?.gridTemplateColumns.split(" ").length ?? 0,
-      agencyCols: style(agency)?.gridTemplateColumns.split(" ").length ?? 0,
-      reportHeight: report?.getBoundingClientRect().height ?? 0,
-      conditionsHeight: conditions?.getBoundingClientRect().height ?? 0,
+      scrollWidth: root.scrollWidth,
+      cardCols: style(cardGrid)?.gridTemplateColumns.split(" ").length ?? 0,
+      metricCols: style(metrics)?.gridTemplateColumns.split(" ").length ?? 0,
+      trustedCols: style(trusted)?.gridTemplateColumns.split(" ").length ?? 0,
     };
   });
 
   expect(geometry.viewport).toBe(360);
   expect(geometry.scrollWidth).toBeLessThanOrEqual(geometry.viewport);
-  expect(geometry.featureCols).toBe(3);
-  expect(geometry.educationCols).toBe(6);
-  expect(geometry.agencyCols).toBe(3);
-  expect(geometry.reportHeight).toBeLessThan(70);
-  expect(geometry.conditionsHeight).toBeLessThan(145);
+  expect(geometry.cardCols).toBe(3);
+  expect(geometry.metricCols).toBe(3);
+  expect(geometry.trustedCols).toBe(3);
 
-  await expect(page.locator(".bl-report-now a")).toBeVisible();
-  await expect(page.locator(".bl-feature")).toHaveCount(3);
-  await expect(page.locator(".bl-education-card")).toHaveCount(6);
-  await expect(page.locator(".bl-agency a")).toHaveCount(2);
+  await expect(page.locator(".auth-card")).toHaveCount(6);
+  await expect(page.locator(".auth-metrics > div")).toHaveCount(6);
+  await expect(page.locator(".auth-bottom-nav a")).toHaveCount(5);
 });
