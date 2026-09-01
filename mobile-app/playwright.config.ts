@@ -53,7 +53,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: `npm run build && npx vite preview --host 127.0.0.1 --port ${testPort}`,
+    command: `npm run build && python3 -m http.server ${testPort} --bind 127.0.0.1 --directory dist/client`,
     url: baseURL,
     reuseExistingServer: process.env.MOBILE_RUNTIME_TEST_PORT == null,
     timeout: 120_000,
