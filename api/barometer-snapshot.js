@@ -2,16 +2,27 @@
 
 const inHg = hpa => Number(hpa) * 0.0295299830714;
 
-async function fetchJson(url, options = {}, timeoutMs = 6500) {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), timeoutMs);
-  try {
-    const response = await fetch(url, { ...options, signal: controller.signal });
-    if (!response.ok) throw new Error(`Upstream request failed (${response.status})`);
-    return await response.json();
-  } finally {
-    clearTimeout(timer);
+async function fetchJson(url, options = {}, timeoutMs = 6500, attempts = 1) {
+  let lastError;
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      const response = await fetch(url, {
+        ...options,
+        signal: controller.signal,
+        cache: "no-store"
+      });
+      if (!response.ok) throw new Error(`Upstream request failed (${response.status})`);
+      return await response.json();
+    } catch (error) {
+      lastError = error;
+      if (attempt < attempts) await new Promise(resolve => setTimeout(resolve, 250 * attempt));
+    } finally {
+      clearTimeout(timer);
+    }
   }
+  throw lastError || new Error("Upstream request failed");
 }
 
 function nearestIndex(times, targetMs) {
@@ -92,7 +103,7 @@ module.exports = async function handler(req, res) {
     const bigDataUrl = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${encodeURIComponent(lat)}&longitude=${encodeURIComponent(lon)}&localityLanguage=en`;
 
     const [weatherResult, alertsResult, nominatimResult, bigDataResult] = await Promise.allSettled([
-      fetchJson(weatherUrl.toString(), { headers: { "User-Agent": "BaitLogic/1.0 baitlogicadmin@gmail.com" } }, 6500),
+      fetchJson(weatherUrl.toString(), { headers: { "User-Agent": "BaitLogic/1.0 baitlogicadmin@gmail.com" } }, 5000, 2),
       fetchJson(alertsUrl, { headers: { "User-Agent": "BaitLogic/1.0 (baitlogicadmin@gmail.com)", "Accept": "application/geo+json" } }, 1500),
       fetchJson(nominatimUrl, { headers: { "User-Agent": "BaitLogic/1.0 (baitlogicadmin@gmail.com)", "Accept-Language": "en" } }, 2500),
       fetchJson(bigDataUrl, { headers: { "User-Agent": "BaitLogic/1.0 baitlogicadmin@gmail.com" } }, 2200)
