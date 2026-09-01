@@ -36,7 +36,7 @@ export default defineConfig({
       testMatch: "**/e2e/release-gate.spec.ts",
       use: {
         ...devices["Pixel 7"],
-        viewport: { width: 412, height: 915 },
+        viewport: { width: 360, height: 780 },
         geolocation: { latitude: 38.7392, longitude: -89.6712 },
         permissions: ["geolocation"],
       },
