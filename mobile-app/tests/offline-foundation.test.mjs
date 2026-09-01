@@ -109,3 +109,22 @@ test("renders mobile and desktop as separate implementations and ships Community
   assert.match(catches, /\/api\/catches/);
   assert.match(catches, /does not invent locations, weights, species, or notes/);
 });
+
+
+test("locks safety-critical navigation and official reporting destinations", async () => {
+  const outdoor = await readFile(new URL("../../public/outdoor.html", import.meta.url), "utf8");
+  const trails = await readFile(new URL("../public/trails.html", import.meta.url), "utf8");
+  const fieldIntel = await readFile(new URL("../../public/index.html", import.meta.url), "utf8");
+
+  assert.match(outdoor, /href="\/field-intel\.html#field-check"/);
+  assert.match(outdoor, /href="\/field-intel\.html#conservation"/);
+  assert.doesNotMatch(outdoor, /href="\/#reports"/);
+  assert.doesNotMatch(outdoor, /href="\/#conservation"/);
+
+  assert.match(trails, /https:\/\/www\.highlandil\.gov\/departments\/parks_and_recreation\/parks_and_silver_lake\/silver_lake\/index\.php/);
+  assert.doesNotMatch(trails, /park_map\.php/);
+
+  assert.match(fieldIntel, /https:\/\/dnr2\.illinois\.gov\/OLETIPHotline\//);
+  assert.match(fieldIntel, /https:\/\/mdc12\.mdc\.mo\.gov\/Applications\/FishKillsIntake\/Intake/);
+  assert.match(fieldIntel, /https:\/\/epa\.illinois\.gov\/pollution-complaint\/submit-a-complaint\.html/);
+});
