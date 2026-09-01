@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#25101f">
+  <title>BaitLogic Profile</title>
+  <style>
+    :root{color-scheme:dark}*{box-sizing:border-box}
+    body{margin:0;min-height:100vh;background:linear-gradient(180deg,#25101f,#170910);color:#f3e8d7;font-family:system-ui,sans-serif}
+    main{max-width:720px;margin:auto;padding:28px 18px 90px}
+    a{color:#d7aa4b;text-decoration:none}
+    .panel{margin-top:18px;padding:18px;border:1px solid rgba(215,170,75,.5);border-radius:14px;background:rgba(44,17,34,.82)}
+    h1{margin:0;color:#d7aa4b}h2{font-size:1rem;color:#16aebd}
+    p{line-height:1.55;color:#e5d9cc}
+    .back{display:inline-block;margin-bottom:18px}
+  </style>
+</head>
+<body>
+<main>
+  <a class="back" href="/">← Back to BaitLogic</a>
+  <h1>Profile</h1>
+  <div class="panel">
+    <h2>Local-first settings</h2>
+    <p>BaitLogic uses your device location only when you allow it so local conditions and nearby resources can be shown accurately. Location and live-condition controls remain on the dashboard.</p>
+  </div>
+  <div class="panel">
+    <h2>Your BaitLogic activity</h2>
+    <p>Use Field Log for observations and Community Catches for shared catch records.</p>
+    <p><a href="/field-intel.html">Open Field Log →</a><br><a href="/catches.html">Open Community Catches →</a></p>
+  </div>
+</main>
+<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("/sw.js").catch(()=>{});}</script>
+</body>
+</html>
