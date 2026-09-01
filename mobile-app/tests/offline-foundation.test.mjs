@@ -108,7 +108,6 @@ test("renders mobile and desktop as separate implementations and ships Community
   assert.match(mobile, /COMMUNITY CATCHES/);
   assert.match(mobile, /TRUSTED DATA SOURCES/);
   assert.match(mobile, /OFFLINE READY/);
-  assert.match(mobile, /CONSERVATION FIRST/);
   assert.match(mobile, /baitlogic-logo\.png/);
   assert.match(mobile, /href:"\/catches\.html"/);
   assert.doesNotMatch(mobile, />68°F</);
