@@ -33,6 +33,8 @@ export type WaterSnapshot = {
 };
 
 const CACHE_KEY = "baitlogic-approved-dashboard-conditions-v2";
+const WEATHER_CACHE_MAX_AGE_MS = 90 * 60 * 1000;
+const WATER_CACHE_MAX_AGE_MS = 6 * 60 * 60 * 1000;
 
 export const WEATHER_LABELS: Record<number,string> = {
   0:"Clear",1:"Mostly clear",2:"Partly cloudy",3:"Cloudy",45:"Fog",48:"Fog",
@@ -45,7 +47,9 @@ export const WEATHER_LABELS: Record<number,string> = {
 function readCache(): DashboardSnapshot | undefined {
   try {
     const value = JSON.parse(localStorage.getItem(CACHE_KEY) || "null");
-    return value?.weather ? value : undefined;
+    if (!value?.weather || !value?.updatedAt) return undefined;
+    const age = Date.now() - new Date(value.updatedAt).getTime();
+    return Number.isFinite(age) && age >= 0 && age <= WEATHER_CACHE_MAX_AGE_MS ? value : undefined;
   } catch {
     return undefined;
   }
@@ -115,17 +119,31 @@ export function useBaitLogicConditions() {
       const weatherData = await weatherResponse.json();
       if (!weatherResponse.ok || !weatherData?.weather) throw new Error(weatherData?.error || "Live conditions unavailable.");
 
+      const weatherSource = weatherResponse.headers.get("X-BaitLogic-Source");
+      if (weatherSource === "offline-cache") {
+        const age = Date.now() - new Date(weatherData.updatedAt).getTime();
+        if (!Number.isFinite(age) || age < 0 || age > WEATHER_CACHE_MAX_AGE_MS) {
+          throw new Error("Saved weather conditions are too old to use safely.");
+        }
+      }
       snapshotRef.current = weatherData;
       setSnapshot(weatherData);
       localStorage.setItem(CACHE_KEY,JSON.stringify(weatherData));
-      const weatherSource = weatherResponse.headers.get("X-BaitLogic-Source");
       setStatus(weatherSource === "offline-cache" ? "cached" : "live");
 
       if (waterResponse.ok) {
         const waterData = await waterResponse.json();
-        waterRef.current = waterData;
-        setWater(waterData);
-        setWaterStatus(waterResponse.headers.get("X-BaitLogic-Source") === "offline-cache" ? "cached" : "live");
+        const waterSource = waterResponse.headers.get("X-BaitLogic-Source");
+        const waterAge = waterData?.timestamp ? Date.now() - new Date(waterData.timestamp).getTime() : Infinity;
+        if (waterSource === "offline-cache" && (!Number.isFinite(waterAge) || waterAge < 0 || waterAge > WATER_CACHE_MAX_AGE_MS)) {
+          waterRef.current = undefined;
+          setWater(undefined);
+          setWaterStatus("unavailable");
+        } else {
+          waterRef.current = waterData;
+          setWater(waterData);
+          setWaterStatus(waterSource === "offline-cache" ? "cached" : "live");
+        }
       } else {
         waterRef.current = undefined;
         setWater(undefined);
