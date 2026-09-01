@@ -7,14 +7,14 @@ test("ships an installable BaitLogic web app manifest", async () => {
 
   assert.equal(manifest.name, "BaitLogic — Local Outdoor Intelligence");
   assert.equal(manifest.display, "standalone");
-  assert.equal(manifest.theme_color, "#061535");
+  assert.equal(manifest.theme_color, "#25101f");
   assert.deepEqual(manifest.icons.map((icon) => icon.sizes), ["192x192", "512x512"]);
 });
 
 test("ships the versioned app-shell service worker", async () => {
   const worker = await readFile(new URL("../dist/client/sw.js", import.meta.url), "utf8");
 
-  assert.match(worker, /baitlogic-field-kit-v15/);
+  assert.match(worker, /baitlogic-field-kit-v16/);
   assert.match(worker, /baitlogic-facebook-qr\.png/);
   assert.match(worker, /hero-sunset\.webp/);
   assert.match(worker, /pillar-fishing\.webp/);
@@ -24,7 +24,7 @@ test("ships the versioned app-shell service worker", async () => {
   assert.match(worker, /\/api\/barometer-snapshot/);
   assert.match(worker, /\/api\/water-snapshot/);
   assert.match(worker, /\/trails\.html/);
-  assert.match(worker, /\/catches\.html/);
+  assert.match(worker, /\/catches\.html/);\n  assert.match(worker, /\/profile\.html/);
   assert.match(worker, /\/api\/catches/);
   assert.match(worker, /X-BaitLogic-Source/);
   assert.match(worker, /offline-cache/);
