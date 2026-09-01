@@ -210,12 +210,12 @@ test("approved phone composition does not overflow or collapse", async ({ page }
   });
 
   expect(geometry.viewport).toBe(360);
-  expect(geometry.scrollWidth).toBeLessThanOrEqual(360);
+  expect(geometry.scrollWidth).toBeLessThanOrEqual(geometry.viewport);
   expect(geometry.featureCols).toBe(3);
   expect(geometry.educationCols).toBe(6);
   expect(geometry.agencyCols).toBe(3);
   expect(geometry.reportHeight).toBeLessThan(70);
-  expect(geometry.conditionsHeight).toBeLessThan(170);
+  expect(geometry.conditionsHeight).toBeLessThan(145);
 
   await expect(page.locator(".bl-report-now a")).toBeVisible();
   await expect(page.locator(".bl-feature")).toHaveCount(3);
