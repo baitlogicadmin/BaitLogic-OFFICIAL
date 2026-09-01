@@ -126,9 +126,9 @@ test("approved card order and dedicated Community Catches route are preserved", 
   const headings = await page.locator(headingSelector).allTextContents();
   if (testInfo.project.name === "mobile-app") {
     expect(headings).toEqual([
-      "BAROMETER",
-      "NATURE CHECK",
+      "CONSERVATION REPORTING · LOCAL",
       "TRAILS & OFF-GRID",
+      "BAROMETER",
       "OUTDOOR KNOWLEDGE",
       "FIELD LOG",
       "COMMUNITY CATCHES",
@@ -165,10 +165,9 @@ test("mobile geometry stays compact and bottom navigation does not cover final c
   );
   expect(cardColumns).toBe(3);
 
-  await expect(page.locator(".mobile-say-panel")).toContainText("SEE SOMETHING.");
-  await expect(page.locator(".mobile-say-panel")).toContainText("SAY SOMETHING.");
+  await expect(page.locator(".mobile-card.conservation")).toContainText("CONSERVATION REPORTING · LOCAL");
   await expect(page.locator(".mobile-conservation-strip")).toContainText("CONSERVATION FIRST");
-  await expect(page.locator(".mobile-bottom-nav")).toContainText("COMMUNITY");
+  await expect(page.locator(".mobile-bottom-nav")).toContainText("PROFILE");
 
   const nav = page.locator(".mobile-bottom-nav");
   const initialNavBox = await nav.boundingBox();
@@ -219,7 +218,6 @@ test("mobile candidate captures deterministic visual evidence for founder compar
 
   await expect(page.locator(".mobile-app-header")).toBeVisible();
   await expect(page.locator(".mobile-conditions")).toBeVisible();
-  await expect(page.locator(".mobile-say-panel")).toBeVisible();
   await expect(page.locator(".mobile-card")).toHaveCount(6);
   await expect(page.locator(".mobile-trusted")).toBeVisible();
   await expect(page.locator(".mobile-offline")).toBeVisible();
