@@ -41,7 +41,7 @@ test("barometer location loading has a bounded Android-friendly fallback", async
   assert.match(app, /Location took too long/);
   assert.match(app, /Location permission is blocked/);
   assert.match(app, /baitlogic-barometer-last-v1/);
-  assert.match(app, /Saved verified conditions are shown/);
+  assert.match(app, /Saved conditions are shown for context only/);
   assert.match(page, /barometer\/app\.js\?v=13/);
   assert.match(page, /barometer\/connection-ui\.js\?v=3/);
 });
