@@ -151,10 +151,10 @@ test("barometer Highland fallback loads verified pressure instead of hanging", a
   expect(documentResponse.status()).toBe(200);
   expect(await documentResponse.text()).toContain('id="useHighland"');
 
-  await page.goto("/barometer.html", { waitUntil: "commit", timeout: 15000 });
-  await expect(page.locator("#useHighland")).toBeAttached({ timeout: 5000 });
-  await page.waitForFunction(() => document.readyState !== "loading", undefined, { timeout: 10000 });
-  await page.locator("#useHighland").click({ force: true });
+  await page.goto("/barometer.html", { waitUntil: "domcontentloaded", timeout: 15000 });
+  const highland = page.locator("#useHighland");
+  await expect(highland).toBeVisible({ timeout: 5000 });
+  await highland.click();
   await expect(page.locator("#pressureValue")).toHaveText("29.91", { timeout: 10000 });
   await expect(page.locator("#dataState")).toContainText(/Live conditions|conditions loaded/i);
 });
