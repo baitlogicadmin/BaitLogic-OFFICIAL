@@ -410,14 +410,14 @@ body{font-family:Roboto,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sa
   .bl-main{width:100%;max-width:100vw;padding:0 9px;gap:6px}
 
   .bl-conditions{border-radius:13px;box-shadow:none}
-  .bl-conditions-top{min-height:62px;grid-template-columns:.72fr 1.18fr}
-  .bl-conditions-top>div:first-child{padding:8px 10px 6px}
+  .bl-conditions-top{height:62px;min-height:62px;grid-template-columns:.72fr 1.18fr;overflow:hidden}
+  .bl-conditions-top>div:first-child{padding:6px 10px 4px;overflow:hidden}
   .bl-conditions h1{font-size:13px;line-height:1;white-space:nowrap}
   .bl-conditions h1 span{font-size:9px;margin-left:4px}
-  .bl-temp-row{gap:6px;margin-top:7px}
+  .bl-temp-row{gap:6px;margin-top:5px;min-width:0}
   .bl-weather-icon{font-size:31px}
   .bl-temp-row strong{font-size:34px;line-height:.88}
-  .bl-temp-row p{font-size:11px;margin-top:3px}
+  .bl-temp-row p{font-size:10px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .bl-hero-photo{min-height:62px}
 
   .bl-condition-metrics{
@@ -492,8 +492,8 @@ body{font-family:Roboto,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sa
   .bl-agency .missouri{grid-area:mo}
   .bl-agency h2{font-size:10.5px;line-height:1.04;margin-bottom:3px}
   .bl-agency p{font-size:7.5px;line-height:1.18;color:#fff;opacity:.95}
-  .bl-agency>a{min-height:40px;gap:5px;padding:4px 6px;border-radius:8px}
-  .bl-agency .state-icon{width:22px;height:28px;font-size:7px;border-radius:5px}
+  .bl-agency>a{min-height:36px;gap:5px;padding:3px 6px;border-radius:8px}
+  .bl-agency .state-icon{width:20px;height:25px;font-size:7px;border-radius:5px}
   .bl-agency strong{font-size:8px;line-height:1.05}
   .bl-agency small{font-size:6.5px;line-height:1.1;margin-top:3px}
 
