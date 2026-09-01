@@ -3,6 +3,7 @@ const CORE = [
   "/manifest.webmanifest",
   "/assets/baitlogic-logo.png",
   "/assets/founder-small-emblem.svg",
+  "/assets/baitlogic-boysenberry-logo.svg",
   "/assets/app-icon-192.png",
   "/assets/app-icon-512.png",
   "/assets/baitlogic-lockup.webp",
