@@ -14,12 +14,12 @@ function CompassAnchorMark({small=false}:{small?:boolean}) {
 }
 
 const cards = [
-  {cls:"conservation",title:"CONSERVATION REPORTING · LOCAL",text:"If you see something, say something.",cta:"REPORT / RESOURCES",href:"/field-intel.html#conservation",img:"/assets/pillar-conservation.webp",icon:"♧"},
+  {cls:"conservation",title:"CONSERVATION REPORTING · LOCAL",text:"If you see something, say something.",cta:"REPORT / RESOURCES",href:"/field-intel.html#conservation",img:"/assets/approved-card-conservation.svg",icon:"♧"},
   {cls:"trails",title:"TRAILS & OFF-GRID",text:"Nearby trails, maps, and off-grid resources.",cta:"EXPLORE TRAILS",href:"/trails.html",img:APPROVED_TRAILS,icon:"⌁"},
-  {cls:"barometer",title:"BAROMETER",text:"Real-time weather, pressure, wind and water data.",cta:"VIEW DASHBOARD",href:"/barometer.html",img:"/assets/approved-pressure.webp",icon:"◴"},
+  {cls:"barometer",title:"BAROMETER",text:"Real-time weather, pressure, wind and water data.",cta:"VIEW DASHBOARD",href:"/barometer.html",img:"/assets/approved-card-barometer.svg",icon:"◴"},
   {cls:"knowledge",title:"OUTDOOR KNOWLEDGE",text:"Camping, hiking, safety, wildlife and more.",cta:"LEARN MORE",href:"/outdoor.html",img:"/assets/pillar-camping.webp",icon:"▤"},
   {cls:"field",title:"FIELD LOG",text:"Track conditions, notes, and observations over time.",cta:"OPEN LOG",href:"/field-intel.html#field-check",img:APPROVED_FIELD,icon:"▣"},
-  {cls:"catches",title:"COMMUNITY CATCHES",text:"Share your catches. See what others are catching.",cta:"VIEW CATCHES",href:"/catches.html",img:"/assets/pillar-fishing.webp",icon:"◉"}
+  {cls:"catches",title:"COMMUNITY CATCHES",text:"Share your catches. See what others are catching.",cta:"VIEW CATCHES",href:"/catches.html",img:"/assets/approved-card-catches.svg",icon:"◉"}
 ];
 
 export default function MobileDashboard(){
