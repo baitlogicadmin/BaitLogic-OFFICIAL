@@ -174,3 +174,42 @@ test("mobile candidate captures deterministic founder-review evidence", async ({
     animations: "disabled",
   });
 });
+
+
+test("approved phone composition does not overflow or collapse", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "mobile-app", "mobile geometry gate");
+  await page.goto("/");
+  await page.evaluate(() => document.fonts.ready);
+
+  const geometry = await page.evaluate(() => {
+    const body = document.documentElement;
+    const featureGrid = document.querySelector(".bl-feature-grid");
+    const education = document.querySelector(".bl-education-row");
+    const agency = document.querySelector(".bl-agency");
+    const report = document.querySelector(".bl-report-now");
+    const conditions = document.querySelector(".bl-conditions");
+    const style = (el: Element | null) => el ? getComputedStyle(el) : null;
+    return {
+      viewport: innerWidth,
+      scrollWidth: body.scrollWidth,
+      featureCols: style(featureGrid)?.gridTemplateColumns.split(" ").length ?? 0,
+      educationCols: style(education)?.gridTemplateColumns.split(" ").length ?? 0,
+      agencyCols: style(agency)?.gridTemplateColumns.split(" ").length ?? 0,
+      reportHeight: report?.getBoundingClientRect().height ?? 0,
+      conditionsHeight: conditions?.getBoundingClientRect().height ?? 0,
+    };
+  });
+
+  expect(geometry.viewport).toBe(360);
+  expect(geometry.scrollWidth).toBeLessThanOrEqual(360);
+  expect(geometry.featureCols).toBe(3);
+  expect(geometry.educationCols).toBe(6);
+  expect(geometry.agencyCols).toBe(3);
+  expect(geometry.reportHeight).toBeLessThan(70);
+  expect(geometry.conditionsHeight).toBeLessThan(170);
+
+  await expect(page.locator(".bl-report-now a")).toBeVisible();
+  await expect(page.locator(".bl-feature")).toHaveCount(3);
+  await expect(page.locator(".bl-education-card")).toHaveCount(6);
+  await expect(page.locator(".bl-agency a")).toHaveCount(2);
+});
