@@ -39,7 +39,7 @@ const cards = [
 ];
 
 export default function MobileDashboard(){
-  const {snapshot,waterTemp,online,status,refreshLocation}=useBaitLogicConditions();
+  const {snapshot,waterTemp,waterStatus,online,status,refreshLocation}=useBaitLogicConditions();
   const w=snapshot?.weather;
   const place=snapshot?.location?.locality || snapshot?.location?.name || "Location unavailable";
   const region=snapshot?.location?.region?.replace("Illinois","IL").replace("Missouri","MO");
@@ -68,7 +68,7 @@ export default function MobileDashboard(){
         <div className="mobile-metrics">
           <div><LapTimerIcon/><span><strong>{w?w.pressureInHg.toFixed(2):"—"} <small>inHg</small></strong><small>{w?pressureTrend(w.pressureDelta3h):"Unavailable"}</small></span></div>
           <div><span className="metric-glyph weather">☁</span><span><strong>{w?`${Math.round(w.temperatureF)}°F`:"—"}</strong><small>{w?WEATHER_LABELS[w.code]||"Current conditions":"Unavailable"}</small></span></div>
-          <div><span className="metric-glyph water">◉</span><span><strong>{waterTemp!=null?`${waterTemp.toFixed(1)}°F`:"—"}</strong><small>{waterTemp!=null?"Water Temp":"No verified reading"}</small></span></div>
+          <div><span className="metric-glyph water">◉</span><span><strong>{waterTemp!=null?`${waterTemp.toFixed(1)}°F`:"—"}</strong><small>{waterTemp!=null?(waterStatus==="cached"?"Cached water":"Water Temp"):"No verified reading"}</small></span></div>
           <div><ActivityLogIcon/><span><strong>{w?`${Math.round(w.windMph)} mph`:"—"}</strong><small>{w?compass(w.windDirection):"Unavailable"}</small></span></div>
           <div><SunIcon/><span><strong>{formatClock(w?.sunrise)}</strong><small>{formatClock(w?.sunset)}</small></span></div>
           <div><span className="metric-glyph updated">◷</span><span><strong>Updated</strong><small>{relativeUpdated(snapshot?.updatedAt)}</small></span></div>
