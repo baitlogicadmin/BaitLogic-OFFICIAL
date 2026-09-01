@@ -35,7 +35,7 @@ function Metric({icon,label,value,detail,cls=""}:{icon:string,label:string,value
 }
 
 export default function MobileDashboard(){
-  const {snapshot,water,waterTemp,waterStatus,online,status,refreshLocation}=useBaitLogicConditions();
+  const {snapshot,waterTemp,waterStatus,online,status,refreshLocation}=useBaitLogicConditions();
   const w=snapshot?.weather;
   const place=snapshot?.location?.locality || snapshot?.location?.name || "Location unavailable";
   const region=snapshot?.location?.region?.replace("Illinois","IL").replace("Missouri","MO");
