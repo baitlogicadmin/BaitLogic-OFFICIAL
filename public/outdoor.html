@@ -94,8 +94,9 @@ async function loadLive(lat,lon){
     const a=aqResult&&aqResult.ok?await aqResult.json():{};
     const w=d.weather||{},aqi=a.current?.us_aqi??null;
     const live={temp:Number(w.temperatureF),feels:Number(w.apparentTemperatureF),humidity:Number(w.humidity),wind:Number(w.windMph),gust:Number(w.gustMph),rain:Number(w.precipitationIn),code:Number(w.code),pressureInHg:Number(w.pressureInHg),pressureDelta3h:Number(w.pressureDelta3h),pressureDelta6h:Number(w.pressureDelta6h),aqi:aqi==null?null:Number(aqi)};
+    const stale=sr.headers.get('X-BaitLogic-Stale')==='true'||sr.headers.get('X-BaitLogic-Offline')==='cached'||sr.headers.get('X-BaitLogic-Source')==='offline-cache';
     window.lastLive=live;
-    renderAlerts(d.alerts||[],d.alertsAvailable!==false&&d.source?.alerts!=='NWS unavailable');
+    renderAlerts(d.alerts||[],!stale&&d.alertsAvailable!==false&&d.source?.alerts!=='NWS unavailable');
     $('#tempNow').textContent=Number.isFinite(live.temp)?`${Math.round(live.temp)}°F`:'—';
     $('#weatherNow').textContent=wxText(live.code);
     $('#feelsNow').textContent=Number.isFinite(live.feels)?`${Math.round(live.feels)}°F`:'—';
@@ -114,7 +115,6 @@ async function loadLive(lat,lon){
       $('#pressureLabel').textContent=`${Math.round(inHgToHpa(live.pressureInHg))} hPa · ${label} · 3h ${live.pressureDelta3h>=0?'+':''}${live.pressureDelta3h.toFixed(2)} · 6h ${live.pressureDelta6h>=0?'+':''}${live.pressureDelta6h.toFixed(2)} inHg`;
     }else{$('#pressureNow').textContent='—';$('#pressureLabel').textContent='Barometric pressure unavailable.'}
     recommend(live);
-    const stale=sr.headers.get('X-BaitLogic-Stale')==='true'||sr.headers.get('X-BaitLogic-Offline')==='cached';
     $('#liveStatus').innerHTML=stale?'<span class="stale-note">Offline — showing the last saved BaitLogic conditions. Reconnect to refresh.</span>':'Live results loaded from the BaitLogic data service.';
     if(activity==='fish'||activity==='paddle')loadWater(lat,lon);else $('#waterLive').innerHTML='';
   }catch(e){
