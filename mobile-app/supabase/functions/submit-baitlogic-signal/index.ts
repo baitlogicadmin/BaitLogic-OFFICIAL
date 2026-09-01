@@ -50,7 +50,6 @@ async function verifyTurnstile(request: Request, token: unknown) {
   const form = new FormData();
   form.append("secret", secret);
   form.append("response", token);
-  form.append("remoteip", clientIp(request));
   const response = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
     method: "POST",
     body: form,
