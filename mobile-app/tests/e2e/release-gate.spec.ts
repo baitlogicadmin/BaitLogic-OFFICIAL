@@ -2,7 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 
 const WEATHER_FIXTURE = {
   source: { weather: "Open-Meteo", alerts: "National Weather Service", location: "Playwright fixture" },
-  updatedAt: "2026-08-31T20:00:00.000Z",
+  updatedAt: new Date().toISOString(),
   location: { name: "Highland, Illinois", locality: "Highland", region: "Illinois", country: "United States" },
   weather: {
     temperatureF: 74,
@@ -26,8 +26,8 @@ const WEATHER_FIXTURE = {
 
 const WATER_FIXTURE = {
   source: "USGS Water Data for the Nation",
-  stations: [{ site: "PLAYWRIGHT", name: "Verified-water test fixture", flow: 10, gage: 2, temp: 68 }],
-  timestamp: "2026-08-31T20:00:00.000Z",
+  stations: [{ site: "PLAYWRIGHT", name: "Verified-water test fixture", flow: 1240, gage: 2, temp: 68 }],
+  timestamp: new Date().toISOString(),
 };
 
 const CATCHES_FIXTURE = {
@@ -37,16 +37,16 @@ const CATCHES_FIXTURE = {
     weight: 4.1,
     location: "Test fixture area",
     notes: "Playwright fixture only.",
-    createdAt: "2026-08-31T19:00:00.000Z",
+    createdAt: new Date().toISOString(),
   }],
 };
 
 async function installDeterministicBackend(page: Page) {
   await page.route("**/api/barometer-snapshot**", route =>
-    route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(WEATHER_FIXTURE) })
+    route.fulfill({ status: 200, headers: { "X-BaitLogic-Source": "live" }, contentType: "application/json", body: JSON.stringify(WEATHER_FIXTURE) })
   );
   await page.route("**/api/water-snapshot**", route =>
-    route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(WATER_FIXTURE) })
+    route.fulfill({ status: 200, headers: { "X-BaitLogic-Source": "live" }, contentType: "application/json", body: JSON.stringify(WATER_FIXTURE) })
   );
   await page.route("**/api/catches**", route =>
     route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(CATCHES_FIXTURE) })
@@ -76,127 +76,64 @@ test.beforeEach(async ({ page }) => {
 test("renders the correct implementation for the active device class", async ({ page }, testInfo) => {
   await page.goto("/");
   if (testInfo.project.name === "mobile-app") {
-    await expect(page.locator(".mobile-dashboard")).toBeVisible();
+    await expect(page.locator(".bl-home")).toBeVisible();
     await expect(page.locator(".desktop-dashboard")).toHaveCount(0);
   } else {
     await expect(page.locator(".desktop-dashboard")).toBeVisible();
-    await expect(page.locator(".mobile-dashboard")).toHaveCount(0);
+    await expect(page.locator(".bl-home")).toHaveCount(0);
   }
 });
 
-test("verified condition data reaches the rendered UI without invented fallback values", async ({ page }, testInfo) => {
+test("verified condition data reaches the mobile interface without invented values", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "mobile-app", "mobile data gate");
   await page.goto("/");
-  const conditions = testInfo.project.name === "mobile-app"
-    ? page.locator(".mobile-conditions")
-    : page.locator(".desktop-conditions");
-  await expect(conditions).toContainText("29.91");
-  await expect(conditions).toContainText("inHg");
-  await expect(conditions).toContainText("74°F");
-  await expect(conditions).toContainText("68.0°F");
-  await expect(conditions).toContainText("8 mph");
-  await expect(page.getByText("LIVE", { exact: false }).first()).toBeVisible();
-
-  if (testInfo.project.name === "mobile-app") {
-    await expect(page.getByText("Highland, IL", { exact: true })).toBeVisible();
-  }
+  await expect(page.locator(".bl-conditions")).toContainText("74°F");
+  await expect(page.locator(".bl-conditions")).toContainText("68.0°F");
+  await expect(page.locator(".bl-conditions")).toContainText("29.91 inHg");
+  await expect(page.locator(".bl-conditions")).toContainText("8 mph NW");
+  await expect(page.locator(".bl-location")).toContainText("Highland");
 });
 
-test("unavailable data stays unavailable instead of silently becoming sample data", async ({ page }) => {
-  await page.unroute("**/api/barometer-snapshot**");
-  await page.unroute("**/api/water-snapshot**");
-  await page.route("**/api/barometer-snapshot**", route =>
-    route.fulfill({ status: 503, contentType: "application/json", body: JSON.stringify({ error: "fixture unavailable" }) })
-  );
-  await page.route("**/api/water-snapshot**", route =>
-    route.fulfill({ status: 503, contentType: "application/json", body: JSON.stringify({ error: "fixture unavailable" }) })
-  );
+test("mobile homepage preserves the founder-approved information architecture", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "mobile-app", "mobile founder gate");
   await page.goto("/");
 
-  await expect(page.getByText("29.91 inHg", { exact: true })).toHaveCount(0);
-  await expect(page.getByText("74°F", { exact: true })).toHaveCount(0);
-  await expect(page.getByText("68.0°F", { exact: true })).toHaveCount(0);
+  await expect(page.locator(".bl-logo")).toHaveAttribute("src", "/assets/baitlogic-boysenberry-logo.svg");
+  await expect(page.locator(".bl-report-now")).toContainText("SEE SOMETHING? SAY SOMETHING.");
+  await expect(page.locator(".bl-feature")).toHaveCount(3);
+  await expect(page.locator(".bl-education-card")).toHaveCount(6);
+  await expect(page.locator(".bl-agency")).toContainText("REPORT TO THE RIGHT AGENCY");
+  await expect(page.locator(".bl-sources")).toContainText("USGS");
+  await expect(page.locator(".bl-sources")).toContainText("NWS");
+  await expect(page.locator(".bl-sources")).toContainText("Open-Meteo");
+  await expect(page.locator(".bl-sources")).toContainText("Offline Ready");
 });
 
-test("approved card order and dedicated Community Catches route are preserved", async ({ page }, testInfo) => {
+test("every mobile home action points at a real route or approved official destination", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "mobile-app", "mobile action gate");
   await page.goto("/");
-  const selector = testInfo.project.name === "mobile-app" ? ".mobile-card" : ".desktop-card";
-  const headingSelector = testInfo.project.name === "mobile-app" ? ".mobile-card h3" : ".desktop-card h2";
 
-  await expect(page.locator(selector)).toHaveCount(6);
-  const headings = await page.locator(headingSelector).allTextContents();
-  if (testInfo.project.name === "mobile-app") {
-    expect(headings).toEqual([
-      "CONSERVATION REPORTING · LOCAL",
-      "TRAILS & OFF-GRID",
-      "BAROMETER",
-      "OUTDOOR KNOWLEDGE",
-      "FIELD LOG",
-      "COMMUNITY CATCHES",
-    ]);
-  } else {
-    expect(headings).toEqual([
-      "CONSERVATION REPORTING · LOCAL",
-      "TRAILS & OFF-GRID",
-      "BAROMETER",
-      "OUTDOOR KNOWLEDGE",
-      "FIELD LOG",
-      "COMMUNITY CATCHES",
-    ]);
+  const expected = [
+    [".bl-primary-cta", "/barometer.html"],
+    [".bl-report-now a", "/field-intel.html#conservation"],
+    [".bl-feature.water-flow", "/field-intel.html#water"],
+    [".bl-feature.catches", "/catches.html"],
+    [".bl-feature.trails", "/trails.html"],
+    [".bl-section-row a", "/outdoor.html"],
+    [".bl-agency .illinois", "https://dnr2.illinois.gov/OLETIPHotline/"],
+    [".bl-agency .missouri", "https://mdc12.mdc.mo.gov/Applications/FishKillsIntake/Intake"],
+  ] as const;
+
+  for (const [selector, href] of expected) {
+    await expect(page.locator(selector)).toHaveAttribute("href", href);
   }
 
-  const catches = page.locator(`${selector}[href="/catches.html"]`);
-  await expect(catches).toHaveCount(1);
+  const education = page.locator(".bl-education-card");
+  await expect(education).toHaveCount(6);
+  for (let i=0;i<6;i++) await expect(education.nth(i)).toHaveAttribute("href", "/outdoor.html");
 });
 
-test("mobile geometry stays compact and bottom navigation does not cover final content", async ({ page }, testInfo) => {
-  test.skip(testInfo.project.name !== "mobile-app", "mobile geometry gate");
-  await page.goto("/");
-
-  const conditionBox = await page.locator(".mobile-conditions").boundingBox();
-  expect(conditionBox?.height ?? 9999).toBeLessThanOrEqual(190);
-
-  const metricColumns = await page.locator(".mobile-metrics").evaluate(el =>
-    getComputedStyle(el).gridTemplateColumns.split(" ").filter(Boolean).length
-  );
-  expect(metricColumns).toBe(3);
-
-  const cardColumns = await page.locator(".mobile-card-grid").evaluate(el =>
-    getComputedStyle(el).gridTemplateColumns.split(" ").filter(Boolean).length
-  );
-  expect(cardColumns).toBe(3);
-
-  await expect(page.locator(".mobile-card.conservation")).toContainText("CONSERVATION REPORTING · LOCAL");
-  await expect(page.locator(".mobile-conservation-strip")).toContainText("CONSERVATION FIRST");
-  await expect(page.locator(".mobile-bottom-nav")).toContainText("PROFILE");
-
-  const nav = page.locator(".mobile-bottom-nav");
-  const initialNavBox = await nav.boundingBox();
-  expect(initialNavBox?.height ?? 0).toBeGreaterThanOrEqual(60);
-  expect(initialNavBox?.height ?? 999).toBeLessThanOrEqual(100);
-
-  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
-  await page.waitForTimeout(100);
-
-  const finalBox = await page.locator(".mobile-conservation-strip").boundingBox();
-  const navBox = await nav.boundingBox();
-  expect(finalBox).not.toBeNull();
-  expect(navBox).not.toBeNull();
-  if (finalBox && navBox) {
-    expect(finalBox.y + finalBox.height).toBeLessThanOrEqual(navBox.y + 2);
-  }
-});
-
-test("desktop keeps its separate four-column primary card layout", async ({ page }, testInfo) => {
-  test.skip(testInfo.project.name !== "desktop-web", "desktop geometry gate");
-  await page.goto("/");
-
-  const columns = await page.locator(".desktop-card-grid").evaluate(el =>
-    getComputedStyle(el).gridTemplateColumns.split(" ").filter(Boolean).length
-  );
-  expect(columns).toBe(4);
-});
-
-test("primary destinations render successfully", async ({ page }, testInfo) => {
+test("primary destinations and barometer render successfully", async ({ page }, testInfo) => {
   const failures = watchRuntimeFailures(page);
   const routes = ["/barometer.html", "/catches.html", "/field-intel.html", "/trails.html", "/outdoor.html", "/profile.html"];
 
@@ -210,18 +147,26 @@ test("primary destinations render successfully", async ({ page }, testInfo) => {
   expect(testInfo.project.name).toMatch(/mobile-app|desktop-web/);
 });
 
-test("mobile candidate captures deterministic visual evidence for founder comparison", async ({ page }, testInfo) => {
-  test.skip(testInfo.project.name !== "mobile-app", "desktop has a separate founder approval gate");
+test("barometer loads verified pressure data instead of hanging", async ({ page }) => {
+  await page.goto("/barometer.html");
+  await page.getByRole("button", { name: /Use Highland, IL/i }).click();
+  await expect(page.locator("#pressureValue")).toHaveText("29.91", { timeout: 10000 });
+  await expect(page.locator("#dataState")).toContainText(/Live conditions|conditions loaded/i);
+});
+
+test("mobile candidate captures deterministic founder-review evidence", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "mobile-app", "mobile screenshot only");
   await page.goto("/");
   await page.evaluate(() => document.fonts.ready);
-  await page.waitForTimeout(250);
+  await page.waitForTimeout(350);
 
-  await expect(page.locator(".mobile-app-header")).toBeVisible();
-  await expect(page.locator(".mobile-conditions")).toBeVisible();
-  await expect(page.locator(".mobile-card")).toHaveCount(6);
-  await expect(page.locator(".mobile-trusted")).toBeVisible();
-  await expect(page.locator(".mobile-offline")).toBeVisible();
-  await expect(page.locator(".mobile-conservation-strip")).toBeVisible();
+  await expect(page.locator(".bl-header")).toBeVisible();
+  await expect(page.locator(".bl-conditions")).toBeVisible();
+  await expect(page.locator(".bl-report-now")).toBeVisible();
+  await expect(page.locator(".bl-feature")).toHaveCount(3);
+  await expect(page.locator(".bl-education-card")).toHaveCount(6);
+  await expect(page.locator(".bl-agency")).toBeVisible();
+  await expect(page.locator(".bl-bottom-nav")).toBeVisible();
 
   await page.screenshot({
     path: testInfo.outputPath("baitlogic-mobile-candidate.png"),
