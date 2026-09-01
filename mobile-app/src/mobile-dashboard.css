@@ -410,7 +410,7 @@ body{font-family:Roboto,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sa
   .bl-main{width:100%;max-width:100vw;padding:0 9px;gap:6px}
 
   .bl-conditions{border-radius:13px;box-shadow:none}
-  .bl-conditions-top{min-height:72px;grid-template-columns:.78fr 1.02fr}
+  .bl-conditions-top{min-height:62px;grid-template-columns:.72fr 1.18fr}
   .bl-conditions-top>div:first-child{padding:8px 10px 6px}
   .bl-conditions h1{font-size:13px;line-height:1;white-space:nowrap}
   .bl-conditions h1 span{font-size:9px;margin-left:4px}
@@ -418,10 +418,10 @@ body{font-family:Roboto,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sa
   .bl-weather-icon{font-size:31px}
   .bl-temp-row strong{font-size:34px;line-height:.88}
   .bl-temp-row p{font-size:11px;margin-top:3px}
-  .bl-hero-photo{min-height:72px}
+  .bl-hero-photo{min-height:62px}
 
   .bl-condition-metrics{
-    min-height:37px;grid-template-columns:repeat(4,minmax(0,1fr));
+    min-height:31px;grid-template-columns:repeat(4,minmax(0,1fr));
     border-bottom:1px solid rgba(255,255,255,.15)
   }
   .bl-metric{gap:3px;padding:5px 6px;min-width:0}
@@ -432,7 +432,7 @@ body{font-family:Roboto,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sa
   .bl-metric em{font-size:6.5px}
   .bl-metric strong,.bl-metric small,.bl-metric em{overflow-wrap:anywhere}
   .bl-home .bl-primary-cta{
-    margin:6px 10px 7px;min-height:28px;border-radius:7px;
+    margin:5px 10px 6px;min-height:24px;border-radius:7px;
     font-size:12px;border-width:1.5px;color:var(--lime)
   }
   .bl-primary-cta span{right:10px;font-size:19px}
@@ -468,8 +468,8 @@ body{font-family:Roboto,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sa
     width:27px;height:27px;right:6px;bottom:6px;transform:none;font-size:17px;border-width:1.5px
   }
 
-  .bl-education{padding:6px 6px 6px;border-radius:10px}
-  .bl-section-row{padding:0 3px 5px}
+  .bl-education{padding:5px 6px 5px;border-radius:10px}
+  .bl-section-row{padding:0 3px 4px}
   .bl-section-row h2{font-size:12px}
   .bl-section-row a{font-size:9px}
   .bl-education-row{
@@ -477,42 +477,43 @@ body{font-family:Roboto,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sa
     width:100%;overflow:visible;padding:0
   }
   .bl-education-card{min-width:0;flex:none;border-radius:7px}
-  .bl-education-card span{font-size:7px;padding:4px 1px;white-space:nowrap;overflow:hidden}
-  .bl-education-card div{height:48px}
-  .bl-dots{gap:5px;padding-top:4px}
-  .bl-dots>*{width:5px;height:5px}
+  .bl-education-card span{display:block;font-size:7px;padding:3px 1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .bl-education-card div{height:39px}
+  .bl-dots{gap:5px;padding-top:3px}
+  .bl-dots>*{width:4px;height:4px}
 
   .bl-agency{
     grid-template-columns:1.05fr .95fr .95fr;
     grid-template-areas:"intro il mo";
-    gap:6px;padding:7px 8px;border-radius:10px;align-items:stretch
+    gap:6px;padding:6px 8px;border-radius:10px;align-items:stretch
   }
   .bl-agency>div{grid-area:intro;align-self:center}
   .bl-agency .illinois{grid-area:il}
   .bl-agency .missouri{grid-area:mo}
   .bl-agency h2{font-size:10.5px;line-height:1.04;margin-bottom:3px}
   .bl-agency p{font-size:7.5px;line-height:1.18;color:#fff;opacity:.95}
-  .bl-agency>a{min-height:45px;gap:5px;padding:5px 6px;border-radius:8px}
+  .bl-agency>a{min-height:40px;gap:5px;padding:4px 6px;border-radius:8px}
   .bl-agency .state-icon{width:22px;height:28px;font-size:7px;border-radius:5px}
   .bl-agency strong{font-size:8px;line-height:1.05}
   .bl-agency small{font-size:6.5px;line-height:1.1;margin-top:3px}
 
   .bl-sources{
-    min-height:25px;grid-template-columns:repeat(4,minmax(0,1fr));
+    min-height:20px;grid-template-columns:repeat(4,minmax(0,1fr));
     border-radius:9px
   }
   .bl-sources span{
-    min-height:25px;padding:0 3px;display:flex;align-items:center;justify-content:center;
+    min-height:20px;padding:0 3px;display:flex;align-items:center;justify-content:center;
     font-size:7.5px
   }
 
   .bl-bottom-nav{
     position:relative;left:auto;right:auto;bottom:auto;transform:none;width:100%;max-width:100vw;
-    height:54px;margin-top:6px;padding:4px 7px 5px;border-radius:22px 22px 0 0
+    height:calc(43px + env(safe-area-inset-bottom));margin-top:6px;
+    padding:3px 7px calc(4px + env(safe-area-inset-bottom));border-radius:22px 22px 0 0
   }
   .bl-bottom-nav a{font-size:9px;gap:2px}
-  .bl-bottom-nav svg{width:19px;height:19px}
-  .bl-bottom-nav .profile-icon{font-size:22px}
+  .bl-bottom-nav svg{width:17px;height:17px}
+  .bl-bottom-nav .profile-icon{font-size:20px}
   .bl-bottom-nav .log{transform:translateY(-2px)}
-  .bl-bottom-nav .plus{width:36px;height:36px;font-size:25px;border-width:2px}
+  .bl-bottom-nav .plus{width:32px;height:32px;font-size:23px;border-width:2px}
 }
