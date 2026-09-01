@@ -1,6 +1,6 @@
 import {
   Crosshair2Icon, HomeIcon, ReaderIcon, GlobeIcon, PersonIcon,
-  LapTimerIcon, SunIcon, ActivityLogIcon, HeartIcon
+  LapTimerIcon, SunIcon, ActivityLogIcon
 } from "@radix-ui/react-icons";
 import {
   compass, formatClock, pressureTrend, relativeUpdated, useBaitLogicConditions, WEATHER_LABELS
@@ -50,7 +50,7 @@ const cards = [
     text:"Track conditions, notes, and observations over time.",
     cta:"OPEN LOG",
     href:"/field-intel.html#field-check",
-    img:"/assets/approved-card-conservation.svg",
+    img:"/assets/hero-sunset.webp",
     icon:"▣"
   },
   {
@@ -131,11 +131,6 @@ export default function MobileDashboard(){
         <b>›</b>
       </a>
 
-      <a className="auth-strip conservation" href="/field-intel.html#conservation">
-        <span className="strip-icon heart"><HeartIcon/></span>
-        <span><strong>CONSERVATION FIRST</strong><small>If you see something, say something.</small></span>
-        <em>MAKE A DIFFERENCE →</em>
-      </a>
     </main>
 
     <nav className="auth-bottom-nav" aria-label="App navigation">
