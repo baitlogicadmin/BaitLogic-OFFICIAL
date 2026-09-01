@@ -66,7 +66,7 @@ export default function MobileDashboard(){
             <h1>OUTDOOR CONDITIONS <span>{live?"● LIVE":status==="cached"?"● CACHED":"● CHECK"}</span></h1>
             <div className="bl-temp-row">
               <span className="bl-weather-icon">{w && [0,1].includes(w.code)?"☀":"☁"}</span>
-              <div><strong>{w?`${Math.round(w.temperatureF)}°F`:"—"}</strong><p>{w?(WEATHER_LABELS[w.code]||"Current conditions"):"Verified conditions unavailable"}</p></div>
+              <div><strong>{w?`${Math.round(w.temperatureF)}°F`:"—"}</strong><p>{w?(WEATHER_LABELS[w.code]||"Current conditions"):"Unavailable"}</p></div>
             </div>
           </div>
           <div className="bl-hero-photo" aria-hidden="true"/>
