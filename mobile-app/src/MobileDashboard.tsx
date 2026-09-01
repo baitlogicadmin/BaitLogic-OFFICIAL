@@ -37,7 +37,7 @@ function Metric({icon,label,value,detail,cls=""}:{icon:string,label:string,value
 export default function MobileDashboard(){
   const {snapshot,waterTemp,waterStatus,online,status,refreshLocation}=useBaitLogicConditions();
   const w=snapshot?.weather;
-  const place=snapshot?.location?.locality || snapshot?.location?.name || "Location unavailable";
+  const place=snapshot?.location?.locality || snapshot?.location?.name || "Choose location";
   const region=snapshot?.location?.region?.replace("Illinois","IL").replace("Missouri","MO");
   const locationLabel=region && !place.includes(region) ? `${place}, ${region}` : place;
   const live=online&&status==="live";
@@ -55,7 +55,7 @@ export default function MobileDashboard(){
       </a>
       <button className="bl-location" onClick={refreshLocation} type="button" aria-label="Refresh current location and conditions">
         <Crosshair2Icon/>
-        <span><strong>{locationLabel}</strong><small>● {live?"LIVE":status==="cached"?"CACHED":"CHECK LOCATION"}</small></span>
+        <span><strong>{locationLabel}</strong><small>● {live?"LIVE":status==="cached"?"CACHED":"CHECK"}</small></span>
       </button>
     </header>
 
