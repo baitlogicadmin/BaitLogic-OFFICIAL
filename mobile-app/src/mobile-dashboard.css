@@ -241,9 +241,63 @@ body{font-family:Roboto,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sa
   .bl-bottom-nav .plus{width:54px;height:54px;font-size:38px}
 }
 @media(max-width:430px){
-  .bl-header{grid-template-columns:minmax(0,1fr) 138px}
-  .bl-logo{width:84px;height:84px}.bl-wordmark>strong{font-size:31px}.bl-wordmark>b{font-size:12px}.bl-wordmark>small{font-size:10px}
-  .bl-location{min-height:70px}.bl-location strong{font-size:13px}
-  .bl-feature-grid{grid-template-columns:repeat(3,1fr)}
-  .bl-condition-metrics{grid-template-columns:repeat(4,1fr)}
+  .bl-header{grid-template-columns:minmax(0,1fr) 122px;gap:6px;padding:8px 10px 10px}
+  .bl-brand{gap:7px}
+  .bl-logo{width:76px;height:76px}
+  .bl-wordmark>strong{font-size:28px;white-space:nowrap}
+  .bl-wordmark>b{font-size:10px;gap:6px;letter-spacing:.2em}
+  .bl-wordmark>b i{width:14px}
+  .bl-wordmark>small{font-size:8.5px;white-space:nowrap}
+  .bl-rainbow{width:76%;height:3px;margin-top:5px}
+  .bl-location{max-width:122px;min-height:64px;padding:8px 6px;gap:6px}
+  .bl-location svg{width:23px;height:23px}
+  .bl-location strong{font-size:11px;white-space:nowrap}
+  .bl-location small{font-size:9px}
+
+  .bl-conditions-top{grid-template-columns:1.12fr .88fr;min-height:144px}
+  .bl-conditions-top>div:first-child{padding:12px 12px 8px}
+  .bl-conditions h1{font-size:16px;white-space:nowrap}
+  .bl-conditions h1 span{display:inline;margin-left:5px;font-size:11px}
+  .bl-temp-row{gap:8px;margin-top:12px}
+  .bl-weather-icon{font-size:45px}
+  .bl-temp-row strong{font-size:48px}
+  .bl-temp-row p{font-size:15px}
+  .bl-hero-photo{min-height:144px}
+  .bl-condition-metrics{grid-template-columns:repeat(4,1fr);min-height:84px}
+  .bl-metric{gap:5px;padding:8px 5px}
+  .bl-metric-icon{font-size:24px}
+  .bl-metric small{font-size:10px}
+  .bl-metric strong{font-size:14px}
+  .bl-metric em{font-size:8px}
+  .bl-primary-cta{margin:10px 12px 11px;min-height:46px;font-size:16px}
+
+  .bl-report-now{grid-template-columns:46px minmax(0,1fr) 132px;gap:8px;padding:10px 12px;min-height:94px}
+  .bl-alert-icon{width:44px;height:44px;font-size:28px}
+  .bl-report-now h2{font-size:15px;line-height:1.08;white-space:nowrap}
+  .bl-report-now p{font-size:11px;line-height:1.32}
+  .bl-report-now>a{min-height:48px;font-size:13px;gap:7px;padding:0 8px;white-space:nowrap}
+  .bl-report-now>a span{font-size:18px}
+
+  .bl-feature-grid{grid-template-columns:repeat(3,1fr);gap:7px}
+  .bl-feature{min-height:172px;padding:10px 8px}
+  .bl-feature h2{font-size:13px;line-height:1.04}
+  .bl-feature p{font-size:11px;line-height:1.33;max-width:88%;margin-top:8px}
+  .bl-feature-arrow{width:38px;height:38px;font-size:22px;right:7px;bottom:7px}
+
+  .bl-section-row h2{font-size:16px}
+  .bl-section-row a{font-size:11px}
+  .bl-education-row{gap:5px}
+  .bl-education-card span{font-size:9px;padding:6px 1px;white-space:nowrap;overflow:hidden;text-overflow:clip}
+  .bl-education-card div{height:80px}
+
+  .bl-agency{grid-template-columns:1.08fr .96fr .96fr;gap:6px;padding:9px 9px}
+  .bl-agency h2{font-size:14px;line-height:1.06}
+  .bl-agency p{font-size:9px;line-height:1.25}
+  .bl-agency>a{min-height:74px;gap:5px;padding:7px 6px}
+  .bl-agency .state-icon{width:29px;height:40px;font-size:8px}
+  .bl-agency strong{font-size:10px;line-height:1.08}
+  .bl-agency small{font-size:8px;line-height:1.18}
+
+  .bl-sources span{font-size:9px}
+  .bl-bottom-nav a{font-size:11px}
 }
