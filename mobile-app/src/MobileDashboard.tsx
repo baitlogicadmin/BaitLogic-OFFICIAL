@@ -6,6 +6,7 @@ import {
 } from "./useBaitLogicConditions";
 import "./mobile-dashboard.css";
 import "./mobile-dashboard-reference.css";
+import "./mobile-dashboard-precision.css";
 
 const education = [
   { title: "Camping", img: "/assets/pillar-camping.webp" },
