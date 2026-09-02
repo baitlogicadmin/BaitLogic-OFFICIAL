@@ -12,14 +12,14 @@ const cards = [
     cls:"reporting",
     title:"CONSERVATION REPORTING · LOCAL",
     text:"If you see something, say something.",
-    cta:"REPORT / RESOURCES",
+    cta:"REPORT A CONCERN",
     href:"/field-intel.html#conservation",
     img:"/assets/hero-sunset.webp",
     icon:"♧"
   },
   {
     cls:"trails",
-    title:"TRAILS & OFF-GRID",
+    title:"TRAILS & MAPS",
     text:"Nearby trails, maps, and off-grid resources.",
     cta:"EXPLORE TRAILS",
     href:"/trails.html",
@@ -37,8 +37,8 @@ const cards = [
   },
   {
     cls:"knowledge",
-    title:"OUTDOOR KNOWLEDGE",
-    text:"Camping, hiking, safety, wildlife and more.",
+    title:"OUTDOOR EDUCATION",
+    text:"Camping, fishing, hiking, safety, wildlife and more.",
     cta:"LEARN MORE",
     href:"/outdoor.html",
     img:"/assets/pillar-camping.webp",
@@ -74,8 +74,11 @@ export default function MobileDashboard(){
   const place=snapshot?.location?.locality || snapshot?.location?.name || "Choose location";
   const region=snapshot?.location?.region?.replace("Illinois","IL").replace("Missouri","MO");
   const locationLabel=region && !place.includes(region) ? `${place}, ${region}` : place;
-  const live=online&&status==="live";
-  const stateLabel=live?"LIVE":status==="cached"?"CACHED":"CHECK";
+  const updatedMs=snapshot?.updatedAt ? new Date(snapshot.updatedAt).getTime() : NaN;
+  const ageMs=Number.isFinite(updatedMs) ? Date.now()-updatedMs : Infinity;
+  const fresh=ageMs>=0 && ageMs<=90*60*1000;
+  const live=online&&status==="live"&&fresh;
+  const stateLabel=live?"LIVE":snapshot&&!fresh?"STALE":status==="cached"?"CACHED":"CHECK";
 
   return <div className="authorized-home">
     <header className="auth-header">
@@ -99,10 +102,10 @@ export default function MobileDashboard(){
         <div className="auth-metrics">
           <div><LapTimerIcon/><span><strong>{w?`${w.pressureInHg.toFixed(2)}`:"—"} <i>inHg</i></strong><small>{w?pressureTrend(w.pressureDelta3h):"Unavailable"}</small></span></div>
           <div><span className="glyph">☁</span><span><strong>{w?`${Math.round(w.temperatureF)}°F`:"—"}</strong><small>{w?(WEATHER_LABELS[w.code]||"Current conditions"):"Unavailable"}</small></span></div>
-          <div><span className="glyph water">◯</span><span><strong>{waterTemp!=null?`${waterTemp.toFixed(1)}°F`:"—"}</strong><small>Water Temp</small></span></div>
+          <div><span className="glyph water">◯</span><span><strong>{waterTemp!=null?`${waterTemp.toFixed(1)}°F`:"—"}</strong><small>{waterTemp!=null?"Water Temp":"No verified reading"}</small></span></div>
           <div><ActivityLogIcon/><span><strong>{w?`${Math.round(w.windMph)} mph`:"—"}</strong><small>{w?compass(w.windDirection):"Unavailable"}</small></span></div>
           <div><SunIcon/><span><strong>{formatClock(w?.sunrise)}</strong><small>{formatClock(w?.sunset)}</small></span></div>
-          <div><span className="glyph clock">◷</span><span><strong>Updated</strong><small>{relativeUpdated(snapshot?.updatedAt)}</small></span></div>
+          <div><span className="glyph clock">◷</span><span><strong>{fresh?"Updated":"Stale data"}</strong><small>{relativeUpdated(snapshot?.updatedAt)}</small></span></div>
         </div>
       </section>
 
