@@ -101,9 +101,9 @@ test("renders mobile and desktop as separate implementations and ships Community
   assert.match(prototype, /DesktopDashboard/);
   assert.match(prototype, /matchMedia/);
   assert.match(mobile, /CONSERVATION REPORTING · LOCAL/);
-  assert.match(mobile, /TRAILS & OFF-GRID/);
+  assert.match(mobile, /TRAILS & MAPS/);
   assert.match(mobile, /BAROMETER/);
-  assert.match(mobile, /OUTDOOR KNOWLEDGE/);
+  assert.match(mobile, /OUTDOOR EDUCATION/);
   assert.match(mobile, /FIELD LOG/);
   assert.match(mobile, /COMMUNITY CATCHES/);
   assert.match(mobile, /TRUSTED DATA SOURCES/);
