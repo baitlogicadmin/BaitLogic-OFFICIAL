@@ -1,0 +1,1 @@
+setInterval(()=>{const t=(document.querySelector('#pressureShort')?.textContent||'').toLowerCase(),v=document.querySelector('#trendVisual');if(v)v.dataset.trend=t.includes('falling')?'falling':t.includes('rising')?'rising':'steady';},700);
