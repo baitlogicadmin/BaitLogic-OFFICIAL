@@ -5,6 +5,7 @@ import {
   compass, pressureTrend, relativeUpdated, useBaitLogicConditions, WEATHER_LABELS
 } from "./useBaitLogicConditions";
 import "./mobile-dashboard.css";
+import "./mobile-dashboard-reference.css";
 
 const education = [
   { title: "Camping", img: "/assets/pillar-camping.webp" },
@@ -129,21 +130,6 @@ export default function MobileDashboard() {
           <a href="/field-intel.html#conservation">REPORT NOW <span>▣</span></a>
         </section>
 
-        <section className="bl-agency" aria-label="Report to the right agency">
-          <div>
-            <h2>REPORT TO THE RIGHT AGENCY</h2>
-            <p>Your reports help protect our waters, wildlife, and public safety.</p>
-          </div>
-          <a className="illinois" href="https://dnr2.illinois.gov/OLETIPHotline/" target="_blank" rel="noopener noreferrer">
-            <span className="state-icon">IL</span>
-            <span><strong>REPORT TO IL DNR</strong><small>Illinois Department of Natural Resources</small></span>
-          </a>
-          <a className="missouri" href="https://mdc12.mdc.mo.gov/Applications/FishKillsIntake/Intake" target="_blank" rel="noopener noreferrer">
-            <span className="state-icon">MO</span>
-            <span><strong>REPORT TO MO CONS.</strong><small>Missouri Department of Conservation</small></span>
-          </a>
-        </section>
-
         <section className="bl-feature-grid" aria-label="Outdoor tools">
           <a className="bl-feature water-flow" href="/field-intel.html#water">
             <div><h2>≋ WATER &amp; FLOW</h2><p>Stream levels, flow, temperature &amp; pressure data.</p></div>
@@ -173,6 +159,21 @@ export default function MobileDashboard() {
             ))}
           </div>
           <div className="bl-dots" aria-hidden="true"><b /><i /><i /><i /><i /></div>
+        </section>
+
+        <section className="bl-agency" aria-label="Report to the right agency">
+          <div>
+            <h2>REPORT TO THE RIGHT AGENCY</h2>
+            <p>Your reports help protect our waters, wildlife, and public safety.</p>
+          </div>
+          <a className="illinois" href="https://dnr2.illinois.gov/OLETIPHotline/" target="_blank" rel="noopener noreferrer">
+            <span className="state-icon">IL</span>
+            <span><strong>REPORT TO IL DNR</strong><small>Illinois Department of Natural Resources</small></span>
+          </a>
+          <a className="missouri" href="https://mdc12.mdc.mo.gov/Applications/FishKillsIntake/Intake" target="_blank" rel="noopener noreferrer">
+            <span className="state-icon">MO</span>
+            <span><strong>REPORT TO MO CONS.</strong><small>Missouri Department of Conservation</small></span>
+          </a>
         </section>
 
         <section className="bl-sources" aria-label="Trusted data sources">
