@@ -1,0 +1,111 @@
+/* Final phone precision pass measured against the approved 709px reference screenshot. */
+@media (max-width: 600px) {
+  .bl-home {
+    padding-bottom: 18px;
+  }
+
+  /* Reference #2: restore the taller conditions hero and keep its title readable. */
+  .bl-conditions-top {
+    height: 107px;
+    min-height: 107px;
+    overflow: hidden;
+  }
+  .bl-hero-photo {
+    min-height: 107px;
+  }
+  .bl-conditions-top > div:first-child {
+    position: relative;
+    z-index: 3;
+    overflow: visible;
+  }
+  .bl-conditions h1 {
+    position: absolute;
+    top: 7px;
+    left: 10px;
+    z-index: 5;
+    width: calc(100vw - 38px);
+    overflow: visible;
+    text-overflow: clip;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  .bl-temp-row {
+    margin-top: 36px;
+  }
+
+  /* Reference #3: compact report strip instead of a second hero-sized block. */
+  .bl-report-now {
+    min-height: 44px;
+    padding: 4px 8px;
+    grid-template-columns: 31px minmax(0, 1fr) 112px;
+    gap: 6px;
+  }
+  .bl-alert-icon {
+    width: 29px;
+    height: 29px;
+    font-size: 18px;
+  }
+  .bl-report-now h2 {
+    font-size: 10px;
+  }
+  .bl-report-now p {
+    font-size: 8px;
+    line-height: 1.15;
+  }
+  .bl-report-now > a {
+    min-height: 29px;
+    font-size: 10.5px;
+  }
+
+  /* Reference #4: three equal cards at the original compact height. */
+  .bl-feature {
+    min-height: 86px;
+  }
+
+  /* Reference #5: six education tiles visible without making the section too tall. */
+  .bl-education {
+    padding: 4px 6px;
+  }
+  .bl-section-row {
+    padding-bottom: 3px;
+  }
+  .bl-education-card div {
+    height: 40px;
+  }
+  .bl-dots {
+    padding-top: 2px;
+  }
+
+  /* Reference #6: intro + IL + MO proportions from the approved composition. */
+  .bl-agency {
+    grid-template-columns: 1.18fr .92fr 1.04fr;
+    min-height: 58px;
+    padding: 6px 7px;
+  }
+  .bl-agency > a {
+    min-height: 47px;
+  }
+
+  /* Reference #8: compact nav with the same breathing room beneath it as the reference. */
+  .bl-bottom-nav {
+    height: calc(43px + env(safe-area-inset-bottom));
+    margin-top: 5px;
+    padding-top: 2px;
+    padding-bottom: calc(3px + env(safe-area-inset-bottom));
+  }
+  .bl-bottom-nav a {
+    font-size: 8.5px;
+  }
+  .bl-bottom-nav svg {
+    width: 16px;
+    height: 16px;
+  }
+  .bl-bottom-nav .profile-icon {
+    font-size: 18px;
+  }
+  .bl-bottom-nav .plus {
+    width: 30px;
+    height: 30px;
+    font-size: 21px;
+  }
+}
