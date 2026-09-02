@@ -123,7 +123,7 @@ test("every founder-authorized mobile card points at the intended real destinati
     [".bl-bottom-nav a:nth-child(1)", "/"],
     [".bl-bottom-nav a:nth-child(2)", "/trails.html"],
     [".bl-bottom-nav a:nth-child(3)", "/field-intel.html#field-check"],
-    [".bl-bottom-nav a:nth-child(4)", "/field-intel.html#field-check"],
+    [".bl-bottom-nav a:nth-child(4)", "/field-intel.html#conservation"],
     [".bl-bottom-nav a:nth-child(5)", "/profile.html"],
   ] as const;
 
@@ -158,8 +158,8 @@ test("barometer Highland fallback is wired to verified pressure loading", async 
   const appJs = await appResponse.text();
   expect(appJs).toContain('E.useHighland?.addEventListener("click",useHighland)');
   expect(appJs).toContain('fetchWithTimeout(`/api/barometer-snapshot');
-  expect(appJs).toContain('39.0');
-  expect(appJs).toContain('-89.67');
+  expect(appJs).toContain('38.7395');
+  expect(appJs).toContain('-89.6712');
 });
 
 test("mobile candidate captures deterministic founder-review evidence", async ({ page }, testInfo) => {
