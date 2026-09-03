@@ -1,6 +1,6 @@
 # BaitLogic — Source of Truth
 
-Last code-aligned review: 2026-08-25 (UTC)
+Last code-aligned review: 2026-09-03 (UTC)
 
 This file is the authoritative handoff for humans and AI collaborators. When project facts conflict with older notes, screenshots, chats, ZIPs, branches, legacy root files, or deprecated infrastructure, this file and current `main` take precedence unless the founder explicitly changes a locked decision.
 
@@ -32,7 +32,7 @@ Core knowledge and conservation information must remain accessible without a pay
 
 ## 2. Product hierarchy — LOCKED
 
-BaitLogic has **four primary pillars**. These are the organizing structure for product UX, navigation, content, marketing, community, email, partnerships, and future feature decisions.
+BaitLogic has **four primary pillars**. These are the organizing structure for product UX, navigation, content, marketing, community, partnerships, and future feature decisions.
 
 ### Pillar 1 — Fishing Intelligence
 
@@ -96,7 +96,7 @@ Do not present every outdoor subject as a separate top-level identity. Supportin
 
 **Camping education must be a front-and-center education option alongside fishing education.**
 
-This is a mandatory product/UX rule. Whenever BaitLogic presents primary educational choices, featured learning categories, homepage learning entry points, or mobile learning navigation, **Camping** must be visibly available next to **Fishing** at the same first-line discovery level. Camping education must not be buried behind generic outdoor categories or treated as an afterthought.
+Whenever BaitLogic presents primary educational choices, featured learning categories, homepage learning entry points, or mobile learning navigation, **Camping** must be visibly available next to **Fishing** at the same first-line discovery level. Camping education must not be buried behind generic outdoor categories or treated as an afterthought.
 
 This rule does **not** create a fifth primary product pillar. It governs the prominence and discoverability of education within the existing four-pillar BaitLogic system.
 
@@ -113,26 +113,38 @@ This rule does **not** create a fifth primary product pillar. It governs the pro
 - Production domains: `bait-logic.com` and `www.bait-logic.com`
 - Data platform: Supabase
 - Active Supabase project ref: `gibaaxzltpdizayvicgf`
-- Public-write protection: Cloudflare Turnstile
-- Owned-email delivery: Resend through Supabase Edge Functions
+- Public-write protection: Cloudflare Turnstile in the validated submission path
 - Production deployment rule: the founder reviews the exact production candidate and explicitly approves deployment
 
 ### Active code map
 
-- Main product UI: `mobile-app/src/Prototype.tsx` and `mobile-app/src/prototype.css`
-- Feature surfaces: `mobile-app/src/FeatureTools.tsx`, `mobile-app/src/RegionalExploreEnhancer.tsx`, and related CSS
-- Product data/config: `mobile-app/src/data/baitlogicData.ts`
-- Runtime composition: `mobile-app/src/App.tsx`, `mobile-app/src/main.tsx`, and `mobile-app/src/mobile/`
+- Runtime entry: `mobile-app/src/main.tsx`
+- App composition: `mobile-app/src/App.tsx`
+- Responsive runtime switch: `mobile-app/src/Prototype.tsx`
+- Mobile implementation: `mobile-app/src/MobileDashboard.tsx` with `mobile-dashboard.css` and `mobile-dashboard-reference.css`
+- Desktop implementation: `mobile-app/src/DesktopDashboard.tsx` with `desktop-dashboard.css`
+- Live/cached conditions: `mobile-app/src/useBaitLogicConditions.ts`
+- Product data/config and Field Check synchronization: `mobile-app/src/data/baitlogicData.ts`
 - PWA/offline: `mobile-app/public/manifest.webmanifest` and `mobile-app/public/sw.js`
-- Public submissions / Field Check photos / signup welcome and admin email: `mobile-app/supabase/functions/submit-baitlogic-signal/index.ts`
-- Weekly email and unsubscribe: `mobile-app/supabase/functions/send-baitlogic-weekly/index.ts` and `unsubscribe-baitlogic-weekly/index.ts`
+- Validated public submission function: `mobile-app/supabase/functions/submit-baitlogic-signal/index.ts`
 - Database changes: `mobile-app/supabase/migrations/`
 - Verification: `mobile-app/scripts/deployment-readiness.mjs`, `mobile-app/tests/`, `.github/workflows/deployment-readiness.yml`
 - Vercel mapping: root `vercel.json`
 
+### Removed from the canonical frontend path
+
+The following retired layers are not active runtime dependencies and must not be revived by assumption:
+- `FeatureTools.tsx` / `feature-tools.css`
+- `ApprovedDashboard.tsx` / `approved-dashboard.css`
+- `TurnstileWidget.tsx`
+- the older `RegionalExploreEnhancer.tsx` / `regional-explore.css` implementation
+- the removed weekly-email lifecycle in `baitlogicData.ts`
+
+The trail/navigation work in PR #43 is separate feature work with newer route/offline logic. It is not production truth until reconciled, verified, approved, and merged through the canonical release path.
+
 ### Important correction
 
-The root Express server and root `public/` directory are legacy/deprecated production UI. They may remain for history or old routes, but they are **not evidence of the current production implementation**.
+The root Express server and root `public/` directory are legacy/deprecated production UI. They may remain for legacy API/server behavior and tests, but they are **not evidence of the current Vercel frontend implementation**.
 
 The active PWA **does have a service worker and offline architecture**. Do not repeat the obsolete claim that offline/PWA support is absent merely because the legacy root `public/` tree does not contain the active service worker.
 
@@ -140,7 +152,7 @@ The active PWA **does have a service worker and offline architecture**. Do not r
 
 ## 4. Deprecated / do not revive by assumption
 
-- Root Express server and root `public/` as the production UI
+- Root Express server and root `public/` as the production frontend
 - `baitlogicadmin/BaitLogic` as the canonical repository
 - simulated phone/device frames in the production runtime UI
 - `baitlogic.org` as the primary domain
@@ -151,6 +163,7 @@ The active PWA **does have a service worker and offline architecture**. Do not r
 - native App Store / Play Store claims; the current product is a PWA
 - marketing BaitLogic as multiple unrelated outdoor brands or feature silos
 - “everything outdoors” messaging that obscures fishing, water, community, and conservation as the core hierarchy
+- the retired weekly-email lifecycle unless the founder explicitly re-approves it
 
 ---
 
@@ -175,32 +188,29 @@ Never call something verified, deployed, live, successful, scientifically valida
 ### Implemented foundation
 
 - responsive Vite/React PWA from `mobile-app/`
+- separate mobile and desktop dashboard implementations selected by `Prototype.tsx`
 - web-app manifest and service worker
-- cached/last-known conditions behavior in the production UI
+- cached/last-known conditions behavior in the active UI
 - device-local Field Check storage and later synchronization
-- protected Field Check and weekly-signup submissions through `submit-baitlogic-signal`
-- Cloudflare Turnstile and database-backed rate limiting
+- protected Field Check submissions through `submit-baitlogic-signal`
+- Cloudflare Turnstile verification and database-backed rate limiting in the submission path
 - approved-only community Field Check feed
-- Field Check photo support in code: JPEG/PNG/WebP up to 1.5 MB, private storage path, area-only place precision, pending moderation
-- signup welcome/admin delivery-attempt tracking in code
-- weekly sender and unsubscribe foundations
-- Facebook and Instagram CTAs
+- Field Check photo support exists in separate unreconciled feature work and is not part of the cleanup branch’s canonical runtime until integrated and verified
+- Facebook and Instagram CTAs where present in the active shell
 - GitHub deployment-readiness workflow
-- mobile barometer location-loading fix merged
-- four-column mobile quick-tool layout fix merged
+- mobile barometer/location handling and offline status contracts
 
 ### Requires verification / hardening
 
 - Android and iPhone physical-device tests: online, offline, relaunch, typing, install, reconnect, and synchronization
 - confirm current location names on real devices and rural locations
-- confirm production service worker behavior and cache freshness semantics
-- confirm Field Check photo upload against live storage policies
-- resolve `email_not_configured` by checking active Supabase Edge Function deployment plus `RESEND_API_KEY` and `BAITLOGIC_EMAIL_FROM`
-- complete one real consented welcome email + admin notification + weekly send + unsubscribe loop
-- confirm all official reporting links and phone routes on production mobile devices
+- confirm production service-worker behavior and cache freshness semantics
+- confirm official reporting destinations on production mobile devices
+- reconcile and verify trail-navigation work before making production claims
+- reconcile and verify Field Check photo work before making production claims
 - continue Supabase performance/security-advisor maintenance
 - maintain deliberate grants and RLS on every public table
-- production monitoring remains limited by current Vercel log retention
+- verify the exact Vercel candidate before any merge to `main`
 
 ### Planned / incomplete strategic modules
 
@@ -210,7 +220,6 @@ Never call something verified, deployed, live, successful, scientifically valida
 - bathymetry/depth intelligence
 - expanded fishing reports and community discussion
 - local business/partner ecosystem
-- mature email nurture/segmentation
 - native Android/iOS packages only if usage justifies them
 - marketplace/commerce remains later priority
 
@@ -218,17 +227,17 @@ Never call something verified, deployed, live, successful, scientifically valida
 
 ## 7. Current code-aligned blockers and cautions
 
-### Email delivery
+### Submission security
 
-Signup welcome-email and admin-notification tracking are implemented in code. `submit-baitlogic-signal` saves the subscriber first, attempts both messages, and records provider IDs/timestamps/errors.
+Field Check synchronization must remain behind the validated Supabase submission function. The server-side function verifies Cloudflare Turnstile, fails closed when the secret is unavailable, applies rate limiting, and uses privileged database access server-side rather than exposing service-role credentials to the browser.
 
-Founder-reported production blocker from 2026-08-24: signup paths recorded `email_not_configured`. In the current function this occurs when the active Supabase Edge Function runtime is missing `RESEND_API_KEY` or `BAITLOGIC_EMAIL_FROM`.
-
-Status remains **BLOCKED / NOT VERIFIED** until the active deployment and secret mapping are checked and a real consented signup successfully receives the welcome email while the admin notification reaches `baitlogicadmin@gmail.com`.
+Do not weaken this path merely because a retired React Turnstile wrapper was removed. That wrapper was unused; the security contract lives in the validated submission function and associated data path.
 
 ### Sample/live claims
 
 Any condition card or module that is still sample/demo data must remain clearly labeled. Do not market sample values as live intelligence.
+
+Cached or stale values must be labeled cached/stale and never presented as live.
 
 ### Analytics
 
@@ -243,10 +252,7 @@ PostHog or any other analytics platform is not automatically a validated product
 - BaitLogic is broader than fishing only where broader outdoor information strengthens the local intelligence/conservation system.
 - Free knowledge, local intelligence, conservation, community sharing, and stewardship are foundational.
 - Core knowledge and conservation resources stay free; no premium knowledge paywall.
-- Current approved visual direction: deep navy, premium gold, warm white, and controlled spectrum/rainbow accents, with strong contrast, outdoor richness, and premium readability.
-- Teal/aqua and coral may remain supporting accents where appropriate.
-- Approved logo direction: ornate/fancy gold ring and anchor, no compass star/starburst behind the anchor; do not restore the rejected neon-blue swoosh.
-- Avoid oppressive darkness, generic fishing-template styling, flat generic minimalism, or an artificial “AI-generated” visual feel.
+- Current approved visual direction remains governed by founder-approved references and exact visual review; do not silently substitute a new aesthetic.
 - Use authentic outdoor imagery; women anglers should be represented prominently.
 - Do not default to male-only imagery.
 
@@ -275,15 +281,11 @@ Short-form fishing/outdoor content with strong visual hooks. Fishing remains the
 
 BaitLogic tools, fishing intelligence, water/environment context, Field Checks, community knowledge, and conservation action.
 
-### Stage 3 — Conversion
+### Stage 3 — Sustainable support
 
-A consented owned email audience for deeper value delivery, community continuity, grants/donations/partner support where appropriate, and sustainable mission-aligned monetization.
+Mission-aligned sponsorships, local-business partnerships, grants/donations where appropriate, and other founder-approved channels may support the platform without putting core knowledge behind a paywall.
 
-Conversion does **not** mean placing core knowledge behind a paywall.
-
-Use Hub-and-Spoke production: one strong core topic should become short video, community/social content, email, website content, and supporting graphics/data where useful.
-
-Baseline cadence remains 3 short-form videos/week, 2 community/report posts/week, and 1 consented value email/week unless real capacity/performance evidence supports a change.
+The prior weekly-email lifecycle is not part of the current canonical product and must not be reintroduced by assumption.
 
 ---
 
@@ -292,7 +294,7 @@ Baseline cadence remains 3 short-form videos/week, 2 community/report posts/week
 - Never expose service-role credentials to browser code or the public repository.
 - Only browser-safe values may use `VITE_*`.
 - Publishable Supabase keys require correct grants and RLS.
-- Never grant anonymous SELECT to private analytics, signup, moderation, or admin data simply to make frontend requests work.
+- Never grant anonymous SELECT to private analytics, moderation, or admin data simply to make frontend requests work.
 - Validate and rate-limit public writes.
 - Treat Supabase security-advisor warnings as defects unless a documented service-only design explains them.
 - Do not present community submissions as official reports or scientific measurements.
@@ -372,7 +374,6 @@ When an imperative product, brand, infrastructure, security, or mission fact cha
 
 ---
 
-
 ## 14. Safety-critical trust standard — LOCKED 2026-08-31
 
 The founder has explicitly designated BaitLogic as a product where people may eventually rely on information while outdoors and where errors in conditions, navigation, closures, reporting, offline behavior, or safety context could have serious consequences.
@@ -397,12 +398,10 @@ For safety-critical/mobile launch work, the mandatory sequence is:
 
 This standard is additive to all existing security, privacy, conservation, source-of-truth, and founder-alert rules and must not be weakened by a later convenience shortcut unless the founder explicitly changes this locked decision.
 
-
 ## Change log
 
+- **2026-09-03 — Canonical frontend cleanup alignment:** documented `main.tsx → App.tsx → Prototype.tsx → MobileDashboard/DesktopDashboard` as the active runtime path; marked `FeatureTools`, `ApprovedDashboard`, the older `RegionalExploreEnhancer`, unused `TurnstileWidget`, and the weekly-email lifecycle as retired; preserved server-side Turnstile submission protection; recorded trail-navigation PR #43 as separate unreconciled feature work.
 - **2026-08-31 — Safety-critical trust standard:** locked BaitLogic field/safety information, mobile release verification, double link/asset checks, fail-closed unknown/stale handling, founder-approved visual parity, and live post-deploy verification as mandatory production gates.
-
-- **2026-08-28 — Camping education prominence:** locked Camping as a front-and-center education option alongside Fishing. Any primary education chooser, featured learning surface, homepage learning entry point, or mobile learning navigation must expose Camping next to Fishing rather than burying it under generic outdoor categories. This is a mandatory education/UX rule and does not create a fifth primary product pillar.
-- **2026-08-25 — Narrative consolidation:** locked BaitLogic around four primary pillars: Fishing Intelligence, Community Knowledge, Water & Environment, and Conservation Action. Locked the system flow `Conditions → Community Knowledge → Better Fishing/Outdoor Decisions → Conservation Action`. Clarified that hiking, paddling, camping, wildlife, trails, habitat, and access are supporting categories rather than competing top-level identities. Locked `Beyond the Bite. Protect What Matters.` and `Understand the water. Learn from the community. Fish smarter. Protect what matters.` as the primary message hierarchy.
-- **2026-08-25 — Architecture correction:** explicitly recorded that `mobile-app/` is production, root `public/` is deprecated, and the active PWA includes `mobile-app/public/sw.js`; this supersedes any audit conclusion based only on the legacy root tree that claimed service-worker/offline architecture was absent.
-- **2026-08-24 — AI/code context alignment:** recorded Field Check photo implementation, signup welcome/admin delivery tracking, the `email_not_configured` blocker, merged barometer location-loading fix, active code map, visual-direction reconciliation, funnel cadence, and runtime conflicts.
+- **2026-08-28 — Camping education prominence:** locked Camping as a front-and-center education option alongside Fishing.
+- **2026-08-25 — Narrative consolidation:** locked BaitLogic around four primary pillars: Fishing Intelligence, Community Knowledge, Water & Environment, and Conservation Action.
+- **2026-08-25 — Architecture correction:** explicitly recorded that `mobile-app/` is production, root `public/` is deprecated as the production frontend, and the active PWA includes `mobile-app/public/sw.js`.
