@@ -76,6 +76,13 @@ run(
   "tests/offline-foundation.test.mjs",
   "Repair the failing PWA, database-security, or active submission contract.",
 );
+run(
+  "Trail API contract tests",
+  process.execPath,
+  ["--test", "../tests/trails.test.js"],
+  "../tests/trails.test.js",
+  "Repair the bounded trail API, GeoJSON conversion, or fallback parsing contract.",
+);
 
 const requiredFiles = [
   "dist/client/index.html",
@@ -86,13 +93,14 @@ const requiredFiles = [
   "dist/client/trails.html",
   "dist/client/catches.html",
   "dist/client/conservation-prairie.html",
+  "../api/trails.js",
   "supabase/functions/submit-baitlogic-signal/index.ts",
 ];
 const missingFiles = requiredFiles.filter((file) => !existsSync(path.join(root, file)));
 addCheck(
   "Vercel production and backend file map",
   missingFiles.length === 0,
-  missingFiles.length ? `Missing: ${missingFiles.join(", ")}` : "All required production, recovered feature, PWA, and active Supabase files are present.",
+  missingFiles.length ? `Missing: ${missingFiles.join(", ")}` : "All required production, recovered feature, PWA, trail API, and active Supabase files are present.",
   missingFiles.length ? "Restore the listed file(s) from the authoritative source before deployment." : "",
 );
 
