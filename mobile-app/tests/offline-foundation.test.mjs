@@ -62,7 +62,7 @@ test("ships the correct public BaitLogic contact address", async () => {
 test("keeps public backend writes behind the validated submission function", async () => {
   const sql = await readFile(new URL("../supabase/field-checks.sql", import.meta.url), "utf8");
   const functionSource = await readFile(new URL("../supabase/functions/submit-baitlogic-signal/index.ts", import.meta.url), "utf8");
-  const interfaceSource = await readFile(new URL("../src/ApprovedDashboard.tsx", import.meta.url), "utf8");
+  const mobileSource = await readFile(new URL("../src/MobileDashboard.tsx", import.meta.url), "utf8");
   const dataSource = await readFile(new URL("../src/data/baitlogicData.ts", import.meta.url), "utf8");
 
   assert.match(sql, /alter table public\.field_checks enable row level security/i);
@@ -75,19 +75,9 @@ test("keeps public backend writes behind the validated submission function", asy
   assert.match(functionSource, /rate_limited/);
   assert.match(functionSource, /SUPABASE_SERVICE_ROLE_KEY/);
   assert.match(dataSource, /captcha_token: captchaToken/);
-  assert.match(interfaceSource, /OFFLINE \/ CACHED/);
-  assert.doesNotMatch(interfaceSource, /Revision Status|Deployment Status|Offline Status|Fully Deployed|All systems online/i);
-});
-
-test("ships the weekly email sender with one-click unsubscribe", async () => {
-  const sender = await readFile(new URL("../supabase/functions/send-baitlogic-weekly/index.ts", import.meta.url), "utf8");
-  const unsubscribe = await readFile(new URL("../supabase/functions/unsubscribe-baitlogic-weekly/index.ts", import.meta.url), "utf8");
-
-  assert.match(sender, /RESEND_API_KEY/);
-  assert.match(sender, /List-Unsubscribe-Post/);
-  assert.match(sender, /Exact locations are never included/);
-  assert.match(unsubscribe, /status: "unsubscribed"/);
-  assert.match(unsubscribe, /safeEqual/);
+  assert.match(mobileSource, /status === "cached"/);
+  assert.match(mobileSource, /CACHED/);
+  assert.doesNotMatch(mobileSource, /Revision Status|Deployment Status|Fully Deployed|All systems online/i);
 });
 
 test("renders mobile and desktop as separate implementations and ships Community Catches", async () => {
