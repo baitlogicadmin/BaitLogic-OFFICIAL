@@ -3,13 +3,11 @@
   "version": "1.0.0",
   "private": true,
   "description": "BaitLogic Outdoors mobile-first community intelligence PWA",
-  "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js",
+    "start": "npm --prefix mobile-app run dev -- --host 0.0.0.0",
+    "dev": "npm --prefix mobile-app run dev -- --host 0.0.0.0",
     "build": "npm --prefix mobile-app run check:readiness",
-    "check:readiness": "npm --prefix mobile-app run check:readiness",
-    "test:legacy-api": "node --test tests/server.test.js"
+    "check:readiness": "npm --prefix mobile-app run check:readiness"
   },
   "dependencies": {
     "compression": "^1.8.1",
