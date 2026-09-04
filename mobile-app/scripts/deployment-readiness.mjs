@@ -74,7 +74,14 @@ run(
   process.execPath,
   ["--test", "tests/offline-foundation.test.mjs"],
   "tests/offline-foundation.test.mjs",
-  "Repair the failing PWA, database-security, or email-delivery contract.",
+  "Repair the failing PWA, database-security, or active submission contract.",
+);
+run(
+  "Trail API contract tests",
+  process.execPath,
+  ["--test", "../tests/trails.test.js"],
+  "../tests/trails.test.js",
+  "Repair the bounded trail API, GeoJSON conversion, or fallback parsing contract.",
 );
 
 const requiredFiles = [
@@ -86,15 +93,14 @@ const requiredFiles = [
   "dist/client/trails.html",
   "dist/client/catches.html",
   "dist/client/conservation-prairie.html",
+  "../api/trails.js",
   "supabase/functions/submit-baitlogic-signal/index.ts",
-  "supabase/functions/send-baitlogic-weekly/index.ts",
-  "supabase/functions/unsubscribe-baitlogic-weekly/index.ts",
 ];
 const missingFiles = requiredFiles.filter((file) => !existsSync(path.join(root, file)));
 addCheck(
   "Vercel production and backend file map",
   missingFiles.length === 0,
-  missingFiles.length ? `Missing: ${missingFiles.join(", ")}` : "All required production, recovered feature, PWA, and Supabase files are present.",
+  missingFiles.length ? `Missing: ${missingFiles.join(", ")}` : "All required production, recovered feature, PWA, trail API, and active Supabase files are present.",
   missingFiles.length ? "Restore the listed file(s) from the authoritative source before deployment." : "",
 );
 
@@ -126,10 +132,8 @@ if (supabaseUrl && publishableKey) {
     [403],
     { method: "POST", headers: { ...authHeaders, "content-type": "application/json" }, body: JSON.stringify({ kind: "readiness_missing_captcha" }) },
   );
-  probe("Weekly sender authorization guard", `${supabaseUrl}/functions/v1/send-baitlogic-weekly`, [401, 403]);
-  probe("Unsubscribe endpoint validation", `${supabaseUrl}/functions/v1/unsubscribe-baitlogic-weekly`, [400]);
 } else {
-  for (const name of ["Database/Data API read", "Submission API bot-protection guard", "Weekly sender authorization guard", "Unsubscribe endpoint validation"]) {
+  for (const name of ["Database/Data API read", "Submission API bot-protection guard"]) {
     addCheck(name, false, "Live probe skipped because Supabase public environment keys are missing.", "Map the public Supabase URL and publishable key.");
   }
 }
