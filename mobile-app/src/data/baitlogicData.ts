@@ -24,7 +24,6 @@ type FieldCheckRow = {
 const FIELD_CHECKS_KEY = "baitlogic-field-checks-v2";
 const LEGACY_FIELD_CHECKS_KEY = "baitlogic-field-checks";
 const SAVED_KEY = "baitlogic-saved-items-v2";
-const WEEKLY_EMAIL_KEY = "baitlogic-weekly-email-v2";
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL?.trim()
   || "https://gibaaxzltpdizayvicgf.supabase.co";
@@ -117,34 +116,6 @@ export function persistSavedIds(ids: number[]) {
   localStorage.setItem(SAVED_KEY, JSON.stringify(ids));
 }
 
-export function saveWeeklyEmail(email: string, website = "") {
-  localStorage.setItem(
-    WEEKLY_EMAIL_KEY,
-    JSON.stringify({ email: email.trim().toLowerCase(), consentAt: new Date().toISOString(), submitted: false, website }),
-  );
-}
-
-async function syncWeeklyEmail(captchaToken?: string) {
-  const signup = readJson<{ email: string; consentAt: string; submitted: boolean; website?: string } | null>(WEEKLY_EMAIL_KEY, null);
-  const supabase = await getSupabase();
-  if (!signup || signup.submitted) return "none" as const;
-  if (!supabase) return "failed" as const;
-
-  const { error } = await supabase.functions.invoke("submit-baitlogic-signal", {
-    body: {
-      kind: "weekly_signup",
-      email: signup.email,
-      consent_at: signup.consentAt,
-      website: signup.website ?? "",
-      captcha_token: captchaToken,
-    },
-  });
-
-  if (error) return "failed" as const;
-  localStorage.setItem(WEEKLY_EMAIL_KEY, JSON.stringify({ ...signup, submitted: true }));
-  return "synced" as const;
-}
-
 async function submitPendingFieldChecks(items: FieldCheck[], captchaToken?: string) {
   const supabase = await getSupabase();
   if (!supabase) return { items, ok: false };
@@ -201,17 +172,16 @@ async function readApprovedFieldChecks() {
 
 export async function syncBaitLogicData(
   online: boolean,
-  captchaTokens: { field?: string; email?: string } = {},
+  captchaTokens: { field?: string } = {},
 ) {
   const local = readFieldChecks();
   if (!online || !backendConfigured) {
-    return { fieldChecks: local, mode: online ? ("device" as const) : ("offline" as const), emailSynced: false };
+    return { fieldChecks: local, mode: online ? ("device" as const) : ("offline" as const) };
   }
 
-  const [submission, remote, emailStatus] = await Promise.all([
+  const [submission, remote] = await Promise.all([
     submitPendingFieldChecks(local, captchaTokens.field),
     readApprovedFieldChecks(),
-    syncWeeklyEmail(captchaTokens.email),
   ]);
   const merged = new Map<string, FieldCheck>();
   remote.items.forEach((item) => merged.set(item.id, item));
@@ -224,7 +194,6 @@ export async function syncBaitLogicData(
   return {
     fieldChecks,
     mode: submission.ok && remote.ok ? ("synced" as const) : ("device" as const),
-    emailSynced: emailStatus === "synced",
   };
 }
 
