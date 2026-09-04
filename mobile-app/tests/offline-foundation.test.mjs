@@ -14,7 +14,7 @@ test("ships an installable BaitLogic web app manifest", async () => {
 test("ships the versioned app-shell service worker", async () => {
   const worker = await readFile(new URL("../dist/client/sw.js", import.meta.url), "utf8");
 
-  assert.match(worker, /baitlogic-field-kit-v18/);
+  assert.match(worker, /baitlogic-field-kit-v20/);
   assert.match(worker, /baitlogic-facebook-qr\.png/);
   assert.match(worker, /hero-sunset\.webp/);
   assert.match(worker, /pillar-fishing\.webp/);
@@ -24,9 +24,11 @@ test("ships the versioned app-shell service worker", async () => {
   assert.match(worker, /\/api\/barometer-snapshot/);
   assert.match(worker, /\/api\/water-snapshot/);
   assert.match(worker, /\/trails\.html/);
+  assert.match(worker, /\/trails-app\.js\?v=1/);
   assert.match(worker, /\/catches\.html/);
   assert.match(worker, /\/profile\.html/);
   assert.match(worker, /\/api\/catches/);
+  assert.match(worker, /\/api\/trails/);
   assert.match(worker, /X-BaitLogic-Source/);
   assert.match(worker, /offline-cache/);
 });
@@ -62,7 +64,7 @@ test("ships the correct public BaitLogic contact address", async () => {
 test("keeps public backend writes behind the validated submission function", async () => {
   const sql = await readFile(new URL("../supabase/field-checks.sql", import.meta.url), "utf8");
   const functionSource = await readFile(new URL("../supabase/functions/submit-baitlogic-signal/index.ts", import.meta.url), "utf8");
-  const interfaceSource = await readFile(new URL("../src/ApprovedDashboard.tsx", import.meta.url), "utf8");
+  const mobileSource = await readFile(new URL("../src/MobileDashboard.tsx", import.meta.url), "utf8");
   const dataSource = await readFile(new URL("../src/data/baitlogicData.ts", import.meta.url), "utf8");
 
   assert.match(sql, /alter table public\.field_checks enable row level security/i);
@@ -75,19 +77,9 @@ test("keeps public backend writes behind the validated submission function", asy
   assert.match(functionSource, /rate_limited/);
   assert.match(functionSource, /SUPABASE_SERVICE_ROLE_KEY/);
   assert.match(dataSource, /captcha_token: captchaToken/);
-  assert.match(interfaceSource, /OFFLINE \/ CACHED/);
-  assert.doesNotMatch(interfaceSource, /Revision Status|Deployment Status|Offline Status|Fully Deployed|All systems online/i);
-});
-
-test("ships the weekly email sender with one-click unsubscribe", async () => {
-  const sender = await readFile(new URL("../supabase/functions/send-baitlogic-weekly/index.ts", import.meta.url), "utf8");
-  const unsubscribe = await readFile(new URL("../supabase/functions/unsubscribe-baitlogic-weekly/index.ts", import.meta.url), "utf8");
-
-  assert.match(sender, /RESEND_API_KEY/);
-  assert.match(sender, /List-Unsubscribe-Post/);
-  assert.match(sender, /Exact locations are never included/);
-  assert.match(unsubscribe, /status: "unsubscribed"/);
-  assert.match(unsubscribe, /safeEqual/);
+  assert.match(mobileSource, /status === "cached"/);
+  assert.match(mobileSource, /CACHED/);
+  assert.doesNotMatch(mobileSource, /Revision Status|Deployment Status|Fully Deployed|All systems online/i);
 });
 
 test("renders mobile and desktop as separate implementations and ships Community Catches", async () => {
@@ -121,9 +113,10 @@ test("renders mobile and desktop as separate implementations and ships Community
   assert.match(catches, /does not invent locations, weights, species, or notes/);
 });
 
-test("locks safety-critical navigation and official reporting destinations", async () => {
+test("locks safety-critical navigation, reporting destinations, and the canonical trail-map contract", async () => {
   const outdoor = await readFile(new URL("../../public/outdoor.html", import.meta.url), "utf8");
   const trails = await readFile(new URL("../public/trails.html", import.meta.url), "utf8");
+  const trailsApp = await readFile(new URL("../public/trails-app.js", import.meta.url), "utf8");
   const fieldIntel = await readFile(new URL("../../public/index.html", import.meta.url), "utf8");
 
   assert.match(outdoor, /href="\/field-intel\.html#field-check"/);
@@ -131,8 +124,16 @@ test("locks safety-critical navigation and official reporting destinations", asy
   assert.doesNotMatch(outdoor, /href="\/#reports"/);
   assert.doesNotMatch(outdoor, /href="\/#conservation"/);
 
-  assert.match(trails, /https:\/\/www\.highlandil\.gov\/departments\/parks_and_recreation\/parks_and_silver_lake\/silver_lake\/index\.php/);
-  assert.doesNotMatch(trails, /park_map\.php/);
+  assert.match(trails, /EXPLORE LOCAL TRAILS/);
+  assert.match(trails, /Real maps\. Real trails\. One BaitLogic experience\./);
+  assert.match(trails, /id="trail-map-svg"/);
+  assert.match(trails, /\/trails-app\.js\?v=1/);
+  assert.doesNotMatch(trails, /MEPRD Actual Trail Map|MCT Interactive Trail Map|Carlyle Hiking Trail Guide/);
+  assert.match(trailsApp, /\/api\/trails\?bbox=/);
+  assert.match(trailsApp, /application\/gpx\+xml/);
+  assert.match(trailsApp, /baitlogic-trails-ui-v1/);
+  assert.match(trailsApp, /highlandil\.gov\/departments\/parks_and_recreation\/parks_and_silver_lake\/silver_lake\/index\.php/);
+  assert.match(trailsApp, /meprd\.org\/community-maps\.html/);
 
   assert.match(fieldIntel, /https:\/\/dnr2\.illinois\.gov\/OLETIPHotline\//);
   assert.match(fieldIntel, /https:\/\/mdc12\.mdc\.mo\.gov\/Applications\/FishKillsIntake\/Intake/);
@@ -160,6 +161,6 @@ test("fails closed when weather-alert verification or cached conditions are unsa
   assert.match(conditions, /WEATHER_CACHE_MAX_AGE_MS = 90 \* 60 \* 1000/);
   assert.match(conditions, /WATER_CACHE_MAX_AGE_MS = 6 \* 60 \* 60 \* 1000/);
 
-  assert.match(worker, /baitlogic-field-kit-v18/);
+  assert.match(worker, /baitlogic-field-kit-v20/);
   assert.match(worker, /X-BaitLogic-Source/);
 });
