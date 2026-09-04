@@ -13,10 +13,10 @@ const signupApi = readFileSync(join(root, "api/signups.js"), "utf8");
 const indexHtml = readFileSync(join(root, "mobile-app/index.html"), "utf8");
 const edgeFunction = readFileSync(join(root, "mobile-app/supabase/functions/submit-baitlogic-signal/index.ts"), "utf8");
 const dataSource = readFileSync(join(root, "mobile-app/src/data/baitlogicData.ts"), "utf8");
-const fieldIntel = readFileSync(join(root, "public/index.html"), "utf8");
-const fieldIntelJs = readFileSync(join(root, "public/site.js"), "utf8");
+const fieldIntel = readFileSync(join(root, "mobile-app/public/field-intel.html"), "utf8");
+const fieldIntelJs = readFileSync(join(root, "mobile-app/public/site.js"), "utf8");
 const serviceWorker = readFileSync(join(root, "mobile-app/public/sw.js"), "utf8");
-const barometerPage = readFileSync(join(root, "public/barometer.html"), "utf8");
+const barometerPage = readFileSync(join(root, "mobile-app/public/barometer.html"), "utf8");
 
 test("canonical frontend and public writes use current guarded paths", () => {
   assert.match(indexHtml, /BaitLogic/);
