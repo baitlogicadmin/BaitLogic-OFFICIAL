@@ -17,8 +17,8 @@ a{color:inherit}.shell{width:min(1040px,calc(100% - 24px));margin:auto;padding:1
 .feed{margin-top:14px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.catch{padding:15px;border:1px solid rgba(70,158,170,.32);border-radius:14px;background:#07151b}.catch h2{margin:0;color:#5aabb5;font-size:18px}.meta{margin-top:4px;color:#989f9f;font-size:10px}.weight{color:#c99142}.location{color:#95bb49}.catch p{margin:10px 0 0;color:#d4d1ca;font-size:12px;line-height:1.45;white-space:pre-wrap}.empty{grid-column:1/-1;padding:22px;border:1px dashed rgba(255,255,255,.18);border-radius:14px;text-align:center;color:#a9b0b0}
 @media(max-width:640px){.feed{grid-template-columns:1fr}.hero{padding:17px}.shell{width:min(100% - 16px,1040px)}}
 </style>
-</head>
-<body>
+<link rel="stylesheet" href="/baitlogic-shell.css?v=1"></head>
+<body class="bl-subpage">
 <main class="shell">
   <div class="top"><a class="back" href="/">← BaitLogic Home</a><span class="status" id="connectionStatus">Checking connection…</span></div>
   <section class="hero">
@@ -47,5 +47,5 @@ async function load(){
 addEventListener("online",load);addEventListener("offline",()=>status.textContent="Offline");load();
 if("serviceWorker"in navigator)navigator.serviceWorker.register("/sw.js").catch(()=>{});
 </script>
-</body>
+<script src="/baitlogic-shell.js?v=1"></script></body>
 </html>

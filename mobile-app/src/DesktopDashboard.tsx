@@ -23,7 +23,7 @@ export default function DesktopDashboard(){
     <header className="desktop-header">
       <a className="desktop-wordmark" href="/"><strong>BAITLOGIC</strong><b>OUTDOORS</b><small>Beyond the Bite. Powered by People and Purpose.</small></a>
       <nav aria-label="Desktop primary navigation">
-        <a className="home" href="/">HOME</a><a className="barometer" href="/barometer.html">BAROMETER</a><a className="catches" href="/catches.html">CATCHES</a><a className="nature" href="/field-intel.html#conservation">NATURE CHECK</a><a className="trails" href="/trails.html">TRAILS</a><a className="more" href="/outdoor.html">MORE</a>
+        <a className="home" href="/">HOME</a><a className="barometer" href="/barometer.html">BAROMETER</a><a className="catches" href="/catches.html">CATCHES</a><a className="nature" href="/nature-check.html">NATURE CHECK</a><a className="trails" href="/trails.html">TRAILS</a><a className="more" href="/outdoor.html">MORE</a>
       </nav>
       <button className="desktop-location" type="button" onClick={refreshLocation}><Crosshair2Icon/><span><strong>{place}</strong><small>● {live?"LIVE":status==="cached"?"CACHED":"CHECK LOCATION"}</small></span></button>
     </header>

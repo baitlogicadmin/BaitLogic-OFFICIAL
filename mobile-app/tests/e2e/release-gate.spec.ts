@@ -76,40 +76,37 @@ test.beforeEach(async ({ page }) => {
 test("renders the correct implementation for the active device class", async ({ page }, testInfo) => {
   await page.goto("/");
   if (testInfo.project.name === "mobile-app") {
-    await expect(page.locator(".authorized-home")).toBeVisible();
+    await expect(page.locator(".bl-home")).toBeVisible();
     await expect(page.locator(".desktop-dashboard")).toHaveCount(0);
   } else {
     await expect(page.locator(".desktop-dashboard")).toBeVisible();
-    await expect(page.locator(".authorized-home")).toHaveCount(0);
+    await expect(page.locator(".bl-home")).toHaveCount(0);
   }
 });
 
 test("verified condition data reaches the mobile interface without invented values", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "mobile-app", "mobile data gate");
   await page.goto("/");
-  await expect(page.locator(".auth-conditions")).toContainText("74°F");
-  await expect(page.locator(".auth-conditions")).toContainText("68.0°F");
-  await expect(page.locator(".auth-conditions")).toContainText("29.91 inHg");
-  await expect(page.locator(".auth-conditions")).toContainText("8 mph");
-  await expect(page.locator(".auth-location")).toContainText("Highland");
+  await expect(page.locator(".bl-conditions")).toContainText("74°F");
+  await expect(page.locator(".bl-conditions")).toContainText("68.0°F");
+  await expect(page.locator(".bl-conditions")).toContainText("29.91 inHg");
+  await expect(page.locator(".bl-conditions")).toContainText("8 mph");
+  await expect(page.locator(".bl-location")).toContainText("Highland");
 });
 
-test("mobile homepage preserves the founder-authorized six-card information architecture", async ({ page }, testInfo) => {
+test("mobile homepage preserves the founder-authorized information architecture", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "mobile-app", "mobile founder gate");
   await page.goto("/");
 
-  await expect(page.locator(".auth-logo").first()).toHaveAttribute("src", "/assets/baitlogic-logo.png");
-  await expect(page.locator(".auth-section-title")).toContainText("CURRENT CONDITIONS");
-  await expect(page.locator(".auth-metrics > div")).toHaveCount(6);
-  await expect(page.locator(".auth-card")).toHaveCount(6);
-  await expect(page.locator(".auth-card.reporting")).toContainText("CONSERVATION REPORTING · LOCAL");
-  await expect(page.locator(".auth-card.trails")).toContainText("TRAILS & OFF-GRID");
-  await expect(page.locator(".auth-card.barometer")).toContainText("BAROMETER");
-  await expect(page.locator(".auth-card.knowledge")).toContainText("OUTDOOR KNOWLEDGE");
-  await expect(page.locator(".auth-card.field")).toContainText("FIELD LOG");
-  await expect(page.locator(".auth-card.catches")).toContainText("COMMUNITY CATCHES");
-  await expect(page.locator(".auth-trusted")).toContainText("TRUSTED DATA SOURCES");
-  await expect(page.locator(".auth-strip.offline")).toContainText("OFFLINE READY");
+  await expect(page.locator(".bl-logo").first()).toHaveAttribute("src", "/assets/baitlogic-boysenberry-logo.svg");
+  await expect(page.locator(".bl-conditions")).toContainText("OUTDOOR CONDITIONS");
+  await expect(page.locator(".bl-condition-metrics > div")).toHaveCount(4);
+  await expect(page.locator(".bl-feature")).toHaveCount(3);
+  await expect(page.locator(".bl-feature.water-flow")).toContainText("WATER & FLOW");
+  await expect(page.locator(".bl-feature.catches")).toContainText("LOCAL CATCHES");
+  await expect(page.locator(".bl-feature.trails")).toContainText("TRAILS & MAPS");
+  await expect(page.locator(".bl-education-card")).toHaveCount(6);
+  await expect(page.locator(".bl-sources")).toContainText("Offline Ready");
 });
 
 test("every founder-authorized mobile card points at the intended real destination", async ({ page }, testInfo) => {
@@ -117,19 +114,17 @@ test("every founder-authorized mobile card points at the intended real destinati
   await page.goto("/");
 
   const expected = [
-    [".auth-section-title", "/barometer.html"],
-    [".auth-card.reporting", "/field-intel.html#conservation"],
-    [".auth-card.trails", "/trails.html"],
-    [".auth-card.barometer", "/barometer.html"],
-    [".auth-card.knowledge", "/outdoor.html"],
-    [".auth-card.field", "/field-intel.html#field-check"],
-    [".auth-card.catches", "/catches.html"],
-    [".auth-strip.offline", "/outdoor.html"],
-    [".auth-bottom-nav a:nth-child(1)", "/"],
-    [".auth-bottom-nav a:nth-child(2)", "/trails.html"],
-    [".auth-bottom-nav a:nth-child(3)", "/field-intel.html#field-check"],
-    [".auth-bottom-nav a:nth-child(4)", "/field-intel.html#field-check"],
-    [".auth-bottom-nav a:nth-child(5)", "/profile.html"],
+    [".bl-primary-cta", "/barometer.html"],
+    [".bl-report-now a", "/field-intel.html#conservation"],
+    [".bl-feature.trails", "/trails.html"],
+    [".bl-feature.water-flow", "/field-intel.html#water"],
+    [".bl-feature.catches", "/catches.html"],
+    [".bl-section-row a", "/outdoor.html"],
+    [".bl-bottom-nav a:nth-child(1)", "/"],
+    [".bl-bottom-nav a:nth-child(2)", "/trails.html"],
+    [".bl-bottom-nav a:nth-child(3)", "/field-intel.html#field-check"],
+    [".bl-bottom-nav a:nth-child(4)", "/field-intel.html#conservation"],
+    [".bl-bottom-nav a:nth-child(5)", "/profile.html"],
   ] as const;
 
   for (const [selector, href] of expected) {
@@ -162,9 +157,9 @@ test("barometer Highland fallback is wired to verified pressure loading", async 
   expect(appResponse.status()).toBe(200);
   const appJs = await appResponse.text();
   expect(appJs).toContain('E.useHighland?.addEventListener("click",useHighland)');
-  expect(appJs).toContain('fetch("/api/barometer-snapshot');
-  expect(appJs).toContain('39.0');
-  expect(appJs).toContain('-89.67');
+  expect(appJs).toContain('fetchWithTimeout(`/api/barometer-snapshot');
+  expect(appJs).toContain('38.7395');
+  expect(appJs).toContain('-89.6712');
 });
 
 test("mobile candidate captures deterministic founder-review evidence", async ({ page }, testInfo) => {
@@ -173,12 +168,11 @@ test("mobile candidate captures deterministic founder-review evidence", async ({
   await page.evaluate(() => document.fonts.ready);
   await page.waitForTimeout(350);
 
-  await expect(page.locator(".auth-header")).toBeVisible();
-  await expect(page.locator(".auth-conditions")).toBeVisible();
-  await expect(page.locator(".auth-card")).toHaveCount(6);
-  await expect(page.locator(".auth-trusted")).toBeVisible();
-  await expect(page.locator(".auth-strip.offline")).toBeVisible();
-  await expect(page.locator(".auth-bottom-nav")).toBeVisible();
+  await expect(page.locator(".bl-header")).toBeVisible();
+  await expect(page.locator(".bl-conditions")).toBeVisible();
+  await expect(page.locator(".bl-feature")).toHaveCount(3);
+  await expect(page.locator(".bl-sources")).toBeVisible();
+  await expect(page.locator(".bl-bottom-nav")).toBeVisible();
 
   await page.screenshot({
     path: testInfo.outputPath("baitlogic-mobile-candidate.png"),
@@ -195,9 +189,9 @@ test("founder-authorized phone composition does not overflow or collapse", async
 
   const geometry = await page.evaluate(() => {
     const root = document.documentElement;
-    const cardGrid = document.querySelector(".auth-card-grid");
-    const metrics = document.querySelector(".auth-metrics");
-    const trusted = document.querySelector(".auth-trusted > div");
+    const cardGrid = document.querySelector(".bl-feature-grid");
+    const metrics = document.querySelector(".bl-condition-metrics");
+    const trusted = document.querySelector(".bl-sources");
     const style = (el: Element | null) => el ? getComputedStyle(el) : null;
     return {
       viewport: innerWidth,
@@ -211,10 +205,10 @@ test("founder-authorized phone composition does not overflow or collapse", async
   expect(geometry.viewport).toBe(360);
   expect(geometry.scrollWidth).toBeLessThanOrEqual(geometry.viewport);
   expect(geometry.cardCols).toBe(3);
-  expect(geometry.metricCols).toBe(3);
-  expect(geometry.trustedCols).toBe(3);
+  expect(geometry.metricCols).toBe(4);
+  expect(geometry.trustedCols).toBe(4);
 
-  await expect(page.locator(".auth-card")).toHaveCount(6);
-  await expect(page.locator(".auth-metrics > div")).toHaveCount(6);
-  await expect(page.locator(".auth-bottom-nav a")).toHaveCount(5);
+  await expect(page.locator(".bl-feature")).toHaveCount(3);
+  await expect(page.locator(".bl-condition-metrics > div")).toHaveCount(4);
+  await expect(page.locator(".bl-bottom-nav a")).toHaveCount(5);
 });

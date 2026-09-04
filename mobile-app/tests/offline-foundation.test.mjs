@@ -14,7 +14,7 @@ test("ships an installable BaitLogic web app manifest", async () => {
 test("ships the versioned app-shell service worker", async () => {
   const worker = await readFile(new URL("../dist/client/sw.js", import.meta.url), "utf8");
 
-  assert.match(worker, /baitlogic-field-kit-v17/);
+  assert.match(worker, /baitlogic-field-kit-v18/);
   assert.match(worker, /baitlogic-facebook-qr\.png/);
   assert.match(worker, /hero-sunset\.webp/);
   assert.match(worker, /pillar-fishing\.webp/);
@@ -160,6 +160,6 @@ test("fails closed when weather-alert verification or cached conditions are unsa
   assert.match(conditions, /WEATHER_CACHE_MAX_AGE_MS = 90 \* 60 \* 1000/);
   assert.match(conditions, /WATER_CACHE_MAX_AGE_MS = 6 \* 60 \* 60 \* 1000/);
 
-  assert.match(worker, /baitlogic-field-kit-v17/);
+  assert.match(worker, /baitlogic-field-kit-v18/);
   assert.match(worker, /X-BaitLogic-Source/);
 });
