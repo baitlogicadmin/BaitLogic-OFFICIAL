@@ -34,8 +34,8 @@ test("ships the versioned app-shell service worker", async () => {
 });
 
 test("barometer location loading has a bounded Android-friendly fallback", async () => {
-  const app = await readFile(new URL("../../public/barometer/app.js", import.meta.url), "utf8");
-  const page = await readFile(new URL("../../public/barometer.html", import.meta.url), "utf8");
+  const app = await readFile(new URL("../public/barometer/app.js", import.meta.url), "utf8");
+  const page = await readFile(new URL("../public/barometer.html", import.meta.url), "utf8");
 
   assert.match(app, /enableHighAccuracy:false/);
   assert.match(app, /maximumAge:300000/);
@@ -49,9 +49,9 @@ test("barometer location loading has a bounded Android-friendly fallback", async
 });
 
 test("ships the correct public BaitLogic contact address", async () => {
-  const fieldIntel = await readFile(new URL("../../public/index.html", import.meta.url), "utf8");
-  const outdoor = await readFile(new URL("../../public/outdoor.html", import.meta.url), "utf8");
-  const siteCss = await readFile(new URL("../../public/site.css", import.meta.url), "utf8");
+  const fieldIntel = await readFile(new URL("../public/field-intel.html", import.meta.url), "utf8");
+  const outdoor = await readFile(new URL("../public/outdoor.html", import.meta.url), "utf8");
+  const siteCss = await readFile(new URL("../public/site.css", import.meta.url), "utf8");
 
   for (const page of [fieldIntel, outdoor]) {
     assert.match(page, /mailto:baitlogicadmin@gmail\.com/);
@@ -114,10 +114,10 @@ test("renders mobile and desktop as separate implementations and ships Community
 });
 
 test("locks safety-critical navigation, reporting destinations, and the canonical trail-map contract", async () => {
-  const outdoor = await readFile(new URL("../../public/outdoor.html", import.meta.url), "utf8");
+  const outdoor = await readFile(new URL("../public/outdoor.html", import.meta.url), "utf8");
   const trails = await readFile(new URL("../public/trails.html", import.meta.url), "utf8");
   const trailsApp = await readFile(new URL("../public/trails-app.js", import.meta.url), "utf8");
-  const fieldIntel = await readFile(new URL("../../public/index.html", import.meta.url), "utf8");
+  const fieldIntel = await readFile(new URL("../public/field-intel.html", import.meta.url), "utf8");
 
   assert.match(outdoor, /href="\/field-intel\.html#field-check"/);
   assert.match(outdoor, /href="\/field-intel\.html#conservation"/);
@@ -142,8 +142,8 @@ test("locks safety-critical navigation, reporting destinations, and the canonica
 
 test("fails closed when weather-alert verification or cached conditions are unsafe", async () => {
   const api = await readFile(new URL("../../api/barometer-snapshot.js", import.meta.url), "utf8");
-  const barometer = await readFile(new URL("../../public/barometer/app.js", import.meta.url), "utf8");
-  const outdoor = await readFile(new URL("../../public/outdoor.html", import.meta.url), "utf8");
+  const barometer = await readFile(new URL("../public/barometer/app.js", import.meta.url), "utf8");
+  const outdoor = await readFile(new URL("../public/outdoor.html", import.meta.url), "utf8");
   const conditions = await readFile(new URL("../src/useBaitLogicConditions.ts", import.meta.url), "utf8");
   const worker = await readFile(new URL("../public/sw.js", import.meta.url), "utf8");
 
