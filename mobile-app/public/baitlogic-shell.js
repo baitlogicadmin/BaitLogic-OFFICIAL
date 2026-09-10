@@ -9,6 +9,11 @@
     ["/outdoor.html", "Education"],
   ];
 
+  const consistency = document.createElement("link");
+  consistency.rel = "stylesheet";
+  consistency.href = "/baitlogic-consistency.css?v=1";
+  document.head.appendChild(consistency);
+
   const header = document.createElement("header");
   header.className = "bl-site-header";
   header.innerHTML = `
