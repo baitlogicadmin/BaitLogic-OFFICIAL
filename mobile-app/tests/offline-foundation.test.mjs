@@ -14,7 +14,7 @@ test("ships an installable BaitLogic web app manifest", async () => {
 test("ships the versioned app-shell service worker", async () => {
   const worker = await readFile(new URL("../dist/client/sw.js", import.meta.url), "utf8");
 
-  assert.match(worker, /baitlogic-field-kit-v20/);
+  assert.match(worker, /baitlogic-field-kit-v21/);
   assert.match(worker, /baitlogic-facebook-qr\.png/);
   assert.match(worker, /hero-sunset\.webp/);
   assert.match(worker, /pillar-fishing\.webp/);
@@ -44,8 +44,9 @@ test("barometer location loading has a bounded Android-friendly fallback", async
   assert.match(app, /Location permission is blocked/);
   assert.match(app, /baitlogic-barometer-last-v1/);
   assert.match(app, /Saved conditions are shown for context only/);
-  assert.match(page, /barometer\/app\.js\?v=13/);
+  assert.match(page, /barometer\/app\.js\?v=14/);
   assert.match(page, /barometer\/connection-ui\.js\?v=3/);
+  assert.match(page, /barometer\/approved-aesthetic-v1\.css\?v=2/);
 });
 
 test("ships the correct public BaitLogic contact address", async () => {
@@ -161,6 +162,6 @@ test("fails closed when weather-alert verification or cached conditions are unsa
   assert.match(conditions, /WEATHER_CACHE_MAX_AGE_MS = 90 \* 60 \* 1000/);
   assert.match(conditions, /WATER_CACHE_MAX_AGE_MS = 6 \* 60 \* 60 \* 1000/);
 
-  assert.match(worker, /baitlogic-field-kit-v20/);
+  assert.match(worker, /baitlogic-field-kit-v21/);
   assert.match(worker, /X-BaitLogic-Source/);
 });
