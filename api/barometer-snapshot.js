@@ -2,27 +2,20 @@
 
 const inHg = hpa => Number(hpa) * 0.0295299830714;
 
-async function fetchJson(url, options = {}, timeoutMs = 6500, attempts = 1) {
-  let lastError;
-  for (let attempt = 1; attempt <= attempts; attempt += 1) {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), timeoutMs);
-    try {
-      const response = await fetch(url, {
-        ...options,
-        signal: controller.signal,
-        cache: "no-store"
-      });
-      if (!response.ok) throw new Error(`Upstream request failed (${response.status})`);
-      return await response.json();
-    } catch (error) {
-      lastError = error;
-      if (attempt < attempts) await new Promise(resolve => setTimeout(resolve, 250 * attempt));
-    } finally {
-      clearTimeout(timer);
-    }
+async function fetchJson(url, options = {}, timeoutMs = 5000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal,
+      cache: "no-store"
+    });
+    if (!response.ok) throw new Error(`Upstream request failed (${response.status})`);
+    return await response.json();
+  } finally {
+    clearTimeout(timer);
   }
-  throw lastError || new Error("Upstream request failed");
 }
 
 function nearestIndex(times, targetMs) {
@@ -55,7 +48,9 @@ function placeFromBigData(data) {
   const candidates = [
     direct,
     data.locality,
-    ...(data.localityInfo?.informative || []).filter(x => /city|town|village|municipality|borough/i.test(x.description || x.type || "")).map(x => x.name)
+    ...(data.localityInfo?.informative || [])
+      .filter(x => /city|town|village|municipality|borough/i.test(x.description || x.type || ""))
+      .map(x => x.name)
   ].filter(Boolean);
   const locality = candidates.find(name => !/township|county|district/i.test(name)) || null;
   const region = data.principalSubdivision || null;
@@ -90,7 +85,7 @@ module.exports = async function handler(req, res) {
       current: "temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,pressure_msl,wind_speed_10m,wind_direction_10m,wind_gusts_10m,is_day,cloud_cover,precipitation",
       hourly: "pressure_msl",
       daily: "sunrise,sunset",
-      past_days: "1",
+      past_hours: "6",
       forecast_days: "1",
       temperature_unit: "fahrenheit",
       wind_speed_unit: "mph",
@@ -103,10 +98,10 @@ module.exports = async function handler(req, res) {
     const bigDataUrl = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${encodeURIComponent(lat)}&longitude=${encodeURIComponent(lon)}&localityLanguage=en`;
 
     const [weatherResult, alertsResult, nominatimResult, bigDataResult] = await Promise.allSettled([
-      fetchJson(weatherUrl.toString(), { headers: { "User-Agent": "BaitLogic/1.0 baitlogicadmin@gmail.com" } }, 3800, 2),
-      fetchJson(alertsUrl, { headers: { "User-Agent": "BaitLogic/1.0 (baitlogicadmin@gmail.com)", "Accept": "application/geo+json" } }, 2500, 2),
-      fetchJson(nominatimUrl, { headers: { "User-Agent": "BaitLogic/1.0 (baitlogicadmin@gmail.com)", "Accept-Language": "en" } }, 2500),
-      fetchJson(bigDataUrl, { headers: { "User-Agent": "BaitLogic/1.0 baitlogicadmin@gmail.com" } }, 2200)
+      fetchJson(weatherUrl.toString(), { headers: { "User-Agent": "BaitLogic/1.0 baitlogicadmin@gmail.com" } }, 5000),
+      fetchJson(alertsUrl, { headers: { "User-Agent": "BaitLogic/1.0 (baitlogicadmin@gmail.com)", "Accept": "application/geo+json" } }, 1500),
+      fetchJson(nominatimUrl, { headers: { "User-Agent": "BaitLogic/1.0 (baitlogicadmin@gmail.com)", "Accept-Language": "en" } }, 1800),
+      fetchJson(bigDataUrl, { headers: { "User-Agent": "BaitLogic/1.0 baitlogicadmin@gmail.com" } }, 1500)
     ]);
 
     if (weatherResult.status !== "fulfilled") {
