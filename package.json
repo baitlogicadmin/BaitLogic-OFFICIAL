@@ -3,15 +3,16 @@
   "version": "1.0.0",
   "scripts": {
     "start": "node server.js",
-    "dev": "node server.js"
+    "dev": "node server.js",
+    "build": "echo No build step required"
   },
   "dependencies": {
     "@sentry/react-native": "^8.21.0",
     "@vercel/speed-insights": "^2.0.0",
-    "cors": "^2.8.6",
-    "dotenv": "^17.4.2",
-    "express": "^5.2.1",
-    "helmet": "^8.3.0"
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "helmet": "^8.0.0"
   },
   "allowScripts": {
     "@sentry/cli@2.58.6": true,
