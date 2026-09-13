@@ -1,3 +1,4 @@
+repomix-output.xml
 node_modules/
 .env
 .env.*
@@ -8,3 +9,10 @@ npm-debug.log*
 mobile-app/node_modules
 mobile-app/test-results/
 mobile-app/playwright-report/
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
