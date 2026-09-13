@@ -1,7 +1,14 @@
 {
+  "name": "baitlogic-official",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
   "dependencies": {
     "@sentry/react-native": "^8.21.0",
-    "@vercel/speed-insights": "^2.0.0"
+    "@vercel/speed-insights": "^2.0.0",
+    "express": "^5.2.1"
   },
   "allowScripts": {
     "@sentry/cli@2.58.6": true,
