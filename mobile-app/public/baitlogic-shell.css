@@ -93,6 +93,53 @@ body.bl-subpage .hero, body.bl-subpage .panel, body.bl-subpage .card, body.bl-su
 }
 .bl-site-footer strong { color:var(--bl-gold); }
 
+/* Trail page: keep the brand palette continuous instead of switching to a separate theme. */
+body:has(#trail-map-svg) {
+  background:
+    radial-gradient(circle at 8% 0%, rgba(216,0,246,.14), transparent 30%) !important,
+    radial-gradient(circle at 92% 24%, rgba(94,220,31,.07), transparent 26%) !important,
+    linear-gradient(135deg, #3F0223 0%, #4C0121 30%, #630436 58%, #4C0121 82%, #3F0223 100%) !important;
+  background-attachment: fixed !important;
+}
+body:has(#trail-map-svg) .topbar {
+  background: linear-gradient(90deg, rgba(63,2,35,.96), rgba(76,1,33,.92), rgba(99,4,54,.94)) !important;
+  border-color: rgba(94,220,31,.25) !important;
+}
+body:has(#trail-map-svg) .brand-mark {
+  border-color: var(--bl-plum) !important;
+  color: var(--bl-lime) !important;
+  background: rgba(76,1,33,.72) !important;
+}
+body:has(#trail-map-svg) .panel {
+  background: linear-gradient(145deg, rgba(99,4,54,.82), rgba(76,1,33,.72), rgba(63,2,35,.88)) !important;
+  border-color: rgba(255,255,255,.15) !important;
+}
+body:has(#trail-map-svg) .trail-card,
+body:has(#trail-map-svg) .chip,
+body:has(#trail-map-svg) .btn,
+body:has(#trail-map-svg) .statbox {
+  background: linear-gradient(135deg, rgba(76,1,33,.94), rgba(63,2,35,.96)) !important;
+  border-color: rgba(216,0,246,.34) !important;
+}
+body:has(#trail-map-svg) .chip.active,
+body:has(#trail-map-svg) .btn.primary,
+body:has(#trail-map-svg) .trail-card.selected {
+  background: var(--bl-lime) !important;
+  border-color: var(--bl-lime) !important;
+  color: #0C1307 !important;
+}
+body:has(#trail-map-svg) .eyebrow,
+body:has(#trail-map-svg) .location-pill,
+body:has(#trail-map-svg) .trail-card-main small { color: var(--bl-plum) !important; }
+body:has(#trail-map-svg) .loc,
+body:has(#trail-map-svg) .trail-card-main em,
+body:has(#trail-map-svg) .statbox strong { color: var(--bl-lime) !important; }
+body:has(#trail-map-svg) .trail-card-main em { background: var(--bl-lime) !important; }
+body:has(#trail-map-svg) .mobile-nav {
+  background: linear-gradient(90deg, rgba(63,2,35,.98), rgba(76,1,33,.98), rgba(99,4,54,.98)) !important;
+  border-top-color: rgba(94,220,31,.28) !important;
+}
+
 @media (max-width: 760px) {
   .bl-site-header__inner { min-height:68px; }
   .bl-site-brand img { width:48px; height:48px; }
