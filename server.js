@@ -1,7 +1,6 @@
 require('dotenv').config();
 const express=require('express');
 const helmet=require('helmet');
-const compression=require('compression');
 const path=require('path');
 const app=express();
 const PORT=Number(process.env.PORT||3000);
@@ -19,8 +18,7 @@ function supabaseHeaders(extra={}){const headers={apikey:SUPABASE_KEY,'Content-T
 async function supabaseRequest(pathname,options={}){const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),12000);try{const response=await fetch(`${SUPABASE_URL}/rest/v1/${pathname}`,{...options,signal:controller.signal,headers:supabaseHeaders(options.headers||{})});const text=await response.text();if(!response.ok)throw new Error(`Supabase error ${response.status}: ${text}`);return text?JSON.parse(text):null}finally{clearTimeout(timer)}}
 const rateMap=new Map();function rateLimit(req,res,next){const key=`${req.ip}:${req.path}`;const current=rateMap.get(key)||{count:0,start:Date.now()};if(Date.now()-current.start>60000){rateMap.set(key,{count:1,start:Date.now()});return next()}if(current.count>=40)return res.status(429).json({error:'Too many requests. Please slow down.'});current.count++;rateMap.set(key,current);next()}
 function adminAuth(req,res,next){if(!ADMIN_KEY)return res.status(503).json({error:'Admin access is not configured.'});const supplied=req.headers['x-admin-key']||req.query.key;if(!supplied||supplied!==ADMIN_KEY)return res.status(401).json({error:'Unauthorized'});next()}
-app.disable('x-powered-by');app.use(helmet({contentSecurityPolicy:false}));app.use(compression());app.use(express.json({limit:'250kb'}));app.use(express.urlencoded({extended:false}));app.use('/api',rateLimit);app.use(express.static(PUBLIC_DIR,{extensions:['html'],maxAge:'5m'}));
-// Stable public alias for the barometer. /bal and /bal/ must resolve to the actual barometer page.
+app.disable('x-powered-by');app.use(helmet({contentSecurityPolicy:false}));app.use(express.json({limit:'250kb'}));app.use(express.urlencoded({extended:false}));app.use('/api',rateLimit);app.use(express.static(PUBLIC_DIR,{extensions:['html'],maxAge:'5m'}));
 app.get(['/bal','/bal/'],(req,res)=>res.sendFile(path.join(PUBLIC_DIR,'barometer.html')));
 app.get('/api/health',(req,res)=>res.json({ok:true,siteTitle:SITE_TITLE,storage:'supabase',timestamp:nowIso()}));
 app.post('/api/events',async(req,res,next)=>{try{const eventName=toText(req.body.event_name,60),eventPath=toText(req.body.path,200),sessionId=toText(req.body.session_id,80),referrer=toText(req.body.referrer,300);if(!eventName)return res.status(400).json({error:'Event name required.'});await supabaseRequest('analytics_events',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({event_name:eventName,path:eventPath||null,session_id:sessionId||null,referrer:referrer||null})});res.status(204).end()}catch(e){next(e)}});
@@ -35,6 +33,6 @@ app.get('/api/nature-checks',async(req,res,next)=>{try{const rows=await supabase
 app.get('/api/admin/summary',adminAuth,async(req,res,next)=>{try{const [signups,waitlistSignups,reports,catches,natureChecks,natureChecksPending]=await Promise.all([supabaseRequest('signups?select=id'),supabaseRequest('waitlist_signups?select=id'),supabaseRequest('reports?select=id'),supabaseRequest('public_catches?select=id'),supabaseRequest('nature_checks?select=id&status=eq.approved'),supabaseRequest('nature_checks?select=id&status=eq.submitted')]);res.json({signups:signups?.length||0,waitlistSignups:waitlistSignups?.length||0,reports:reports?.length||0,catches:catches?.length||0,natureChecks:natureChecks?.length||0,natureChecksPending:natureChecksPending?.length||0})}catch(e){next(e)}});
 app.get('/admin',(req,res)=>res.sendFile(path.join(PUBLIC_DIR,'admin.html')));
 app.use((error,req,res,next)=>{console.error(error);if(res.headersSent)return next(error);res.status(500).json({error:'Something went wrong. Please try again.'})});
-app.get('*',(req,res)=>res.sendFile(path.join(PUBLIC_DIR,'index.html')));
+app.get('/{*splat}',(req,res)=>res.sendFile(path.join(PUBLIC_DIR,'index.html')));
 if(require.main===module)app.listen(PORT,()=>console.log(`${SITE_TITLE} listening on port ${PORT}`));
 module.exports=app;
