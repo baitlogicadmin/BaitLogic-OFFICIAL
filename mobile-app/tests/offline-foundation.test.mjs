@@ -135,7 +135,7 @@ test("locks safety-critical navigation, reporting destinations, and the canonica
   assert.doesNotMatch(trails, /MEPRD Actual Trail Map|MCT Interactive Trail Map|Carlyle Hiking Trail Guide/);
   assert.match(trailsApp, /\/api\/trails\?bbox=/);
   assert.match(trailsApp, /application\/gpx\+xml/);
-  assert.match(trailsApp, /baitlogic-trails-ui-v1/);
+  assert.match(trailsApp, /baitlogic-trails-ui-v2/);
   assert.match(trailsApp, /highlandil\.gov\/departments\/parks_and_recreation\/parks_and_silver_lake\/silver_lake\/index\.php/);
   assert.match(trailsApp, /meprd\.org\/community-maps\.html/);
 
