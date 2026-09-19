@@ -1,7 +1,7 @@
 "use strict";
 
-const CACHE_NAME="baitlogic-offline-v18";
-const DATA_CACHE="baitlogic-data-v18";
+const CACHE_NAME="baitlogic-offline-v19";
+const DATA_CACHE="baitlogic-data-v19";
 const QUEUE_DB="baitlogic-offline-queue-v1";
 const QUEUE_STORE="requests";
 
@@ -13,6 +13,7 @@ const APP_SHELL=[
   "/nature-check.html",
   "/conservation-prairie.html",
   "/approved-visual.css",
+  "/baitlogic-brand.css?v=1",
   "/site.css?v=1",
   "/site.css?v=3",
   "/site.css?v=3",
