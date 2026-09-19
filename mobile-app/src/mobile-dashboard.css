@@ -293,3 +293,34 @@ button{font:inherit}
   .bl-feature h2{font-size:7.8px}
   .bl-feature p{font-size:6.8px}
 }
+
+/* Canonical BaitLogic brand override */
+.bl-home{
+  --boysenberry:#5B1F46;--boysenberry-deep:#3F0223;--boysenberry-soft:#630436;
+  --purple:#74408f;--purple-deep:#512d68;--lime:#5EDC1F;--lime-deep:#3f9d10;
+  --magenta:#D800F6;--cobalt:#1034A6;--cyan:#5D3FD3;--orange:#FC6A03;--gold:#FC6A03;
+  --cream:#FFF8F1;--muted:#EAD9E3;
+  background:radial-gradient(circle at 12% -4%,rgba(216,0,246,.10),transparent 28%),radial-gradient(circle at 90% 38%,rgba(94,220,31,.06),transparent 30%),linear-gradient(135deg,#3F0223 0%,#4C0121 34%,#5B1F46 62%,#4C0121 82%,#3F0223 100%)!important;
+}
+.bl-wordmark>strong{background:linear-gradient(180deg,#FFF8F1 0%,#FC6A03 100%)!important;-webkit-background-clip:text!important;background-clip:text!important}
+.bl-wordmark>b{color:#FC6A03!important}.bl-wordmark>b i{background:#5EDC1F!important}
+.bl-rainbow{height:3px!important;background:linear-gradient(90deg,#FC6A03,#5EDC1F,#1034A6,#5D3FD3,#D800F6)!important;opacity:.72}
+.bl-location{background:rgba(63,2,35,.78)!important;border-color:rgba(94,220,31,.42)!important}
+.bl-location svg{color:#D800F6!important}.bl-location small{color:#5EDC1F!important}
+.bl-conditions,.bl-watch,.bl-weekly-card,.bl-report-card{
+  background:linear-gradient(145deg,rgba(99,4,54,.92),rgba(63,2,35,.96))!important;
+  border-color:rgba(216,0,246,.34)!important;
+}
+.bl-conditions{border-bottom:3px solid #5EDC1F!important}
+.bl-conditions h1 span,.bl-metric.water .bl-metric-icon{color:#5EDC1F!important}
+.bl-metric-icon{color:#FC6A03!important}.bl-metric small{color:#FFF8F1!important}.bl-metric em{color:#EAD9E3!important}
+.bl-primary,.bl-cta,.primary-cta{background:#5EDC1F!important;color:#101800!important}
+.bl-secondary,.secondary-cta{background:rgba(216,0,246,.12)!important;border-color:rgba(216,0,246,.55)!important;color:#FFF8F1!important}
+.bl-home .section-heading p,.bl-home .view-kicker{color:#FC6A03!important}
+.bl-home .card,.bl-home .panel,.bl-home .feed-card,.bl-home .social-card,.bl-home .notice-card,.bl-home .truth-empty{
+  background:linear-gradient(145deg,rgba(99,4,54,.88),rgba(76,1,33,.94))!important;
+  border-color:rgba(255,248,241,.16)!important;
+}
+.bl-home .bottom-nav{background:rgba(63,2,35,.98)!important;border-top-color:rgba(94,220,31,.30)!important}
+.bl-home .bottom-nav button.active{color:#101800!important;background:#5EDC1F!important}
+.bl-home .report-tab>span{background:#5EDC1F!important;color:#101800!important}
