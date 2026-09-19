@@ -24,7 +24,7 @@ const CORE = [
   "/nature-check.html",
   "/outdoor.html",
   "/trails.html",
-  "/trails-app.js?v=1",
+  "/trails-app.js?v=3",
   "/catches.html",
   "/profile.html",
   "/baitlogic-shell.css?v=1",
