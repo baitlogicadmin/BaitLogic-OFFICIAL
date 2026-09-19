@@ -23,6 +23,7 @@ const featureFiles = [
   ["premium.css", "premium.css"],
   ["launch.css", "launch.css"],
   ["field-check.css", "field-check.css"],
+  ["baitlogic-brand.css", "baitlogic-brand.css"],
 ];
 
 for (const [sourceName, outputName] of featureFiles) {

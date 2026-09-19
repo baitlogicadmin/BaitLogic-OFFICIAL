@@ -2,19 +2,21 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 
+// Canonical BaitLogic release contracts are validated against the current public route versions.
+
 test("ships an installable BaitLogic web app manifest", async () => {
   const manifest = JSON.parse(await readFile(new URL("../dist/client/manifest.webmanifest", import.meta.url), "utf8"));
 
   assert.equal(manifest.name, "BaitLogic — Local Outdoor Intelligence");
   assert.equal(manifest.display, "standalone");
-  assert.equal(manifest.theme_color, "#210918");
+  assert.equal(manifest.theme_color, "#4C0121");
   assert.deepEqual(manifest.icons.map((icon) => icon.sizes), ["192x192", "512x512"]);
 });
 
 test("ships the versioned app-shell service worker", async () => {
   const worker = await readFile(new URL("../dist/client/sw.js", import.meta.url), "utf8");
 
-  assert.match(worker, /baitlogic-field-kit-v22/);
+  assert.match(worker, /baitlogic-field-kit-v23/);
   assert.match(worker, /baitlogic-facebook-qr\.png/);
   assert.match(worker, /hero-sunset\.webp/);
   assert.match(worker, /pillar-fishing\.webp/);
@@ -24,7 +26,7 @@ test("ships the versioned app-shell service worker", async () => {
   assert.match(worker, /\/api\/barometer-snapshot/);
   assert.match(worker, /\/api\/water-snapshot/);
   assert.match(worker, /\/trails\.html/);
-  assert.match(worker, /\/trails-app\.js\?v=1/);
+  assert.match(worker, /\/trails-app\.js\?v=3/);
   assert.match(worker, /\/catches\.html/);
   assert.match(worker, /\/profile\.html/);
   assert.match(worker, /\/api\/catches/);
@@ -127,13 +129,13 @@ test("locks safety-critical navigation, reporting destinations, and the canonica
   assert.doesNotMatch(outdoor, /href="\/#conservation"/);
 
   assert.match(trails, /EXPLORE LOCAL TRAILS/);
-  assert.match(trails, /Real maps\. Real trails\. One BaitLogic experience\./);
+  assert.match(trails, /Real maps\. Real trails\. One BaitLogic Outdoors experience\./);
   assert.match(trails, /id="trail-map-svg"/);
-  assert.match(trails, /\/trails-app\.js\?v=1/);
+  assert.match(trails, /\/trails-app\.js\?v=3/);
   assert.doesNotMatch(trails, /MEPRD Actual Trail Map|MCT Interactive Trail Map|Carlyle Hiking Trail Guide/);
   assert.match(trailsApp, /\/api\/trails\?bbox=/);
   assert.match(trailsApp, /application\/gpx\+xml/);
-  assert.match(trailsApp, /baitlogic-trails-ui-v1/);
+  assert.match(trailsApp, /baitlogic-trails-ui-v2/);
   assert.match(trailsApp, /highlandil\.gov\/departments\/parks_and_recreation\/parks_and_silver_lake\/silver_lake\/index\.php/);
   assert.match(trailsApp, /meprd\.org\/community-maps\.html/);
 
@@ -163,6 +165,6 @@ test("fails closed when weather-alert verification or cached conditions are unsa
   assert.match(conditions, /WEATHER_CACHE_MAX_AGE_MS = 90 \* 60 \* 1000/);
   assert.match(conditions, /WATER_CACHE_MAX_AGE_MS = 6 \* 60 \* 60 \* 1000/);
 
-  assert.match(worker, /baitlogic-field-kit-v22/);
+  assert.match(worker, /baitlogic-field-kit-v23/);
   assert.match(worker, /X-BaitLogic-Source/);
 });
