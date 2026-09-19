@@ -216,3 +216,25 @@ body:has(.barometer-shell) input,body:has(.barometer-shell) select,body:has(.bar
  .bl-site-nav{max-width:60%}
  .bl-site-nav a{padding-inline:7px;font-size:10px}
 }
+
+body:has(.barometer-shell) .wordmark{color:var(--bl-cream)!important}
+body:has(.barometer-shell) .wordmark strong{color:var(--bl-tiger)!important}
+body:has(.barometer-shell) .menu-button{color:var(--bl-cream)!important;background:rgba(216,0,246,.10)!important;border-color:rgba(216,0,246,.45)!important}
+body:has(.barometer-shell) .quick-card,
+body:has(.barometer-shell) .intel-panel,
+body:has(.barometer-shell) .water-evidence-card,
+body:has(.barometer-shell) .modal,
+body:has(.barometer-shell) .utility-footer{
+  background:linear-gradient(145deg,rgba(99,4,54,.88),rgba(63,2,35,.94))!important;
+  border-color:var(--bl-line)!important;color:var(--bl-cream)!important;
+}
+body:has(.barometer-shell) .quick-card strong,
+body:has(.barometer-shell) .quick-card span,
+body:has(.barometer-shell) .intel-panel summary,
+body:has(.barometer-shell) .intel-body,
+body:has(.barometer-shell) .water-evidence-card,
+body:has(.barometer-shell) .utility-footer{color:var(--bl-cream)!important}
+body:has(.barometer-shell) .quick-icon{color:var(--bl-thyme)!important}
+body:has(.barometer-shell) .secondary-button{
+  background:rgba(216,0,246,.10)!important;color:var(--bl-cream)!important;border-color:rgba(216,0,246,.45)!important;
+}
