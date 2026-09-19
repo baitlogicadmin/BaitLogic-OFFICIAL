@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 
+// Canonical BaitLogic release contracts are validated against the current public route versions.
+
 test("ships an installable BaitLogic web app manifest", async () => {
   const manifest = JSON.parse(await readFile(new URL("../dist/client/manifest.webmanifest", import.meta.url), "utf8"));
 
