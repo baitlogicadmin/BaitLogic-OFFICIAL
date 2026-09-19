@@ -1,0 +1,190 @@
+/* BaitLogic canonical visual system — single source of truth.
+   Palette: Mulberry / Boysenberry / Thyme / Tiger / Egyptian Blue / Iris / Electric Plum.
+   Keep this file last in the stylesheet order so legacy page themes cannot fragment the product. */
+:root{
+  --bl-mulberry:#4C0121;
+  --bl-boysenberry:#5B1F46;
+  --bl-boysenberry-deep:#3F0223;
+  --bl-thyme:#5EDC1F;
+  --bl-tiger:#FC6A03;
+  --bl-egyptian:#1034A6;
+  --bl-iris:#5D3FD3;
+  --bl-plum:#D800F6;
+  --bl-cream:#FFF8F1;
+  --bl-muted:#EAD9E3;
+  --bl-line:rgba(255,248,241,.18);
+  --bl-panel:rgba(99,4,54,.82);
+  --bl-panel-deep:rgba(63,2,35,.92);
+  --bl-shadow:0 14px 34px rgba(35,0,20,.30);
+}
+html{background:var(--bl-mulberry)!important;color-scheme:dark}
+body{
+  background:
+    radial-gradient(circle at 8% -4%,rgba(216,0,246,.12),transparent 28rem),
+    radial-gradient(circle at 92% 12%,rgba(94,220,31,.07),transparent 25rem),
+    linear-gradient(135deg,var(--bl-boysenberry-deep) 0%,var(--bl-mulberry) 30%,var(--bl-boysenberry) 58%,var(--bl-mulberry) 82%,var(--bl-boysenberry-deep) 100%)!important;
+  color:var(--bl-cream)!important;
+}
+body a{color:inherit}
+.topbar,.app-header{
+  background:linear-gradient(90deg,rgba(63,2,35,.98),rgba(76,1,33,.96),rgba(99,4,54,.96))!important;
+  border-bottom:2px solid rgba(94,220,31,.65)!important;
+  box-shadow:0 8px 24px rgba(26,0,15,.30)!important;
+}
+.brand,.brand strong,.nav{color:var(--bl-cream)!important}
+.brandmark{
+  color:#16000a!important;
+  background:var(--bl-tiger)!important;
+  border-color:rgba(255,248,241,.9)!important;
+}
+.brand strong span,.eyebrow,.kicker,.section-label,.hero-label{color:var(--bl-tiger)!important}
+.nav a{color:var(--bl-cream)!important}
+.nav a:hover,.nav a:focus-visible,.nav a.active{
+  color:#130009!important;background:var(--bl-thyme)!important;
+}
+.menu-btn{
+  color:var(--bl-cream)!important;
+  background:rgba(255,248,241,.08)!important;
+  border-color:rgba(255,248,241,.24)!important;
+}
+.hero>div,.hero-card{
+  background:linear-gradient(145deg,rgba(63,2,35,.97),rgba(99,4,54,.92))!important;
+  border:1px solid rgba(216,0,246,.34)!important;
+  border-bottom:3px solid var(--bl-thyme)!important;
+  box-shadow:var(--bl-shadow)!important;
+}
+.hero-panel,.card,.wide-card,.action-card,.datacard,.action-tile,.directive article,.notice-card,.feed-card,.social-card,.truth-empty{
+  color:var(--bl-cream)!important;
+  background:linear-gradient(145deg,rgba(99,4,54,.88),rgba(76,1,33,.94))!important;
+  border-color:var(--bl-line)!important;
+  box-shadow:var(--bl-shadow)!important;
+}
+.hero h1,.section h2,.wide-card h2,.card h3,.action-card h2,.datacard h2,.action-tile strong,.directive h3{
+  color:var(--bl-cream)!important;
+}
+.hero p,.hero-panel p,.card p,.action-card p,.datacard p,.action-tile p,.directive p,.lead,.field-help,.message,.source-note,.footer{
+  color:var(--bl-muted)!important;
+}
+.status{
+  color:#132006!important;background:var(--bl-thyme)!important;border-color:var(--bl-thyme)!important;
+}
+.mini-action{
+  background:rgba(63,2,35,.78)!important;border-color:rgba(216,0,246,.30)!important;
+}
+.mini-action strong{color:var(--bl-cream)!important}.mini-action span{color:var(--bl-muted)!important}
+.btn,.btn-primary,.btn-secondary,.primary,.secondary{
+  border-radius:13px!important;font-weight:900!important;
+}
+.btn.primary,.btn-primary,.primary{
+  color:#101800!important;background:var(--bl-thyme)!important;border-color:var(--bl-thyme)!important;
+  box-shadow:0 8px 20px rgba(94,220,31,.18)!important;
+}
+.btn.coral,.btn-secondary,.secondary{
+  color:var(--bl-cream)!important;background:rgba(252,106,3,.16)!important;border:1px solid rgba(252,106,3,.72)!important;
+}
+.btn.ghost{
+  color:var(--bl-cream)!important;background:rgba(216,0,246,.10)!important;border-color:rgba(216,0,246,.52)!important;
+}
+.btn:hover,.btn:focus-visible,.btn-primary:hover,.btn-secondary:hover{
+  filter:brightness(1.08);transform:translateY(-1px);
+}
+.action-strip{border-top:3px solid var(--bl-thyme)!important}
+.field-check-rule{background:var(--bl-mulberry)!important;border-bottom-color:var(--bl-thyme)!important}
+.field label,.choice-fieldset legend{color:var(--bl-tiger)!important}
+.field input,.field select,.field textarea,.signup-form input{
+  background:rgba(63,2,35,.86)!important;color:var(--bl-cream)!important;border-color:rgba(255,248,241,.24)!important;
+}
+.field input::placeholder,.field textarea::placeholder,.signup-form input::placeholder{color:rgba(234,217,227,.62)!important}
+.field input:focus,.field select:focus,.field textarea:focus{
+  border-color:var(--bl-thyme)!important;box-shadow:0 0 0 3px rgba(94,220,31,.18)!important;
+}
+.choice-chip span,.privacy-choice span{
+  background:rgba(63,2,35,.74)!important;color:var(--bl-cream)!important;border-color:var(--bl-line)!important;
+}
+.choice-chip input:checked+span,.privacy-choice input:checked+span{
+  background:var(--bl-thyme)!important;color:#101800!important;border-color:var(--bl-thyme)!important;
+  box-shadow:inset 0 -3px rgba(16,24,0,.35)!important;
+}
+.field-check-submit{background:var(--bl-thyme)!important;color:#101800!important}
+.feed-item{background:rgba(63,2,35,.72)!important;border-color:var(--bl-line)!important}
+.feed-item strong,.metric{color:var(--bl-cream)!important}
+.community-action-card,.alert-card{border-left-color:var(--bl-tiger)!important}
+.footer-inner{border-top-color:var(--bl-line)!important}
+.footer strong{color:var(--bl-tiger)!important}
+.bottom-nav{
+  background:rgba(63,2,35,.97)!important;border-color:rgba(94,220,31,.28)!important;
+  box-shadow:0 -10px 30px rgba(35,0,20,.35)!important;
+}
+.bottom-nav a{color:var(--bl-muted)!important}.bottom-nav a.active{
+  color:#101800!important;background:var(--bl-thyme)!important;box-shadow:inset 0 -3px var(--bl-tiger)!important;
+}
+
+/* Nature Check */
+body:has(.datacards) .topbar{position:sticky}
+body:has(.datacards) .action-section,.action-section{color:var(--bl-cream)}
+body:has(.datacards) .datacard .ic{
+  background:var(--bl-thyme)!important;color:#101800!important;
+}
+body:has(.datacards) .btn-primary{background:var(--bl-thyme)!important;color:#101800!important}
+body:has(.datacards) .btn-secondary{background:rgba(216,0,246,.12)!important;color:var(--bl-cream)!important;border-color:rgba(216,0,246,.55)!important}
+body:has(.datacards) .footer-cta{
+  background:linear-gradient(145deg,rgba(99,4,54,.92),rgba(63,2,35,.96))!important;
+  border-color:rgba(216,0,246,.34)!important;color:var(--bl-cream)!important;
+}
+body:has(.datacards) .tagline{color:var(--bl-muted)!important}
+
+/* Prairie action page inline legacy styles */
+.action-hero>div:first-child{background:linear-gradient(145deg,rgba(63,2,35,.97),rgba(99,4,54,.92))!important}
+.loss-card{background:rgba(252,106,3,.12)!important;border-color:rgba(252,106,3,.55)!important;color:var(--bl-cream)!important}
+.loss-card span{color:var(--bl-muted)!important}
+.action-tile b{color:var(--bl-tiger)!important}
+.action-tile:hover,.action-tile:focus-visible{border-color:var(--bl-plum)!important}
+.directive span{background:var(--bl-thyme)!important;color:#101800!important}
+.source-box{border-left-color:var(--bl-thyme)!important;background:rgba(94,220,31,.08)!important;color:var(--bl-muted)!important}
+
+/* Community catches */
+body:has(#catches) .wrap{color:var(--bl-cream)!important}
+body:has(#catches) .hero{background:linear-gradient(145deg,rgba(63,2,35,.97),rgba(99,4,54,.92))!important}
+body:has(#catches) .card{background:linear-gradient(145deg,rgba(99,4,54,.88),rgba(76,1,33,.94))!important}
+body:has(#catches) .back,.back{color:var(--bl-tiger)!important}
+body:has(#catches) .eyebrow{color:var(--bl-tiger)!important}
+body:has(#catches) .primary{background:var(--bl-thyme)!important;color:#101800!important}
+body:has(#catches) .secondary{background:rgba(216,0,246,.10)!important;color:var(--bl-cream)!important;border-color:rgba(216,0,246,.52)!important}
+
+/* Barometer: retain the information hierarchy, remove the unrelated teal/gold theme. */
+body:has(.barometer-shell){
+  background:
+    radial-gradient(circle at 10% 0%,rgba(216,0,246,.12),transparent 28rem),
+    linear-gradient(135deg,var(--bl-boysenberry-deep),var(--bl-mulberry) 35%,var(--bl-boysenberry) 65%,var(--bl-boysenberry-deep))!important;
+}
+body:has(.barometer-shell) .app-header{
+  background:linear-gradient(90deg,rgba(63,2,35,.98),rgba(76,1,33,.96),rgba(99,4,54,.96))!important;
+  border-bottom-color:rgba(94,220,31,.65)!important;
+}
+body:has(.barometer-shell) .hero-card{
+  background:linear-gradient(145deg,rgba(63,2,35,.97),rgba(99,4,54,.92))!important;
+  border-color:rgba(216,0,246,.34)!important;border-bottom-color:var(--bl-thyme)!important;
+}
+body:has(.barometer-shell) .quick-card,body:has(.barometer-shell) .info-card,body:has(.barometer-shell) .details-card{
+  background:rgba(76,1,33,.90)!important;border-color:var(--bl-line)!important;
+}
+body:has(.barometer-shell) .location-actions button,body:has(.barometer-shell) .hero-actions a{
+  background:rgba(216,0,246,.10)!important;border-color:rgba(216,0,246,.48)!important;color:var(--bl-cream)!important;
+}
+body:has(.barometer-shell) .location-actions button:first-child{
+  background:var(--bl-thyme)!important;border-color:var(--bl-thyme)!important;color:#101800!important;
+}
+body:has(.barometer-shell) .connection-pill{border-color:rgba(94,220,31,.42)!important;color:var(--bl-thyme)!important}
+body:has(.barometer-shell) .eyebrow,body:has(.barometer-shell) .decision-kicker{color:var(--bl-tiger)!important}
+body:has(.barometer-shell) .pressure-value strong,body:has(.barometer-shell) h1,body:has(.barometer-shell) h2,body:has(.barometer-shell) h3{color:var(--bl-cream)!important}
+body:has(.barometer-shell) .trend-visual .trend-head,body:has(.barometer-shell) .trend-visual .trend-shaft{background:var(--bl-thyme)!important}
+body:has(.barometer-shell) .data-card,body:has(.barometer-shell) .evidence-card{background:rgba(63,2,35,.78)!important;border-color:var(--bl-line)!important}
+
+/* Prevent legacy light themes from reappearing on common utility surfaces. */
+body:has(.barometer-shell) input,body:has(.barometer-shell) select,body:has(.barometer-shell) textarea{
+  background:rgba(63,2,35,.86)!important;color:var(--bl-cream)!important;border-color:var(--bl-line)!important;
+}
+@media(max-width:620px){
+  .hero h1{font-size:clamp(2rem,11vw,3rem)!important}
+  .hero>div{padding:22px 18px!important}
+}
