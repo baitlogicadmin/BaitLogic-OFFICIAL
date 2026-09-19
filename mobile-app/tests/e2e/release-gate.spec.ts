@@ -151,9 +151,9 @@ test("barometer Highland fallback is wired to verified pressure loading", async 
   const documentHtml = await documentResponse.text();
   expect(documentHtml).toContain('id="useHighland"');
   expect(documentHtml).toContain('id="pressureValue"');
-  expect(documentHtml).toContain('/barometer/app.js?v=13');
+  expect(documentHtml).toContain('/barometer/app.js?v=14');
 
-  const appResponse = await request.get("/barometer/app.js?v=13", { timeout: 15000 });
+  const appResponse = await request.get("/barometer/app.js?v=14", { timeout: 15000 });
   expect(appResponse.status()).toBe(200);
   const appJs = await appResponse.text();
   expect(appJs).toContain('E.useHighland?.addEventListener("click",useHighland)');
