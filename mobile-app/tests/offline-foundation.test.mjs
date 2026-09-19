@@ -129,7 +129,7 @@ test("locks safety-critical navigation, reporting destinations, and the canonica
   assert.match(trails, /EXPLORE LOCAL TRAILS/);
   assert.match(trails, /Real maps\. Real trails\. One BaitLogic experience\./);
   assert.match(trails, /id="trail-map-svg"/);
-  assert.match(trails, /\/trails-app\.js\?v=1/);
+  assert.match(trails, /\/trails-app\.js\?v=3/);
   assert.doesNotMatch(trails, /MEPRD Actual Trail Map|MCT Interactive Trail Map|Carlyle Hiking Trail Guide/);
   assert.match(trailsApp, /\/api\/trails\?bbox=/);
   assert.match(trailsApp, /application\/gpx\+xml/);
