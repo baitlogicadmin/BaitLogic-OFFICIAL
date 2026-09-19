@@ -188,3 +188,31 @@ body:has(.barometer-shell) input,body:has(.barometer-shell) select,body:has(.bar
   .hero h1{font-size:clamp(2rem,11vw,3rem)!important}
   .hero>div{padding:22px 18px!important}
 }
+
+/* Shared injected shell */
+.bl-site-header{
+  position:sticky!important;top:0!important;z-index:100!important;
+  background:linear-gradient(90deg,rgba(63,2,35,.98),rgba(76,1,33,.96),rgba(99,4,54,.96))!important;
+  border-bottom:2px solid rgba(94,220,31,.65)!important;
+  box-shadow:0 8px 24px rgba(26,0,15,.30)!important;
+  backdrop-filter:blur(14px);
+}
+.bl-site-header__inner{width:min(1040px,calc(100% - 24px));min-height:72px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:14px}
+.bl-site-brand{display:flex;align-items:center;gap:9px;color:var(--bl-cream)!important;text-decoration:none}
+.bl-site-brand img{width:52px!important;height:52px!important;object-fit:contain}
+.bl-site-brand span{display:grid;line-height:1}
+.bl-site-brand strong{color:var(--bl-tiger)!important;font-family:Georgia,serif;font-size:19px;letter-spacing:.03em}
+.bl-site-brand small{margin-top:4px;color:var(--bl-muted)!important;font-size:9px}
+.bl-site-nav{display:flex;align-items:center;gap:4px;overflow-x:auto;scrollbar-width:none}
+.bl-site-nav::-webkit-scrollbar{display:none}
+.bl-site-nav a{min-height:42px;padding:10px 9px;border-radius:10px;color:var(--bl-cream)!important;text-decoration:none;font-size:12px;font-weight:900;white-space:nowrap}
+.bl-site-nav a:hover,.bl-site-nav a:focus-visible,.bl-site-nav a[aria-current="page"]{color:#101800!important;background:var(--bl-thyme)!important;outline:none}
+.bl-install{min-height:42px;padding:10px 12px;border:1px solid var(--bl-tiger);border-radius:10px;color:#101800!important;background:var(--bl-tiger)!important;font-weight:900}
+@media(max-width:760px){
+ .bl-site-header__inner{min-height:66px}
+ .bl-site-brand img{width:46px!important;height:46px!important}
+ .bl-site-brand strong{font-size:16px}
+ .bl-site-brand small{display:none}
+ .bl-site-nav{max-width:60%}
+ .bl-site-nav a{padding-inline:7px;font-size:10px}
+}
