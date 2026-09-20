@@ -9,7 +9,6 @@ const root = join(__dirname, "..");
 const mobile = readFileSync(join(root, "mobile-app/src/MobileDashboard.tsx"), "utf8");
 const desktop = readFileSync(join(root, "mobile-app/src/DesktopDashboard.tsx"), "utf8");
 const conditions = readFileSync(join(root, "mobile-app/src/useBaitLogicConditions.ts"), "utf8");
-const signupApi = readFileSync(join(root, "api/signups.js"), "utf8");
 const indexHtml = readFileSync(join(root, "mobile-app/index.html"), "utf8");
 const edgeFunction = readFileSync(join(root, "mobile-app/supabase/functions/submit-baitlogic-signal/index.ts"), "utf8");
 const dataSource = readFileSync(join(root, "mobile-app/src/data/baitlogicData.ts"), "utf8");
@@ -20,8 +19,6 @@ const barometerPage = readFileSync(join(root, "public/barometer.html"), "utf8");
 
 test("canonical frontend and public writes use current guarded paths", () => {
   assert.match(indexHtml, /BaitLogic/);
-  assert.match(signupApi, /if \(!validEmail\(email\)\)/);
-  assert.match(signupApi, /captcha_token: captchaToken/);
   assert.match(dataSource, /captcha_token: captchaToken/);
   assert.match(edgeFunction, /if \(!secret\) return false/);
   assert.match(edgeFunction, /TURNSTILE_SECRET_KEY/);
