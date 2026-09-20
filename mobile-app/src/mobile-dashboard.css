@@ -324,3 +324,10 @@ button{font:inherit}
 .bl-home .bottom-nav{background:rgba(63,2,35,.98)!important;border-top-color:rgba(94,220,31,.30)!important}
 .bl-home .bottom-nav button.active{color:#101800!important;background:#5EDC1F!important}
 .bl-home .report-tab>span{background:#5EDC1F!important;color:#101800!important}
+
+
+.bl-water-watch-entry{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:14px 0;padding:16px;border:1px solid rgba(94,220,31,.35);border-radius:18px;background:linear-gradient(135deg,#4C0121,#5B1F46);color:#FFF8F1;box-shadow:0 12px 28px rgba(76,1,33,.18)}
+.bl-water-watch-entry strong{display:block;font-size:12px;letter-spacing:.1em;color:#5EDC1F}
+.bl-water-watch-entry p{margin:4px 0 0;font-size:12px;line-height:1.4;color:#EAD9E3}
+.bl-water-watch-entry button{flex:0 0 auto;border:1px solid #5EDC1F;border-radius:12px;padding:10px 12px;background:#5EDC1F;color:#3F0223;font:800 10px/1 inherit;letter-spacing:.04em}
+@media(max-width:520px){.bl-water-watch-entry{align-items:flex-start;flex-direction:column}.bl-water-watch-entry button{width:100%}}
