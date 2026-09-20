@@ -2,5 +2,6 @@
   "version": 2,
   "buildCommand": "cd mobile-app && npm ci && npm run build",
   "outputDirectory": "mobile-app/dist/client",
-  "cleanUrls": true
+  "cleanUrls": true,
+  "framework": "vite"
 }
