@@ -1,7 +1,7 @@
 "use strict";
 
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],safe=v=>String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
-const verificationTokens={report:"",signup:""},verificationWidgets={report:null,signup:null};
+const verificationTokens={report:""},verificationWidgets={report:null};
 
 function loadTurnstileScript(){
   if(window.turnstile)return Promise.resolve(window.turnstile);
@@ -20,7 +20,7 @@ async function initTurnstile(){
     const config=await api("/api/health");
     if(!config.turnstileSiteKey)throw new Error("Verification is temporarily unavailable.");
     const turnstile=await loadTurnstileScript();
-    for(const [kind,id] of [["report","#reportTurnstile"],["signup","#signupTurnstile"]]){
+    for(const [kind,id] of [["report","#reportTurnstile"]]){
       const mount=$(id);if(!mount)continue;
       verificationWidgets[kind]=turnstile.render(mount,{
         sitekey:config.turnstileSiteKey,
@@ -33,7 +33,6 @@ async function initTurnstile(){
     }
   }catch(error){
     msg("#reportMsg",String(error?.message||"Verification is temporarily unavailable."));
-    msg("#signupMsg",String(error?.message||"Verification is temporarily unavailable."));
   }
 }
 
@@ -295,36 +294,6 @@ function reportForm(){
   });
 }
 
-function signup(){
-  const f=$("#signupForm");
-  const savedDraft=readPrivateDraft("baitlogic-signup-draft-v1");
-  if(f&&savedDraft){
-    if(f.elements.name)f.elements.name.value=String(savedDraft.name||"");
-    if(f.elements.email)f.elements.email.value=String(savedDraft.email||"");
-    msg("#signupMsg","Restored your private draft. Reconnect and complete verification to join.",true);
-  }
-  f?.addEventListener("submit",async e=>{
-    e.preventDefault();
-    const payload=Object.fromEntries(new FormData(f).entries());
-    if(!navigator.onLine){
-      const saved=savePrivateDraft("baitlogic-signup-draft-v1",payload);
-      return msg("#signupMsg",saved
-        ? "Saved as a private draft on this device. Reconnect and complete verification to join."
-        : "This device could not save the draft. Copy your email before leaving this page.",saved);
-    }
-    if(!verificationTokens.signup)return msg("#signupMsg","Complete the security check and try again.");
-    payload.captcha_token=verificationTokens.signup;
-    msg("#signupMsg","Joining…");
-    try{
-      const d=await api("/api/signups",{method:"POST",body:JSON.stringify(payload)});
-      f.reset();
-      track("signup_success");
-      msg("#signupMsg",d.welcome==="sent"?"You’re in. Confirmation email sent — check your inbox or spam folder.":"You’re subscribed. The confirmation email is delayed, but your signup is safely recorded.",true);
-      localStorage.removeItem("baitlogic-signup-draft-v1");resetVerification("signup");
-    }catch(err){msg("#signupMsg",err.message);resetVerification("signup")}
-  });
-}
-
 async function waterAt(lat,lon){
   const out=$("#waterResults");out.innerHTML='<div class="feed-item">Finding nearby USGS monitoring stations…</div>';
   try{
@@ -359,6 +328,6 @@ function registerPwa(){
   if("serviceWorker" in navigator){navigator.serviceWorker.register("/sw.js").then(()=>{window.addEventListener("online",()=>navigator.serviceWorker.controller?.postMessage({type:"BAITLOGIC_FLUSH_QUEUE"}))}).catch(()=>{})}
 }
 
-document.addEventListener("DOMContentLoaded",()=>{track("page_view");menu();liveEntry();health();loadReports();reportForm();signup();water();nav();registerPwa();initTurnstile()});
+document.addEventListener("DOMContentLoaded",()=>{track("page_view");menu();liveEntry();health();loadReports();reportForm();water();nav();registerPwa();initTurnstile()});
 window.addEventListener("online",()=>{health();loadReports()});
 window.addEventListener("offline",health);
