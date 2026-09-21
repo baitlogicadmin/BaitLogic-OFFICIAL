@@ -3,7 +3,7 @@
 const { supabaseRequest, commonHeaders, methodNotAllowed } = require("../lib/baitlogic-api");
 
 module.exports = async function handler(req, res) {
-  commonHeaders(res);
+  commonHeaders(res, "GET, OPTIONS");
   if (req.method === "OPTIONS") return res.status(204).end();
 
   try {
@@ -20,7 +20,6 @@ module.exports = async function handler(req, res) {
         })),
       });
     }
-
 
     return methodNotAllowed(res);
   } catch (error) {
