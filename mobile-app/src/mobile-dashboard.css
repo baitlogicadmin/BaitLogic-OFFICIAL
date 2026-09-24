@@ -331,3 +331,41 @@ button{font:inherit}
 .bl-water-watch-entry p{margin:4px 0 0;font-size:12px;line-height:1.4;color:#EAD9E3}
 .bl-water-watch-entry button{flex:0 0 auto;border:1px solid #5EDC1F;border-radius:12px;padding:10px 12px;background:#5EDC1F;color:#3F0223;font:800 10px/1 inherit;letter-spacing:.04em}
 @media(max-width:520px){.bl-water-watch-entry{align-items:flex-start;flex-direction:column}.bl-water-watch-entry button{width:100%}}
+
+
+/* 2026-09-24 final render refinement: calm translucency + unified field-intelligence grid. */
+.bl-feature-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+.bl-feature.education{color:var(--magenta,#D800F6)}
+.bl-feature.education::before{background-image:url("/assets/pillar-camping.webp")}
+.bl-feature.education::after{background:linear-gradient(90deg,rgba(20,7,18,.78),rgba(9,7,10,.24) 72%,rgba(0,0,0,.08))}
+.bl-report-now{
+  background:linear-gradient(105deg,rgba(94,220,31,.22),rgba(94,220,31,.10))!important;
+  border-color:rgba(94,220,31,.55)!important;
+  color:#EFFFDC!important;
+  box-shadow:0 8px 22px rgba(38,8,30,.16),inset 0 0 30px rgba(94,220,31,.05)!important;
+  backdrop-filter:blur(12px);
+}
+.bl-report-now h2{color:#DFFFAD!important}
+.bl-report-now p{color:#F1FFE4!important}
+.bl-report-now>a{
+  background:rgba(94,220,31,.10)!important;
+  border-color:rgba(94,220,31,.62)!important;
+  color:#E8FFC9!important;
+}
+.bl-bottom-nav .active{
+  color:#DFFFAD!important;
+  background:rgba(94,220,31,.12)!important;
+  border:1px solid rgba(94,220,31,.28);
+}
+.bl-bottom-nav .plus{
+  border-color:rgba(94,220,31,.70)!important;
+  color:#DFFFAD!important;
+  background:rgba(94,220,31,.08)!important;
+}
+@media(max-width:760px){
+  .bl-feature-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+@media(max-width:600px){
+  .bl-report-now{min-height:64px!important}
+  .bl-feature{min-height:108px!important}
+}
