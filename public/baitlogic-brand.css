@@ -238,3 +238,163 @@ body:has(.barometer-shell) .quick-icon{color:var(--bl-thyme)!important}
 body:has(.barometer-shell) .secondary-button{
   background:rgba(216,0,246,.10)!important;color:var(--bl-cream)!important;border-color:rgba(216,0,246,.45)!important;
 }
+
+
+/* === BaitLogic FINAL CONTINUITY OVERRIDES ===
+   One product, one visual language. Legacy page palettes are aliases only;
+   functional meaning remains: Thyme = primary action/reporting, Plum = secondary,
+   Tiger = limited alert/emphasis. */
+:root{
+  --bl-gold:var(--bl-plum);
+  --navy:var(--bl-mulberry);
+  --navy-2:var(--bl-boysenberry);
+  --ink:var(--bl-cream);
+  --muted:var(--bl-muted);
+  --gold:var(--bl-plum);
+  --gold-soft:rgba(216,0,246,.12);
+  --teal:var(--bl-thyme);
+  --paper:var(--bl-mulberry);
+  --surface:rgba(99,4,54,.88);
+  --line:var(--bl-line);
+  --line-strong:rgba(255,248,241,.28);
+  --danger:var(--bl-tiger);
+  --shadow:var(--bl-shadow);
+  --shadow-soft:0 8px 24px rgba(35,0,20,.24);
+  color-scheme:dark;
+}
+html,body{background-color:var(--bl-mulberry)!important}
+body,body.bl-subpage{
+  background:
+    radial-gradient(circle at 8% -4%,rgba(216,0,246,.13),transparent 28rem),
+    radial-gradient(circle at 92% 12%,rgba(94,220,31,.07),transparent 25rem),
+    linear-gradient(135deg,var(--bl-boysenberry-deep) 0%,var(--bl-mulberry) 30%,var(--bl-boysenberry) 58%,var(--bl-mulberry) 82%,var(--bl-boysenberry-deep) 100%)!important;
+  color:var(--bl-cream)!important;
+}
+.topbar,.app-header,.bl-site-header{
+  background:linear-gradient(90deg,rgba(63,2,35,.98),rgba(76,1,33,.96),rgba(99,4,54,.96))!important;
+  border-color:rgba(94,220,31,.38)!important;
+}
+.brand,.brand strong,.brand-copy strong,.wordmark,.wordmark strong,.nav,.topnav a,.bl-site-brand strong{
+  color:var(--bl-cream)!important;
+}
+.brand strong span,.brand-copy strong,.bl-site-brand strong,.eyebrow,.kicker,.section-label,.hero-label,
+.back,.location-pill,.decision-kicker{
+  color:var(--bl-plum)!important;
+}
+.brandmark,.brand-mark{
+  color:var(--bl-lime)!important;
+  background:rgba(76,1,33,.82)!important;
+  border-color:var(--bl-plum)!important;
+}
+.nav a,.topnav a,.bl-site-nav a{color:var(--bl-cream)!important}
+.nav a:hover,.nav a:focus-visible,.nav a.active,
+.topnav a:hover,.topnav a:focus-visible,.topnav a.active,
+.bl-site-nav a:hover,.bl-site-nav a:focus-visible,.bl-site-nav a[aria-current="page"]{
+  color:#101800!important;background:var(--bl-thyme)!important;
+}
+.menu-btn,.menu-button{
+  color:var(--bl-cream)!important;background:rgba(216,0,246,.10)!important;
+  border-color:rgba(216,0,246,.42)!important;
+}
+.hero>div,.hero-card,.hero-panel,.card,.wide-card,.action-card,.datacard,.action-tile,
+.directive article,.notice-card,.feed-card,.social-card,.truth-empty,.quick-card,.info-card,
+.details-card,.intel-panel,.water-evidence-card,.data-card,.evidence-card,.utility-footer,
+.panel,.statbox{
+  color:var(--bl-cream)!important;
+  background:linear-gradient(145deg,rgba(99,4,54,.88),rgba(76,1,33,.94))!important;
+  border-color:var(--bl-line)!important;
+  box-shadow:var(--bl-shadow)!important;
+}
+.hero>div,.hero-card{
+  border-color:rgba(216,0,246,.34)!important;
+  border-bottom-color:var(--bl-thyme)!important;
+}
+.hero h1,.hero h2,.hero h3,.section h2,.wide-card h2,.card h3,.action-card h2,
+.datacard h2,.action-tile strong,.directive h3,.hero-panel h2,
+.pressure-value strong,.barometer-shell h1,.barometer-shell h2,.barometer-shell h3{
+  color:var(--bl-cream)!important;
+}
+.hero p,.hero-panel p,.card p,.action-card p,.datacard p,.action-tile p,.directive p,
+.lead,.field-help,.message,.source-note,.footer,.meta,.empty,.tagline{
+  color:var(--bl-muted)!important;
+}
+.btn,.btn-primary,.btn-secondary,.primary,.secondary,.chip{
+  border-radius:13px!important;font-weight:900!important;
+}
+.btn.primary,.btn-primary,.primary,.field-check-submit,
+.location-actions button:first-child{
+  color:#101800!important;background:var(--bl-thyme)!important;border-color:var(--bl-thyme)!important;
+}
+.btn.coral,.btn-secondary,.secondary{
+  color:var(--bl-cream)!important;background:rgba(216,0,246,.10)!important;
+  border:1px solid rgba(216,0,246,.52)!important;
+}
+.btn.ghost{
+  color:var(--bl-cream)!important;background:rgba(216,0,246,.08)!important;
+  border-color:rgba(216,0,246,.45)!important;
+}
+.btn:hover,.btn:focus-visible,.btn-primary:hover,.btn-secondary:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.status{color:#101800!important;background:var(--bl-thyme)!important;border-color:var(--bl-thyme)!important}
+.mini-action,.feed-item,.field-check-rule{
+  background:rgba(63,2,35,.78)!important;border-color:var(--bl-line)!important;
+}
+.mini-action strong,.feed-item strong,.metric{color:var(--bl-cream)!important}
+.field label,.choice-fieldset legend,.field-check-rule strong{color:var(--bl-plum)!important}
+.field-check-rule{border-bottom-color:var(--bl-thyme)!important}
+.field input,.field select,.field textarea,.signup-form input{
+  background:rgba(63,2,35,.86)!important;color:var(--bl-cream)!important;
+  border-color:rgba(255,248,241,.24)!important;
+}
+.field input:focus,.field select:focus,.field textarea:focus{
+  border-color:var(--bl-thyme)!important;box-shadow:0 0 0 3px rgba(94,220,31,.18)!important;
+}
+.choice-chip span,.privacy-choice span{
+  background:rgba(63,2,35,.74)!important;color:var(--bl-cream)!important;border-color:var(--bl-line)!important;
+}
+.choice-chip input:checked+span,.privacy-choice input:checked+span{
+  background:var(--bl-thyme)!important;color:#101800!important;border-color:var(--bl-thyme)!important;
+}
+.bottom-nav,.mobile-nav{
+  background:rgba(63,2,35,.97)!important;border-color:rgba(94,220,31,.28)!important;
+}
+.bottom-nav a,.mobile-nav a{color:var(--bl-muted)!important}
+.bottom-nav a.active,.mobile-nav a.active{
+  color:#101800!important;background:var(--bl-thyme)!important;
+}
+.action-strip{border-top-color:var(--bl-thyme)!important}
+.action-hero>div:first-child{background:linear-gradient(145deg,rgba(63,2,35,.97),rgba(99,4,54,.92))!important}
+.loss-card{background:rgba(252,106,3,.10)!important;border-color:rgba(252,106,3,.42)!important;color:var(--bl-cream)!important}
+.loss-card span,.action-tile b{color:var(--bl-muted)!important}
+.action-tile:hover,.action-tile:focus-visible{border-color:var(--bl-plum)!important}
+.directive span{background:var(--bl-thyme)!important;color:#101800!important}
+.source-box{border-left-color:var(--bl-thyme)!important;background:rgba(94,220,31,.08)!important;color:var(--bl-muted)!important}
+.alert-card{border-left-color:var(--bl-tiger)!important}
+body:has(.barometer-shell) .location-actions button,
+body:has(.barometer-shell) .hero-actions a,
+body:has(.barometer-shell) .secondary-button{
+  background:rgba(216,0,246,.10)!important;color:var(--bl-cream)!important;
+  border-color:rgba(216,0,246,.48)!important;
+}
+body:has(.barometer-shell) .location-actions button:first-child{background:var(--bl-thyme)!important;color:#101800!important}
+body:has(.barometer-shell) .connection-pill{color:var(--bl-thyme)!important;border-color:rgba(94,220,31,.42)!important}
+body:has(.barometer-shell) .trend-visual .trend-head,
+body:has(.barometer-shell) .trend-visual .trend-shaft{background:var(--bl-thyme)!important}
+
+/* Trails: the page's own inline CSS cannot pull the product back to gold/orange. */
+body:has(#trail-map-svg) .brand-copy strong{color:var(--bl-cream)!important}
+body:has(#trail-map-svg) .eyebrow,
+body:has(#trail-map-svg) .location-pill,
+body:has(#trail-map-svg) .trail-card-main small{color:var(--bl-plum)!important}
+body:has(#trail-map-svg) .loc,
+body:has(#trail-map-svg) .trail-card-main em,
+body:has(#trail-map-svg) .statbox strong{color:var(--bl-thyme)!important}
+body:has(#trail-map-svg) .trail-card-main em{background:var(--bl-thyme)!important}
+body:has(#trail-map-svg) .topbar{border-color:rgba(94,220,31,.28)!important}
+
+/* Keep reporting visually unmistakable across pages. */
+[data-report],[data-action="report"],#report,#reportButton,.report-button,.report-cta{
+  background:var(--bl-thyme)!important;color:#101800!important;border-color:var(--bl-thyme)!important;
+}
+
+/* Remove accidental legacy blue/teal/yellow surfaces while preserving alert orange. */
+body .teal,body .blue,.legacy-blue{color:var(--bl-plum)!important}
