@@ -105,7 +105,7 @@ test("mobile homepage preserves the founder-authorized information architecture"
   await expect(page.locator(".bl-feature.water-flow")).toContainText("WATER & FLOW");
   await expect(page.locator(".bl-feature.catches")).toContainText("LOCAL CATCHES");
   await expect(page.locator(".bl-feature.trails")).toContainText("TRAILS & MAPS");
-  await expect(page.locator(".bl-education-card")).toHaveCount(6);
+  await expect(page.locator(".bl-education-card")).toHaveCount(10);
   await expect(page.locator(".bl-sources")).toContainText("Offline Ready");
 });
 
@@ -151,7 +151,7 @@ test("barometer Highland fallback is wired to verified pressure loading", async 
   const documentHtml = await documentResponse.text();
   expect(documentHtml).toContain('id="useHighland"');
   expect(documentHtml).toContain('id="pressureValue"');
-  expect(documentHtml).toContain('/barometer/app.js?v=14');
+  expect(documentHtml).toContain('/barometer/app.js?v=15');
 
   const appResponse = await request.get("/barometer/app.js?v=14", { timeout: 15000 });
   expect(appResponse.status()).toBe(200);
