@@ -40,4 +40,4 @@ const barometerAssets = path.join(legacyPublic, "barometer");
 if (!existsSync(barometerAssets)) throw new Error("Missing recovered Barometer assets: " + barometerAssets);
 cpSync(barometerAssets, path.join(client, "barometer"), { recursive: true, force: true });
 
-console.log("Prepared Vercel production build with React shell + recovered BaitLogic feature routes.");
+console.log("Prepared portable static production build with React shell + recovered BaitLogic feature routes.");

@@ -1,0 +1,63 @@
+/* BaitLogic balanced visual system — review branch only. */
+.bl-home{--bl-bg:#080e13;--bl-panel:#111c24;--bl-line:#30434b;--bl-blue:#3a9fef;--bl-lime:#b5e75a;--bl-plum:#a67caa;background:var(--bl-bg)!important;color:#f2f5f5!important;font-family:Arial,Helvetica,sans-serif!important}
+.bl-header,.bl-bottom-nav{background:#0a1319!important;border-color:#293942!important}
+.bl-wordmark>strong{background:none!important;-webkit-text-fill-color:#d7b16c!important;color:#d7b16c!important;font-family:Georgia,serif!important;font-weight:700!important;letter-spacing:.025em!important}
+.bl-wordmark>b{color:#e4c68e!important;font-family:Georgia,serif!important}
+.bl-wordmark>small{color:#d8d5c9!important;font-size:clamp(9px,1.7vw,12px)!important}
+.bl-rainbow{display:none!important}
+.bl-location{background:#111d24!important;border:1px solid #354b51!important}
+.bl-location svg{color:var(--bl-blue)!important}.bl-location small{color:var(--bl-lime)!important}
+.bl-main{gap:16px!important;padding:12px clamp(12px,3vw,26px)!important;max-width:1100px;margin:auto}
+.bl-conditions,.bl-education,.bl-water-watch-entry,.bl-agency,.bl-sources{background:var(--bl-panel)!important;border:1px solid var(--bl-line)!important;border-radius:14px!important;box-shadow:none!important}
+.bl-conditions{border-bottom:1px solid var(--bl-line)!important}
+.bl-conditions h1,.bl-section-row h2{color:#f0f3f2!important;font-weight:700!important}
+.bl-conditions h1 span{color:var(--bl-lime)!important}
+.bl-metric-icon{color:var(--bl-blue)!important}
+.bl-metric.water .bl-metric-icon{color:var(--bl-blue)!important}
+.bl-primary-cta{background:#1a303b!important;color:#b9dff8!important;border:1px solid #436d83!important;box-shadow:none!important}
+.bl-report-now{background:#14201d!important;border:1px solid #536f4c!important;color:#f2f5f1!important;box-shadow:none!important;min-height:72px!important}
+.bl-report-now h2{color:#e9f1e7!important;font-weight:700!important}
+.bl-report-now p{color:#cddbd1!important}
+.bl-report-now>a{background:var(--bl-lime)!important;color:#172011!important;border:0!important;box-shadow:none!important;font-weight:700!important}
+.bl-feature-grid{gap:12px!important}
+.bl-feature{min-height:170px!important;border:1px solid #41545a!important;border-radius:13px!important;box-shadow:none!important;padding:16px!important}
+.bl-feature::after{background:linear-gradient(0deg,rgba(5,12,17,.94),rgba(5,12,17,.10))!important}
+.bl-feature h2{font-size:clamp(13px,1.6vw,19px)!important;line-height:1.2!important;color:#f3f5f4!important;white-space:normal!important}
+.bl-feature p{font-size:clamp(11px,1.2vw,14px)!important;line-height:1.45!important;color:#e0e7e9!important}
+.bl-feature-arrow{color:#c8e4f6!important;border:1px solid #65849a!important;background:#15242d!important}
+.bl-education{padding:14px!important}
+.bl-section-row a{color:#c9a8d1!important}
+.bl-education-card{background:#15232b!important;border-color:#344951!important}
+.bl-education-card div{filter:brightness(.78) saturate(.86)!important}
+.bl-water-watch-entry strong{color:var(--bl-lime)!important}
+.bl-water-watch-entry button{background:var(--bl-lime)!important;color:#152015!important;border:0!important}
+.bl-bottom-nav .active,.bl-bottom-nav a:nth-child(2){color:var(--bl-blue)!important;background:transparent!important;border:0!important}
+.bl-bottom-nav a:nth-child(4),.bl-bottom-nav a:nth-child(5){color:#c2cad0!important}
+.bl-bottom-nav .log{color:var(--bl-lime)!important}
+.bl-bottom-nav .plus{border:1px solid #a2ce58!important;background:#1b291e!important;color:var(--bl-lime)!important;box-shadow:none!important}
+@media(max-width:600px){
+.bl-main{gap:12px!important;padding:10px 12px!important}
+.bl-header{height:auto!important;min-height:82px!important}
+.bl-report-now{grid-template-columns:minmax(0,1fr)!important;gap:7px!important;padding:12px!important}
+.bl-alert-icon{display:none!important}
+.bl-report-now h2{font-size:15px!important}
+.bl-report-now p{font-size:12px!important;line-height:1.4!important}
+.bl-report-now>a{min-height:44px!important;font-size:12px!important}
+.bl-feature-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
+.bl-feature{min-height:180px!important;padding:12px!important}
+.bl-feature h2{font-size:13px!important}
+.bl-feature p{font-size:11px!important;line-height:1.35!important}
+.bl-education-card{flex-basis:110px!important;width:110px!important}
+.bl-education-card span{font-size:10px!important}
+.bl-education-card div{height:82px!important}
+.bl-section-row h2{font-size:14px!important}
+.bl-section-row a{font-size:11px!important}
+.bl-metric small{font-size:8px!important}.bl-metric strong{font-size:11px!important}
+.bl-bottom-nav{position:fixed!important;bottom:0!important;height:66px!important}
+.bl-home{padding-bottom:76px!important}
+}
+@media(max-width:360px){.bl-feature-grid{grid-template-columns:1fr!important}.bl-feature{min-height:155px!important}}
+@media(prefers-reduced-motion:reduce){.bl-home *{animation:none!important;transition:none!important}}
+
+/* Founder-approved conservation tagline: lime green below the purpose statement. */
+.bl-brand .bl-conservation-motto { display:block; color:#A8EF22; font-weight:800; font-size:clamp(10px, 2.5vw, 14px); line-height:1.3; letter-spacing:.01em; }

@@ -6,6 +6,7 @@ import {
 } from "./useBaitLogicConditions";
 import "./mobile-dashboard.css";
 import "./mobile-dashboard-reference.css";
+import "./balanced-theme.css";
 import WaterWatch from "./WaterWatch";
 
 const education = [
@@ -39,7 +40,7 @@ export default function MobileDashboard() {
 
   return <div className="bl-home">
     <header className="bl-header">
-      <a href="/" className="bl-brand" aria-label="BaitLogic Outdoors home"><Logo /><span className="bl-wordmark"><strong>BAITLOGIC</strong><b><i />OUTDOORS<i /></b><small><em>Beyond the Bite.</em> Powered by People and Purpose.</small><span className="bl-rainbow" aria-hidden="true" /></span></a>
+      <a href="/" className="bl-brand" aria-label="BaitLogic Outdoors home"><Logo /><span className="bl-wordmark"><strong>BAITLOGIC</strong><b><i />OUTDOORS<i /></b><small><em>Beyond the Bite.</em> Powered by People and Purpose.</small><span className="bl-conservation-motto">See something? Say something.</span><span className="bl-rainbow" aria-hidden="true" /></span></a>
       <button className="bl-location" onClick={refreshLocation} type="button" aria-label="Refresh current location and conditions"><Crosshair2Icon /><span><strong>{locationLabel}</strong><small>● {live ? "LIVE" : status === "cached" ? "CACHED" : "CHECK"}</small></span></button>
     </header>
     <main className="bl-main">
