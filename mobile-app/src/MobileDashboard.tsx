@@ -6,6 +6,7 @@ import {
 } from "./useBaitLogicConditions";
 import "./mobile-dashboard.css";
 import "./mobile-dashboard-reference.css";
+import "./balanced-theme.css";
 import WaterWatch from "./WaterWatch";
 
 const education = [
