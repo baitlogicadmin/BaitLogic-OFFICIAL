@@ -22,7 +22,7 @@ export default function DesktopDashboard(){
 
   return <div className="desktop-dashboard">
     <header className="desktop-header">
-      <a className="desktop-wordmark" href="/"><strong>BAITLOGIC</strong><b>OUTDOORS</b><small>Beyond the Bite. Powered by People and Purpose.</small></a>
+      <a className="desktop-wordmark" href="/"><strong>BAITLOGIC</strong><b>OUTDOORS</b><small>Beyond the Bite. Powered by People and Purpose.</small><span className="desktop-conservation-motto">See something? Say something.</span></a>
       <nav aria-label="Desktop primary navigation">
         <a className="home" href="/">HOME</a><a className="barometer" href="/barometer.html">BAROMETER</a><a className="catches" href="/catches.html">CATCHES</a><a className="nature" href="/nature-check.html">NATURE CHECK</a><a className="trails" href="/trails.html">TRAILS</a><a className="more" href="/outdoor.html">MORE</a>
       </nav>
