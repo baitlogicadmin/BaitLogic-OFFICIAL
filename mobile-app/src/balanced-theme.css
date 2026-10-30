@@ -58,3 +58,6 @@
 }
 @media(max-width:360px){.bl-feature-grid{grid-template-columns:1fr!important}.bl-feature{min-height:155px!important}}
 @media(prefers-reduced-motion:reduce){.bl-home *{animation:none!important;transition:none!important}}
+
+/* Founder-approved conservation tagline: lime green below the purpose statement. */
+.bl-brand .bl-conservation-motto { display:block; color:#A8EF22; font-weight:800; font-size:clamp(10px, 2.5vw, 14px); line-height:1.3; letter-spacing:.01em; }
