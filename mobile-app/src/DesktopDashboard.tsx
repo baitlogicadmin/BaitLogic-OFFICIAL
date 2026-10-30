@@ -3,6 +3,7 @@ import {
 } from "@radix-ui/react-icons";
 import { compass, formatClock, pressureTrend, relativeUpdated, useBaitLogicConditions, WEATHER_LABELS } from "./useBaitLogicConditions";
 import "./desktop-dashboard.css";
+import "./balanced-desktop.css";
 
 const cards = [
   {cls:"reporting",title:"CONSERVATION REPORTING · LOCAL",text:"If you see something, say something.",cta:"REPORT / RESOURCES",href:"/field-intel.html#conservation",img:"/assets/pillar-conservation.webp"},
