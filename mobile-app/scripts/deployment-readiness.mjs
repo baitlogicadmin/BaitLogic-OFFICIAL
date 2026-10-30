@@ -93,12 +93,11 @@ const requiredFiles = [
   "dist/client/trails.html",
   "dist/client/catches.html",
   "dist/client/conservation-prairie.html",
-  "../api/trails.js",
-  "supabase/functions/submit-baitlogic-signal/index.ts",
+    "supabase/functions/submit-baitlogic-signal/index.ts",
 ];
 const missingFiles = requiredFiles.filter((file) => !existsSync(path.join(root, file)));
 addCheck(
-  "Vercel production and backend file map",
+  "Static production and backend file map",
   missingFiles.length === 0,
   missingFiles.length ? `Missing: ${missingFiles.join(", ")}` : "All required production, recovered feature, PWA, trail API, and active Supabase files are present.",
   missingFiles.length ? "Restore the listed file(s) from the authoritative source before deployment." : "",
@@ -110,15 +109,15 @@ addCheck(
   "Front-end environment mapping",
   missingEnv.length === 0,
   missingEnv.length ? `.env.local (missing key; compare .env.example)\nMissing keys: ${missingEnv.join(", ")}` : "Required public runtime keys are mapped; values were not printed.",
-  missingEnv.length ? "Add the missing key(s) to Vercel preview/production and rerun the gate." : "",
+  missingEnv.length ? "Configure the required public environment values in the deployment provider." : "",
 );
 
-const productionTarget = (process.env.BAITLOGIC_PRODUCTION_TARGET ?? "vercel").trim().toLowerCase();
+const productionTarget = (process.env.BAITLOGIC_PRODUCTION_TARGET ?? "cloudflare-pages").trim().toLowerCase();
 addCheck(
   "Authoritative production target",
-  productionTarget === "vercel",
-  productionTarget === "vercel" ? "GitHub main → Vercel is the only approved production target." : `Invalid production target: ${productionTarget}.`,
-  productionTarget === "vercel" ? "" : "Set BAITLOGIC_PRODUCTION_TARGET=vercel; do not deploy BaitLogic production through a second host.",
+  productionTarget === "cloudflare-pages",
+  productionTarget === "cloudflare-pages" ? "Cloudflare Pages is the intended static hosting target; DNS migration is separate." : `Invalid production target: ${productionTarget}.`,
+  productionTarget === "vercel" ? "" : "Set BAITLOGIC_PRODUCTION_TARGET=cloudflare-pages before running the release gate.",
 );
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL?.replace(/\/$/, "");
@@ -148,6 +147,6 @@ for (const check of checks) {
   if (check.fix) console.log(`      Fix: ${check.fix}`);
 }
 console.log(`\nResult: ${failed === 0 ? "PASS" : "FAIL"} — ${passed}/${checks.length} checks passed.`);
-console.log("Production source: GitHub main → Vercel.");
+console.log("Production target: Cloudflare Pages (not yet deployed).");
 
 if (failed > 0) process.exitCode = 1;
