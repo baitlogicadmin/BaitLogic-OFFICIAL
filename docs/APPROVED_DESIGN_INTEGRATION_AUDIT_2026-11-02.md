@@ -1,6 +1,8 @@
+> **CORRECTION — verified against the repository's Source of Truth and mobile-app runtime (2026-11-02):** The actual documented production application is `mobile-app/` (React/TypeScript/Vite), NOT the root Express `server.js` app. The documented production Supabase project is `gibaaxzltpdizayvicgf`, NOT the separately connected `khhishscjirjxhsulniq` project. Do not repoint production to the latter. Existing production deployment was documented as Vercel; migrating to Cloudflare requires a compatible hosting architecture and route/Edge Function audit. The release readiness document also contains stale email requirements and must be reconciled with current user-approved scope. No production credentials or database configuration were changed.
+
 # BaitLogic production integration audit — 2026-11-02
 
-Branch: `audit/approved-design-integration-2026-11-02`. The `main` branch is unchanged.
+Branch: `audit/approved-design-integration-2026-11-02`. The `main` branch is unchanged. **The following root-server observations are about a secondary/legacy runtime, not the documented production Vite application.**
 
 ## Verified current source
 - `package.json` starts `node server.js`; build script is a no-op.
