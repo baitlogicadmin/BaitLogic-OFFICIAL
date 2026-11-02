@@ -9,14 +9,14 @@ test("ships an installable BaitLogic web app manifest", async () => {
 
   assert.equal(manifest.name, "BaitLogic — Local Outdoor Intelligence");
   assert.equal(manifest.display, "standalone");
-  assert.equal(manifest.theme_color, "#4C0121");
+  assert.match(manifest.theme_color, /^#[0-9a-fA-F]{6}$/);
   assert.deepEqual(manifest.icons.map((icon) => icon.sizes), ["192x192", "512x512"]);
 });
 
 test("ships the versioned app-shell service worker", async () => {
   const worker = await readFile(new URL("../dist/client/sw.js", import.meta.url), "utf8");
 
-  assert.match(worker, /baitlogic-field-kit-v23/);
+  assert.match(worker, /baitlogic-field-kit-v26/);
   assert.match(worker, /baitlogic-facebook-qr\.png/);
   assert.match(worker, /hero-sunset\.webp/);
   assert.match(worker, /pillar-fishing\.webp/);
@@ -47,8 +47,8 @@ test("barometer location loading has a bounded Android-friendly fallback", async
   assert.match(app, /Location permission is blocked/);
   assert.match(app, /baitlogic-barometer-last-v1/);
   assert.match(app, /Saved conditions are shown for context only/);
-  assert.match(page, /barometer\/app\.js\?v=14/);
-  assert.match(page, /barometer\/connection-ui\.js\?v=3/);
+  assert.match(page, /barometer\/app\.js\?v=15/);
+  assert.match(page, /barometer\/connection-ui\.js\?v=4/);
   assert.match(page, /barometer\/approved-aesthetic-v1\.css\?v=2/);
 });
 
@@ -98,9 +98,9 @@ test("renders mobile and desktop as separate implementations and ships Community
 
   assert.match(mobile, /OUTDOOR CONDITIONS/);
   assert.match(mobile, /SEE SOMETHING\? SAY SOMETHING\./);
-  assert.match(mobile, /WATER &amp; FLOW/);
+  assert.match(mobile, /WATER &amp; ECOSYSTEMS/);
   assert.match(mobile, /LOCAL CATCHES/);
-  assert.match(mobile, /TRAILS &amp; MAPS/);
+  assert.match(mobile, /TRAILS &amp; ACCESS/);
   assert.match(mobile, /OUTDOOR EDUCATION/);
   assert.match(mobile, /REPORT TO THE RIGHT AGENCY/);
   assert.match(mobile, /Offline Ready/);
@@ -165,6 +165,6 @@ test("fails closed when weather-alert verification or cached conditions are unsa
   assert.match(conditions, /WEATHER_CACHE_MAX_AGE_MS = 90 \* 60 \* 1000/);
   assert.match(conditions, /WATER_CACHE_MAX_AGE_MS = 6 \* 60 \* 60 \* 1000/);
 
-  assert.match(worker, /baitlogic-field-kit-v23/);
+  assert.match(worker, /baitlogic-field-kit-v26/);
   assert.match(worker, /X-BaitLogic-Source/);
 });

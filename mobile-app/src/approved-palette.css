@@ -1,0 +1,32 @@
+/* Approved BaitLogic mobile-first palette refinement.
+ * Keeps original logo, existing routes, components and live-data logic intact.
+ * Single high-contrast accent per adjacent surface; plum is a background only.
+ */
+:root {
+  --bl-royal: #1745bd;
+  --bl-cyan: #24c5db;
+  --bl-lime: #a3df45;
+  --bl-orange: #f68b31;
+  --bl-deep-plum: #281b38;
+  --bl-ink: #081521;
+}
+@media (max-width: 760px) {
+  html, body, #root { background: var(--bl-ink) !important; }
+  .bl-home { background: linear-gradient(180deg,#101d34 0%,#281b38 48%,#091927 100%) !important; color: #f5f8ff; }
+  .bl-header { background: #0c1c30 !important; border-bottom: 2px solid var(--bl-cyan) !important; }
+  .bl-conditions { background: #11233b !important; border-color: rgba(36,197,219,.65) !important; border-bottom: 3px solid var(--bl-cyan) !important; }
+  .bl-location { background: #10273a !important; border-color: var(--bl-cyan) !important; }
+  .bl-location small { color: var(--bl-lime) !important; }
+  .bl-home .bl-primary-cta { background: var(--bl-lime) !important; color: #101c0b !important; border-color: var(--bl-lime) !important; font-weight: 800; }
+  .bl-report-now { background: #22314c !important; border-color: var(--bl-orange) !important; }
+  .bl-report-now > a { background: var(--bl-orange) !important; color: #1d1408 !important; }
+  .bl-feature { border-color: rgba(255,255,255,.25) !important; }
+  .bl-feature.water-flow { border-bottom: 3px solid var(--bl-cyan) !important; }
+  .bl-feature.catches { border-bottom: 3px solid var(--bl-orange) !important; }
+  .bl-feature.trails { border-bottom: 3px solid var(--bl-lime) !important; }
+  .bl-feature.education { border-bottom: 3px solid var(--bl-royal) !important; }
+  .bl-bottom-nav { background: #0a1b30 !important; border-top: 2px solid var(--bl-cyan) !important; }
+  .bl-bottom-nav a.active { color: var(--bl-lime) !important; }
+  .bl-water-watch-entry, .bl-education, .bl-agency { background-color: #12243a !important; }
+  a:focus-visible,button:focus-visible { outline: 3px solid var(--bl-lime) !important; outline-offset: 3px; }
+}
