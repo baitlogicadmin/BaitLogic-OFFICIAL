@@ -59,6 +59,37 @@ jobs:
           console.log('Mobile entry chunk:', entry, fs.statSync(path.join(dir, entry)).size, 'bytes');
           console.log('Separate JavaScript chunks:', js.length - 1);
           NODE
+      - name: Install Chromium for mobile browser checks
+        run: npx playwright install --with-deps chromium
+      - name: Measure interactive mobile startup at simulated 4G
+        run: |
+          node --input-type=module <<'NODE'
+          import { chromium } from '@playwright/test';
+          import { spawn } from 'node:child_process';
+          const server = spawn('python3', ['-m','http.server','4178','--bind','127.0.0.1','--directory','dist/client'], {stdio:'ignore'});
+          let browser;
+          try {
+            for(let i=0;i<60;i++){
+              try {const r=await fetch('http://127.0.0.1:4178/');if(r.ok)break;}catch{}
+              await new Promise(r=>setTimeout(r,200));
+            }
+            browser=await chromium.launch({headless:true});
+            const context=await browser.newContext({viewport:{width:360,height:780},deviceScaleFactor:2,isMobile:true,hasTouch:true,serviceWorkers:'block'});
+            const page=await context.newPage();
+            const cdp=await context.newCDPSession(page);
+            await cdp.send('Network.enable');
+            await cdp.send('Network.emulateNetworkConditions',{offline:false,latency:120,downloadThroughput:1_600_000/8,uploadThroughput:750_000/8});
+            await page.route('**/api/**',route=>route.fulfill({status:503,contentType:'application/json',body:'{"error":"unavailable"}'}));
+            const start=Date.now();
+            await page.goto('http://127.0.0.1:4178/',{waitUntil:'domcontentloaded',timeout:30000});
+            await page.locator('.bl-primary-cta').waitFor({state:'visible',timeout:15000});
+            const ms=Date.now()-start;
+            const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth);
+            console.log('Mobile primary action ready in',ms,'ms on simulated 4G; overflow:',overflow);
+            if(overflow)throw Error('Horizontal overflow on 360px viewport');
+            if(ms>3000)throw Error('Mobile 3-second readiness budget exceeded: '+ms+'ms');
+          } finally {await browser?.close();server.kill();}
+          NODE
       - name: Measure generated client payload
         run: |
           node --input-type=module <<'NODE'
