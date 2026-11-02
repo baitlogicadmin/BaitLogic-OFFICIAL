@@ -39,6 +39,26 @@ jobs:
         run: npm run build
       - name: Test worker routing and Vite PWA build outputs
         run: npm run test:sites
+      - name: Enforce mobile-first code splitting
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import path from 'node:path';
+          const dir = 'dist/client/assets';
+          const js = fs.readdirSync(dir).filter(name => name.endsWith('.js'));
+          const index = fs.readFileSync('dist/client/index.html', 'utf8');
+          const entry = index.match(/src="\/assets\/([^"]+\.js)"/)?.[1];
+          if (!entry) throw new Error('Missing built JavaScript entrypoint');
+          const entrySource = fs.readFileSync(path.join(dir, entry), 'utf8');
+          if (entrySource.includes('CONSERVATION REPORTING · LOCAL')) {
+            throw new Error('Desktop dashboard leaked into the initial mobile entry bundle');
+          }
+          if (!js.some(name => name !== entry)) {
+            throw new Error('Expected at least one separately loaded JavaScript chunk');
+          }
+          console.log('Mobile entry chunk:', entry, fs.statSync(path.join(dir, entry)).size, 'bytes');
+          console.log('Separate JavaScript chunks:', js.length - 1);
+          NODE
       - name: Measure generated client payload
         run: |
           node --input-type=module <<'NODE'
