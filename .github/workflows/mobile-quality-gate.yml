@@ -1,0 +1,57 @@
+name: BaitLogic mobile quality gate
+
+on:
+  push:
+    branches:
+      - audit/approved-design-integration-2026-11-02
+  pull_request:
+    paths:
+      - 'mobile-app/**'
+      - '.github/workflows/mobile-quality-gate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: baitlogic-quality-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: mobile-app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: mobile-app/package-lock.json
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Validate mobile runtime
+        run: npm run check:runtime
+      - name: Production TypeScript/Vite build
+        run: npm run build
+      - name: Test Sites worker contracts
+        run: npm run test:sites
+      - name: Measure generated client payload
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import path from 'node:path';
+          const root='dist/client';
+          const files=[];
+          function walk(dir){for(const entry of fs.readdirSync(dir,{withFileTypes:true})){const p=path.join(dir,entry.name);if(entry.isDirectory())walk(p);else if(/\.(js|css)$/.test(entry.name))files.push({file:p,bytes:fs.statSync(p).size});}}
+          walk(root);
+          files.sort((a,b)=>b.bytes-a.bytes);
+          console.log('Largest JavaScript/CSS outputs (uncompressed):');
+          for(const f of files.slice(0,15))console.log((f.bytes/1024).toFixed(1)+' KiB  '+f.file);
+          const total=files.reduce((n,f)=>n+f.bytes,0);
+          console.log('Total JS/CSS:',(total/1024).toFixed(1),'KiB');
+          if(!files.length)process.exitCode=1;
+          NODE
