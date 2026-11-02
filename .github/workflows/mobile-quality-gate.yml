@@ -37,15 +37,8 @@ jobs:
         run: npm run check:runtime
       - name: Production TypeScript/Vite build
         run: npm run build
-      - name: Test Sites worker contracts (requires Sites packaging)
+      - name: Test worker routing and Vite PWA build outputs
         run: npm run test:sites
-        continue-on-error: true
-      - name: Record Sites packaging compatibility gap
-        run: |
-          if [ ! -f dist/server/index.js ] || [ ! -f dist/.openai/hosting.json ]; then
-            echo 'Sites packaging artifacts are missing from the Vercel-oriented build.'
-            echo 'Do not treat this as a passed Sites contract or a deployable Sites build.'
-          fi
       - name: Measure generated client payload
         run: |
           node --input-type=module <<'NODE'
