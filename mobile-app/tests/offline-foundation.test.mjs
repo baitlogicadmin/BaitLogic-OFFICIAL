@@ -49,7 +49,7 @@ test("barometer location loading has a bounded Android-friendly fallback", async
   assert.match(app, /Saved conditions are shown for context only/);
   assert.match(page, /barometer\/app\.js\?v=15/);
   assert.match(page, /barometer\/connection-ui\.js\?v=4/);
-  assert.match(page, /barometer\/approved-aesthetic-v1\.css\?v=2|baitlogic-shell\.js\?v=1/);
+  assert.match(page, /baitlogic-shell\.js\?v=1/);
 });
 
 test("ships the correct public BaitLogic contact address", async () => {
