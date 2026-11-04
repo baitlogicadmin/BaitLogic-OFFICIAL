@@ -59,8 +59,10 @@ function probe(name, url, expectedStatuses, init = {}) {
 loadEnvFile(path.join(root, ".env.local"));
 loadEnvFile(path.join(root, ".env"));
 
-process.env.VITE_SUPABASE_URL ||= process.env.SUPABASE_URL || "https://gibaaxzltpdizayvicgf.supabase.co";
-process.env.VITE_SUPABASE_PUBLISHABLE_KEY ||= process.env.SUPABASE_PUBLISHABLE_KEY || "sb_publishable_oUyldV6BybbdjH3GhVRzqw_uVLKl_xN";
+// Never silently substitute a different Supabase project or a baked-in key.
+// The release gate must test the explicitly configured production backend.
+process.env.VITE_SUPABASE_URL ||= process.env.SUPABASE_URL || "";
+process.env.VITE_SUPABASE_PUBLISHABLE_KEY ||= process.env.SUPABASE_PUBLISHABLE_KEY || "";
 
 run(
   "Front-end production build",
