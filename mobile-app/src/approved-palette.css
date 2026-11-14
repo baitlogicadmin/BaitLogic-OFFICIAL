@@ -6,7 +6,7 @@
   --bl-royal: #315bff;
   --bl-cobalt: #315bff;
   --bl-red: #f34b52;
-  --bl-yellow: #f7e600;
+  --bl-yellow: #ffdf00;
   --bl-cyan: #24c5db;
   --bl-lime: #a3df45;
   --bl-orange: #f68b31;
@@ -22,7 +22,8 @@
   .bl-location small { color: var(--bl-lime) !important; }
   .bl-home .bl-primary-cta { background: var(--bl-lime) !important; color: #101c0b !important; border-color: var(--bl-lime) !important; font-weight: 800; }
   .bl-report-now { background: #22314c !important; border-color: var(--bl-red) !important; box-shadow: inset 3px 0 0 var(--bl-red); }
-  .bl-report-now > a { background: var(--bl-orange) !important; color: #1d1408 !important; }
+  .bl-report-now > a { background: var(--bl-lime) !important; color: #101c0b !important; border: 2px solid var(--bl-lime) !important; font-weight: 800; }
+  .bl-report-now > a:focus-visible { outline: 3px solid var(--bl-yellow) !important; outline-offset: 3px; }
   .bl-feature { border-color: rgba(255,255,255,.25) !important; }
   .bl-feature.water-flow { border-bottom: 3px solid var(--bl-cyan) !important; }
   .bl-feature.catches { border-bottom: 3px solid var(--bl-yellow) !important; }
